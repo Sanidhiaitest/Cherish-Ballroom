@@ -9,6 +9,7 @@ import WhatsAppModal from "./components/WhatsAppModal";
 import CouplePreviewModal from "./components/CouplePreviewModal";
 import ProposalModal from "./components/ProposalModal";
 import AIVoiceCallModal from "./components/AIVoiceCallModal";
+import VirtualTourModal from "./components/VirtualTourModal";
 import OverviewView from "./components/views/OverviewView";
 import FunnelView from "./components/views/FunnelView";
 import QueueView from "./components/views/QueueView";
@@ -36,6 +37,7 @@ export default function App() {
   const [previewLead, setPreviewLead] = useState(null);
   const [proposalLead, setProposalLead] = useState(null);
   const [aiVoiceCall, setAiVoiceCall] = useState(null);
+  const [virtualTourOpen, setVirtualTourOpen] = useState(false);
   const ViewComponent = VIEWS[view];
 
   function openAIVoiceCall(lead, script, outcome) {
@@ -56,7 +58,12 @@ export default function App() {
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
             >
-              <ViewComponent openLead={setSelected} setView={setView} onAIVoiceCall={openAIVoiceCall} />
+              <ViewComponent
+                openLead={setSelected}
+                setView={setView}
+                onAIVoiceCall={openAIVoiceCall}
+                onOpenVirtualTour={() => setVirtualTourOpen(true)}
+              />
             </motion.div>
           </AnimatePresence>
         </div>
@@ -83,6 +90,7 @@ export default function App() {
           onClose={() => setAiVoiceCall(null)}
         />
       )}
+      <VirtualTourModal open={virtualTourOpen} onClose={() => setVirtualTourOpen(false)} />
     </div>
   );
 }

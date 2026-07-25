@@ -1,6 +1,18 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { X, Bell, Home, MessageCircle, Calendar, User, ChevronRight } from "lucide-react";
+import { X, Bell, Home, MessageCircle, Calendar, User, ChevronRight, PartyPopper } from "lucide-react";
 import { STAGES } from "../data/leads";
+
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+function daysUntilMilestone(milestone) {
+  if (!milestone) return null;
+  const match = milestone.match(/(\w{3})\s+'(\d{2})/);
+  if (!match) return null;
+  const monthIdx = MONTHS.indexOf(match[1]);
+  if (monthIdx === -1) return null;
+  const target = new Date(2000 + Number(match[2]), monthIdx, 1);
+  return Math.round((target - new Date()) / (1000 * 60 * 60 * 24));
+}
 
 const FRIENDLY_EVENT_COPY = {
   dm: "We received your message and started your event thread.",
@@ -24,6 +36,8 @@ const FRIENDLY_STAGE_COPY = {
 export default function CouplePreviewModal({ lead, onClose }) {
   const stageIdx = lead ? STAGES.findIndex((s) => s.id === lead.stage) : 0;
   const firstName = lead?.name.split(/[\s&]/)[0] || "there";
+  const plannedPct = Math.round((stageIdx / (STAGES.length - 1)) * 100);
+  const daysToGo = lead?.stage === "booked" ? daysUntilMilestone(lead.milestone) : null;
 
   return (
     <AnimatePresence>
@@ -72,7 +86,12 @@ export default function CouplePreviewModal({ lead, onClose }) {
                 </div>
 
                 <div className="mx-5 rounded-3xl p-5" style={{ background: "linear-gradient(135deg, var(--color-ink), #1c2e26)" }}>
-                  <div className="font-mono text-[9.5px] uppercase tracking-wider" style={{ color: "var(--color-gold-soft)" }}>Your event</div>
+                  <div className="flex items-center justify-between">
+                    <div className="font-mono text-[9.5px] uppercase tracking-wider" style={{ color: "var(--color-gold-soft)" }}>Your event</div>
+                    <span className="font-mono text-[9.5px] rounded-full px-2 py-0.5" style={{ background: "rgba(201,162,39,0.18)", color: "var(--color-gold-soft)" }}>
+                      {plannedPct}% planned
+                    </span>
+                  </div>
                   <div className="font-serif text-[18px] mt-1" style={{ color: "var(--color-paper)" }}>
                     {lead.hall !== "—" ? lead.hall : "Hall — to be decided"}
                   </div>
@@ -82,6 +101,14 @@ export default function CouplePreviewModal({ lead, onClose }) {
                   <div className="font-body text-[12.5px] mt-3 leading-relaxed" style={{ color: "var(--color-ivory)" }}>
                     {FRIENDLY_STAGE_COPY[lead.stage]}
                   </div>
+                  {daysToGo !== null && (
+                    <div className="flex items-center gap-2 mt-3 pt-3" style={{ borderTop: "1px solid rgba(255,255,255,0.1)" }}>
+                      <PartyPopper size={14} style={{ color: "var(--color-gold-soft)" }} />
+                      <span className="font-body text-[12.5px] font-semibold" style={{ color: "var(--color-paper)" }}>
+                        {daysToGo > 0 ? `${daysToGo} days to your big day` : "Thank you for celebrating with Cherish"}
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 <div className="mx-5 mt-4">

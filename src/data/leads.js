@@ -333,6 +333,17 @@ export const CONTENT_TRENDS = [
   { type: "avoid", title: "Price-first captions", reason: "Leads where price is mentioned upfront show a 40% lower visit-to-quote rate — let the tasting sell first." },
 ];
 
+// From the competitive audit: every premium Delhi peer checked (Foodlink Luxury,
+// Kwality Catering, and others) runs on personal WhatsApp + manual forms —
+// none of the five below were found anywhere in the set.
+export const COMPETITIVE_CHECKLIST = [
+  "WhatsApp Business API chatbot",
+  "Instagram DM automation",
+  "AI lead tracking & scoring",
+  "AI voice follow-up calls",
+  "Virtual kitchen tour",
+];
+
 export const AI_CALL_LOG = [
   {
     leadName: "Ishaan & Priya",

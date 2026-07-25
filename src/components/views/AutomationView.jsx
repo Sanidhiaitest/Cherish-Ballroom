@@ -1,6 +1,7 @@
+import { Fragment } from "react";
 import { motion } from "framer-motion";
-import { Zap, MessageCircle, Bot, Users2, ArrowUpRight, CheckCircle2, Circle, Globe2, PhoneCall } from "lucide-react";
-import { LEADS, NURTURE_STEPS, AI_CALL_LOG, medianResponseSeconds, partnerMarginSummary, formatINR } from "../../data/leads";
+import { Zap, MessageCircle, Bot, Users2, ArrowUpRight, CheckCircle2, Circle, Globe2, PhoneCall, ChefHat, Check, X as XIcon } from "lucide-react";
+import { LEADS, NURTURE_STEPS, AI_CALL_LOG, COMPETITIVE_CHECKLIST, medianResponseSeconds, partnerMarginSummary, formatINR } from "../../data/leads";
 import Avatar from "../Avatar";
 
 function fmtSeconds(s) {
@@ -8,7 +9,7 @@ function fmtSeconds(s) {
   return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")} min`;
 }
 
-export default function AutomationView({ openLead, setView, onAIVoiceCall }) {
+export default function AutomationView({ openLead, setView, onAIVoiceCall, onOpenVirtualTour }) {
   const median = medianResponseSeconds();
   const fastestReplies = LEADS.filter((l) => l.firstResponseSeconds).sort((a, b) => a.firstResponseSeconds - b.firstResponseSeconds);
   const dmExample = fastestReplies[0];
@@ -189,13 +190,44 @@ export default function AutomationView({ openLead, setView, onAIVoiceCall }) {
             See the referral channel <ArrowUpRight size={12} />
           </button>
         </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="rounded-2xl p-6"
+          style={{ background: "linear-gradient(150deg, #3a2410, var(--color-ink))" }}
+        >
+          <div className="flex items-center gap-2 mb-1">
+            <ChefHat size={15} style={{ color: "var(--color-gold-soft)" }} />
+            <div className="font-serif text-[16px]" style={{ color: "var(--color-paper)" }}>Virtual Kitchen Tour & Menu Concierge</div>
+          </div>
+          <p className="font-body text-[12px] mb-4" style={{ color: "var(--color-stone)" }}>
+            The kitchen is the actual differentiator — most venues only show halls. This travels to a lead's phone before the in-person tasting.
+          </p>
+          <button
+            onClick={onOpenVirtualTour}
+            className="w-full flex items-center gap-3 rounded-2xl p-4 text-left"
+            style={{ background: "rgba(201,162,39,0.12)", border: "1px solid rgba(201,162,39,0.28)" }}
+          >
+            <div className="flex items-center justify-center rounded-xl w-9 h-9 shrink-0" style={{ background: "rgba(201,162,39,0.2)" }}>
+              <ChefHat size={16} style={{ color: "var(--color-gold-soft)" }} />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="font-semibold text-[12.5px]" style={{ color: "var(--color-paper)" }}>360° preview + sample menu Q&A</div>
+              <div className="font-body text-[11px]" style={{ color: "var(--color-stone)" }}>Preview what a lead receives</div>
+            </div>
+            <ArrowUpRight size={14} style={{ color: "var(--color-gold-soft)" }} />
+          </button>
+        </motion.div>
       </div>
 
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mt-5">
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-        className="rounded-2xl p-6 mt-5 flex flex-col md:flex-row gap-6 items-start"
+        transition={{ delay: 0.35 }}
+        className="rounded-2xl p-6 flex flex-col md:flex-row gap-6 items-start"
         style={{ background: "var(--color-paper)", border: "1px solid var(--color-stone-line)" }}
       >
         <div className="flex items-center justify-center rounded-2xl w-14 h-14 shrink-0" style={{ background: "rgba(31,77,61,0.1)" }}>
@@ -217,6 +249,39 @@ export default function AutomationView({ openLead, setView, onAIVoiceCall }) {
           </div>
         </div>
       </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+        className="rounded-2xl p-6"
+        style={{ background: "var(--color-paper)", border: "1px solid var(--color-stone-line)" }}
+      >
+        <div className="flex items-center gap-2 mb-1">
+          <div className="font-serif text-[16px]" style={{ color: "var(--color-ink)" }}>Where Delhi Stands Today</div>
+          <span className="font-mono text-[9px] uppercase tracking-wider rounded-full px-2 py-0.5" style={{ background: "var(--color-ivory)", color: "var(--color-stone)" }}>Competitive audit</span>
+        </div>
+        <p className="font-body text-[12px] mb-4" style={{ color: "var(--color-stone)" }}>
+          Every premium Delhi peer audited still runs on personal WhatsApp and manual forms.
+        </p>
+        <div className="grid grid-cols-[1fr_70px_100px] gap-y-2.5 items-center">
+          <span className="font-mono text-[9.5px] uppercase" style={{ color: "var(--color-stone)" }} />
+          <span className="font-mono text-[9.5px] uppercase text-center" style={{ color: "var(--color-gold-deep)" }}>Cherish</span>
+          <span className="font-mono text-[9.5px] uppercase text-center" style={{ color: "var(--color-stone)" }}>Other Venues</span>
+          {COMPETITIVE_CHECKLIST.map((item) => (
+            <Fragment key={item}>
+              <span className="font-body text-[12px]" style={{ color: "var(--color-ink)" }}>{item}</span>
+              <span className="flex justify-center">
+                <Check size={15} style={{ color: "var(--color-emerald)" }} />
+              </span>
+              <span className="flex justify-center">
+                <XIcon size={13} style={{ color: "var(--color-stone)" }} />
+              </span>
+            </Fragment>
+          ))}
+        </div>
+      </motion.div>
+      </div>
     </div>
   );
 }
