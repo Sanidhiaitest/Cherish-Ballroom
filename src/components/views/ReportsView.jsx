@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Sparkles, Star, MessageSquareWarning, FileText, TrendingUp, Wand2, ChevronRight } from "lucide-react";
+import { Sparkles, Star, MessageSquareWarning, FileText, TrendingUp, Wand2, ChevronRight, Megaphone, ThumbsUp, ThumbsDown } from "lucide-react";
 import {
   LEADS, STAGES, WEEKLY_LEAD_TREND, BOOKINGS_TREND, MONTHLY_BOOKING_GOAL,
-  REVIEWS, SAVED_REPORTS, formatINR, medianResponseSeconds, partnerMarginSummary,
+  REVIEWS, SAVED_REPORTS, CAMPAIGNS, CONTENT_TRENDS, formatINR, medianResponseSeconds, partnerMarginSummary,
 } from "../../data/leads";
 import { sourceColor } from "../SourceTag";
 import AreaChart from "../charts/AreaChart";
@@ -86,6 +86,66 @@ export default function ReportsView() {
           ))}
         </div>
       </motion.div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-5">
+        <div className="rounded-2xl p-6" style={{ background: "var(--color-paper)", border: "1px solid var(--color-stone-line)" }}>
+          <div className="flex items-center gap-2 mb-1">
+            <ThumbsUp size={15} style={{ color: "var(--color-gold-deep)" }} />
+            <div className="font-serif text-[15px]" style={{ color: "var(--color-ink)" }}>Content & Trends Advisor</div>
+          </div>
+          <p className="font-body text-[12px] mb-4" style={{ color: "var(--color-stone)" }}>
+            Before the ad spend — what's actually earning attention right now, and what to leave alone.
+          </p>
+          <div className="flex flex-col gap-2.5">
+            {CONTENT_TRENDS.map((t, i) => {
+              const post = t.type === "post";
+              return (
+                <div
+                  key={i}
+                  className="flex items-start gap-2.5 rounded-xl px-3.5 py-3"
+                  style={{ background: post ? "rgba(31,77,61,0.07)" : "rgba(178,58,72,0.07)", border: `1px solid ${post ? "rgba(31,77,61,0.22)" : "rgba(178,58,72,0.22)"}` }}
+                >
+                  {post ? (
+                    <ThumbsUp size={14} className="shrink-0 mt-0.5" style={{ color: "var(--color-emerald)" }} />
+                  ) : (
+                    <ThumbsDown size={14} className="shrink-0 mt-0.5" style={{ color: "var(--color-rose)" }} />
+                  )}
+                  <div>
+                    <div className="font-body text-[12.5px] font-semibold" style={{ color: "var(--color-ink)" }}>{t.title}</div>
+                    <div className="font-body text-[11.5px] mt-0.5 leading-relaxed" style={{ color: "var(--color-stone)" }}>{t.reason}</div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="rounded-2xl p-6" style={{ background: "var(--color-paper)", border: "1px solid var(--color-stone-line)" }}>
+          <div className="flex items-center gap-2 mb-1">
+            <Megaphone size={15} style={{ color: "var(--color-gold-deep)" }} />
+            <div className="font-serif text-[15px]" style={{ color: "var(--color-ink)" }}>Campaign Performance</div>
+          </div>
+          <p className="font-body text-[12px] mb-4" style={{ color: "var(--color-stone)" }}>
+            Which ad spend is actually turning into leads and bookings.
+          </p>
+          <div className="flex flex-col">
+            {CAMPAIGNS.map((c, i) => (
+              <div key={c.name} className="py-3" style={{ borderTop: i === 0 ? "none" : "1px solid var(--color-stone-line)" }}>
+                <div className="flex items-center justify-between mb-1.5">
+                  <div className="font-body text-[12.5px] font-semibold" style={{ color: "var(--color-ink)" }}>{c.name}</div>
+                  <span className="font-mono text-[9.5px] uppercase" style={{ color: "var(--color-stone)" }}>{c.platform}</span>
+                </div>
+                <div className="flex items-center gap-4 font-mono text-[11px]" style={{ color: "var(--color-stone)" }}>
+                  <span>{formatINR(c.spend)} spent</span>
+                  <span>{c.leads} leads</span>
+                  <span style={{ color: "var(--color-gold-deep)" }}>{formatINR(Math.round(c.spend / c.leads))}/lead</span>
+                  <span style={{ color: "var(--color-emerald)" }}>{c.booked} booked</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
 
       <div className="flex justify-end mb-3">
         <div className="flex gap-1 rounded-full p-1" style={{ background: "var(--color-paper)", border: "1px solid var(--color-stone-line)" }}>

@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
-import { Zap, MessageCircle, Bot, Users2, ArrowUpRight, CheckCircle2, Circle } from "lucide-react";
-import { LEADS, NURTURE_STEPS, medianResponseSeconds, partnerMarginSummary, formatINR } from "../../data/leads";
+import { Zap, MessageCircle, Bot, Users2, ArrowUpRight, CheckCircle2, Circle, Globe2, PhoneCall } from "lucide-react";
+import { LEADS, NURTURE_STEPS, AI_CALL_LOG, medianResponseSeconds, partnerMarginSummary, formatINR } from "../../data/leads";
 import Avatar from "../Avatar";
 
 function fmtSeconds(s) {
@@ -13,7 +13,6 @@ export default function AutomationView({ openLead, setView, onAIVoiceCall }) {
   const fastestReplies = LEADS.filter((l) => l.firstResponseSeconds).sort((a, b) => a.firstResponseSeconds - b.firstResponseSeconds);
   const dmExample = fastestReplies[0];
   const nurtureLead = LEADS.find((l) => l.nurtureStep !== undefined) || LEADS[0];
-  const voiceLead = LEADS.find((l) => l.name === "Ishaan & Priya");
   const margin = partnerMarginSummary();
 
   return (
@@ -131,25 +130,33 @@ export default function AutomationView({ openLead, setView, onAIVoiceCall }) {
         >
           <div className="flex items-center gap-2 mb-1">
             <Bot size={15} style={{ color: "var(--color-gold-soft)" }} />
-            <div className="font-serif text-[16px]" style={{ color: "var(--color-paper)" }}>AI Voice Follow-up</div>
+            <div className="font-serif text-[16px]" style={{ color: "var(--color-paper)" }}>AI Voice Follow-up — Call Log</div>
           </div>
           <p className="font-body text-[12px] mb-4" style={{ color: "var(--color-stone)" }}>
-            A Hindi/Hinglish voice agent calls 24–48h after the walkthrough — and hands hesitant leads straight to Kritika instead of another automated nudge.
+            A Hindi/Hinglish voice agent calls 24–48h after the walkthrough. Simple, positive calls close themselves — hesitation gets routed to a human.
           </p>
-          {voiceLead && (
-            <button
-              onClick={() => onAIVoiceCall(voiceLead)}
-              className="w-full flex items-center gap-3 rounded-2xl p-4 text-left"
-              style={{ background: "rgba(201,162,39,0.1)", border: "1px solid rgba(201,162,39,0.25)" }}
-            >
-              <Avatar initials={voiceLead.initials} source={voiceLead.source} size={30} />
-              <div className="flex-1 min-w-0">
-                <div className="font-semibold text-[12.5px]" style={{ color: "var(--color-paper)" }}>{voiceLead.name}</div>
-                <div className="font-body text-[11px]" style={{ color: "var(--color-stone)" }}>Play sample call</div>
-              </div>
-              <ArrowUpRight size={14} style={{ color: "var(--color-gold-soft)" }} />
-            </button>
-          )}
+          <div className="flex flex-col gap-2">
+            {AI_CALL_LOG.map((entry) => {
+              const callLead = LEADS.find((l) => l.name === entry.leadName);
+              if (!callLead) return null;
+              const positive = entry.tone === "positive";
+              return (
+                <button
+                  key={entry.leadName}
+                  onClick={() => onAIVoiceCall(callLead, entry.script, entry.outcomeDetail)}
+                  className="w-full flex items-center gap-3 rounded-2xl p-3.5 text-left"
+                  style={{ background: "rgba(255,255,255,0.04)", border: `1px solid ${positive ? "rgba(31,77,61,0.4)" : "rgba(201,162,39,0.25)"}` }}
+                >
+                  <Avatar initials={callLead.initials} source={callLead.source} size={28} />
+                  <div className="flex-1 min-w-0">
+                    <div className="font-semibold text-[12px]" style={{ color: "var(--color-paper)" }}>{callLead.name}</div>
+                    <div className="font-body text-[10.5px] truncate" style={{ color: positive ? "var(--color-emerald-soft)" : "var(--color-gold-soft)" }}>{entry.outcomeLabel}</div>
+                  </div>
+                  <PhoneCall size={13} style={{ color: "var(--color-stone)" }} />
+                </button>
+              );
+            })}
+          </div>
         </motion.div>
 
         <motion.div
@@ -183,6 +190,33 @@ export default function AutomationView({ openLead, setView, onAIVoiceCall }) {
           </button>
         </motion.div>
       </div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+        className="rounded-2xl p-6 mt-5 flex flex-col md:flex-row gap-6 items-start"
+        style={{ background: "var(--color-paper)", border: "1px solid var(--color-stone-line)" }}
+      >
+        <div className="flex items-center justify-center rounded-2xl w-14 h-14 shrink-0" style={{ background: "rgba(31,77,61,0.1)" }}>
+          <Globe2 size={22} style={{ color: "var(--color-emerald)" }} />
+        </div>
+        <div className="flex-1">
+          <div className="flex items-center gap-2 mb-1">
+            <div className="font-serif text-[16px]" style={{ color: "var(--color-ink)" }}>The Dubai Benchmark</div>
+            <span className="font-mono text-[9px] uppercase tracking-wider rounded-full px-2 py-0.5" style={{ background: "var(--color-ivory)", color: "var(--color-stone)" }}>Industry context</span>
+          </div>
+          <p className="font-body text-[12.5px] leading-relaxed mb-3" style={{ color: "var(--color-ink)" }}>
+            <strong>70–80% of Middle East luxury hotels</strong> already run WhatsApp-native AI concierges tied into their CRM — Jumeirah uses AI-driven campaigns to send dining experiences to food-lovers specifically, not blanket offers. This isn't experimental technology anymore; it's table stakes at the top end of hospitality.
+          </p>
+          <div className="flex items-start gap-2 rounded-xl px-3.5 py-3" style={{ background: "var(--color-ivory)" }}>
+            <Zap size={13} className="shrink-0 mt-0.5" style={{ color: "var(--color-gold-deep)" }} />
+            <span className="font-body text-[12px] italic leading-relaxed" style={{ color: "var(--color-ink)" }}>
+              "Innovation should amplify high-touch moments, not replace them." Every automation on this page exists to protect the walkthrough and the tasting — the two moments Cherish actually wins on.
+            </span>
+          </div>
+        </div>
+      </motion.div>
     </div>
   );
 }

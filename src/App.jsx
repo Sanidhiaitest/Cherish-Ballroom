@@ -35,8 +35,12 @@ export default function App() {
   const [chatLead, setChatLead] = useState(null);
   const [previewLead, setPreviewLead] = useState(null);
   const [proposalLead, setProposalLead] = useState(null);
-  const [aiVoiceLead, setAiVoiceLead] = useState(null);
+  const [aiVoiceCall, setAiVoiceCall] = useState(null);
   const ViewComponent = VIEWS[view];
+
+  function openAIVoiceCall(lead, script, outcome) {
+    setAiVoiceCall(lead ? { lead, script, outcome } : null);
+  }
 
   return (
     <div className="flex min-h-screen bg-noise" style={{ background: "var(--color-ivory)" }}>
@@ -52,7 +56,7 @@ export default function App() {
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
             >
-              <ViewComponent openLead={setSelected} setView={setView} onAIVoiceCall={(l) => setAiVoiceLead(l)} />
+              <ViewComponent openLead={setSelected} setView={setView} onAIVoiceCall={openAIVoiceCall} />
             </motion.div>
           </AnimatePresence>
         </div>
@@ -65,13 +69,20 @@ export default function App() {
         onWhatsApp={(l) => setChatLead(l)}
         onPreviewCouple={(l) => setPreviewLead(l)}
         onViewProposal={(l) => setProposalLead(l)}
-        onAIVoiceCall={(l) => setAiVoiceLead(l)}
+        onAIVoiceCall={openAIVoiceCall}
       />
       <CallModal lead={callLead} onClose={() => setCallLead(null)} />
       <WhatsAppModal lead={chatLead} onClose={() => setChatLead(null)} />
       <CouplePreviewModal lead={previewLead} onClose={() => setPreviewLead(null)} />
       <ProposalModal lead={proposalLead} onClose={() => setProposalLead(null)} />
-      <AIVoiceCallModal lead={aiVoiceLead} onClose={() => setAiVoiceLead(null)} />
+      {aiVoiceCall && (
+        <AIVoiceCallModal
+          lead={aiVoiceCall.lead}
+          script={aiVoiceCall.script}
+          outcome={aiVoiceCall.outcome}
+          onClose={() => setAiVoiceCall(null)}
+        />
+      )}
     </div>
   );
 }
