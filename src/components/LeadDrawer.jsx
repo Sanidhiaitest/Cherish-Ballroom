@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { X, Phone, MessageCircle, Sparkles, MapPin, FileText, StickyNote, AlertTriangle, PhoneCall, Smartphone } from "lucide-react";
+import { X, Phone, MessageCircle, Sparkles, MapPin, FileText, StickyNote, AlertTriangle, PhoneCall, Smartphone, Bot, ClipboardList } from "lucide-react";
 import { STAGES, scoreTone, formatINR } from "../data/leads";
 import SourceTag from "./SourceTag";
 import Avatar from "./Avatar";
@@ -15,7 +15,7 @@ const TYPE_ICON = {
   alert: AlertTriangle,
 };
 
-export default function LeadDrawer({ lead, onClose, onCall, onWhatsApp, onPreviewCouple }) {
+export default function LeadDrawer({ lead, onClose, onCall, onWhatsApp, onPreviewCouple, onViewProposal, onAIVoiceCall }) {
   return (
     <AnimatePresence>
       {lead && (
@@ -91,13 +91,33 @@ export default function LeadDrawer({ lead, onClose, onCall, onWhatsApp, onPrevie
                 <MessageCircle size={13.5} /> WhatsApp
               </motion.button>
             </div>
-            <button
-              onClick={() => onPreviewCouple?.(lead)}
-              className="w-full flex items-center justify-center gap-2 rounded-full py-2 mb-7 font-medium text-[12px] transition-colors hover:bg-black/5"
-              style={{ color: "var(--color-stone)" }}
-            >
-              <Smartphone size={12.5} /> See what {lead.name.split(" ")[0]} sees on their phone
-            </button>
+            <div className="flex flex-wrap gap-2 mb-7">
+              <button
+                onClick={() => onPreviewCouple?.(lead)}
+                className="flex items-center gap-1.5 rounded-full px-3 py-1.5 font-medium text-[11.5px] transition-colors hover:bg-black/5"
+                style={{ color: "var(--color-stone)", border: "1px solid var(--color-stone-line)" }}
+              >
+                <Smartphone size={11.5} /> Couple's phone view
+              </button>
+              {lead.value > 0 && (
+                <button
+                  onClick={() => onViewProposal?.(lead)}
+                  className="flex items-center gap-1.5 rounded-full px-3 py-1.5 font-medium text-[11.5px] transition-colors hover:bg-black/5"
+                  style={{ color: "var(--color-stone)", border: "1px solid var(--color-stone-line)" }}
+                >
+                  <ClipboardList size={11.5} /> Proposal / BEO
+                </button>
+              )}
+              {(lead.stage === "visited" || lead.stage === "quoted" || lead.stage === "followup") && (
+                <button
+                  onClick={() => onAIVoiceCall?.(lead)}
+                  className="flex items-center gap-1.5 rounded-full px-3 py-1.5 font-medium text-[11.5px] transition-colors hover:bg-black/5"
+                  style={{ color: "var(--color-stone)", border: "1px solid var(--color-stone-line)" }}
+                >
+                  <Bot size={11.5} /> Play AI voice follow-up
+                </button>
+              )}
+            </div>
 
             <div className="font-mono text-[10.5px] font-bold uppercase tracking-wider mb-4" style={{ color: "var(--color-stone)" }}>
               One Thread, Every Touchpoint

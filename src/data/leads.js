@@ -26,6 +26,7 @@ export const LEADS = [
   {
     id: 1, name: "Ananya & Rohit", initials: "AR", source: "instagram", stage: "followup",
     score: 82, days: 2, phone: "+91 98•• ••71", ref: null, hall: "Emerald Hall", guests: 450, value: 1900000,
+    firstResponseSeconds: 118, nurtureStep: 2,
     thread: [
       { t: "Day 0, 11:42 PM", type: "dm", e: "DM'd @cherish.ballrooms reel — asked about Emerald hall availability, Dec dates." },
       { t: "Day 0, 11:44 PM", type: "ai", e: "System auto-logged guest count (450) from the DM, flagged qualified, slotted a site visit for Day 2." },
@@ -55,6 +56,7 @@ export const LEADS = [
   {
     id: 4, name: "Ishaan & Priya", initials: "IP", source: "instagram", stage: "visited",
     score: 74, days: 1, phone: "+91 98•• ••83", ref: null, hall: "Solitaire Hall", guests: 380, value: 1940000,
+    firstResponseSeconds: 64, nurtureStep: 1,
     thread: [
       { t: "Day 0", type: "dm", e: "Ad click → WhatsApp. Asked about Solitaire hall + vegetarian menu." },
       { t: "Day 0", type: "visit", e: "Site visit same evening — loved the glasshouse." },
@@ -80,6 +82,7 @@ export const LEADS = [
   {
     id: 7, name: "Rhea & Arjun", initials: "RA", source: "instagram", stage: "query",
     score: 40, days: 0, phone: "+91 98•• ••50", ref: null, hall: "—", guests: 0, value: 0,
+    firstResponseSeconds: 41,
     thread: [{ t: "Just now", type: "ai", e: "DM'd asking about Feb weekend availability. System sent an instant acknowledgment, awaiting her reply." }],
   },
   {
@@ -101,6 +104,7 @@ export const LEADS = [
   {
     id: 10, name: "Simran Oberoi", initials: "SO", source: "instagram", stage: "query",
     score: 35, days: 0, phone: "+91 98•• ••29", ref: null, hall: "—", guests: 0, value: 0,
+    firstResponseSeconds: 52,
     thread: [{ t: "Just now", type: "ai", e: "Commented on a reel; system opened the DM thread automatically, guest count still unclear." }],
   },
   {
@@ -114,6 +118,7 @@ export const LEADS = [
   {
     id: 12, name: "Diya & Kabir", initials: "DK", source: "instagram", stage: "quoted",
     score: 85, days: 1, phone: "+91 98•• ••65", ref: null, hall: "Emerald Hall", guests: 400, value: 2100000,
+    firstResponseSeconds: 29, nurtureStep: 3,
     thread: [
       { t: "Day 0", type: "dm", e: "Ad click → instant system acknowledgment → same-day visit booked." },
       { t: "Day 1", type: "quote", e: "Quoted Emerald, 400 pax. Replied asking for tasting date — hot." },
@@ -150,9 +155,65 @@ export const LEADS = [
   {
     id: 17, name: "Naina Chawla", initials: "NC", source: "instagram", stage: "query",
     score: 38, days: 0, phone: "+91 98•• ••56", ref: null, hall: "—", guests: 0, value: 0,
+    firstResponseSeconds: 35,
     thread: [{ t: "Just now", type: "ai", e: "Saved 4 reels this week before DMing today. System flagged as a warm silent-browser, not a cold query." }],
   },
 ];
+
+export const NURTURE_STEPS = [
+  { id: "thank_you", label: "Thank-you + visit recap", channel: "WhatsApp" },
+  { id: "menu_nudge", label: "Menu & tasting nudge", channel: "WhatsApp" },
+  { id: "date_reminder", label: "Limited-date reminder", channel: "WhatsApp" },
+  { id: "social_proof", label: "Testimonial / social proof", channel: "WhatsApp" },
+  { id: "voice_call", label: "AI voice follow-up call", channel: "Voice" },
+];
+
+export const EVENTCO_COMMISSION_RATE = 0.5;
+
+export function medianResponseSeconds() {
+  const values = LEADS.map((l) => l.firstResponseSeconds).filter(Boolean).sort((a, b) => a - b);
+  if (!values.length) return 0;
+  const mid = Math.floor(values.length / 2);
+  return values.length % 2 ? values[mid] : Math.round((values[mid - 1] + values[mid]) / 2);
+}
+
+export function partnerMarginSummary() {
+  const eventco = LEADS.filter((l) => l.source === "eventco" && l.value > 0);
+  const direct = LEADS.filter((l) => l.source !== "eventco" && l.value > 0);
+  const eventcoGross = eventco.reduce((s, l) => s + l.value, 0);
+  const eventcoNet = eventcoGross * (1 - EVENTCO_COMMISSION_RATE);
+  const directGross = direct.reduce((s, l) => s + l.value, 0);
+  return {
+    eventcoGross,
+    eventcoNet,
+    eventcoNetPerLead: eventco.length ? eventcoNet / eventco.length : 0,
+    directNetPerLead: direct.length ? directGross / direct.length : 0,
+    eventcoCount: eventco.length,
+    directCount: direct.length,
+  };
+}
+
+// Rough BEO-style cost breakdown derived from the lead's own estimate — mirrors
+// a Tripleseat proposal without needing a second, hand-maintained price sheet.
+export function buildProposal(lead) {
+  if (!lead.value) return null;
+  const venue = Math.round(lead.value * 0.35);
+  const catering = Math.round(lead.value * 0.45);
+  const decor = Math.round(lead.value * 0.12);
+  const service = lead.value - venue - catering - decor;
+  const deposit = Math.round(lead.value * 0.25);
+  return {
+    lineItems: [
+      { label: "Venue rental", sub: lead.hall, amount: venue },
+      { label: "In-house catering", sub: `${lead.guests} pax`, amount: catering },
+      { label: "Décor & lighting", sub: "Standard package", amount: decor },
+      { label: "Staff & service", sub: "Full event day", amount: service },
+    ],
+    total: lead.value,
+    deposit,
+    balance: lead.value - deposit,
+  };
+}
 
 // Referral Web is derived, not hand-maintained: any lead with a `ref` pointing
 // at another lead's exact `name` becomes a child node of that lead.

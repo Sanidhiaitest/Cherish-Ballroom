@@ -7,10 +7,13 @@ import LeadDrawer from "./components/LeadDrawer";
 import CallModal from "./components/CallModal";
 import WhatsAppModal from "./components/WhatsAppModal";
 import CouplePreviewModal from "./components/CouplePreviewModal";
+import ProposalModal from "./components/ProposalModal";
+import AIVoiceCallModal from "./components/AIVoiceCallModal";
 import OverviewView from "./components/views/OverviewView";
 import FunnelView from "./components/views/FunnelView";
 import QueueView from "./components/views/QueueView";
 import ReferralView from "./components/views/ReferralView";
+import AutomationView from "./components/views/AutomationView";
 import { LEADS } from "./data/leads";
 
 const VIEWS = {
@@ -18,6 +21,7 @@ const VIEWS = {
   funnel: FunnelView,
   queue: QueueView,
   referral: ReferralView,
+  automation: AutomationView,
 };
 
 const DEFAULT_COUPLE_PREVIEW = LEADS.find((l) => l.name === "Diya & Kabir");
@@ -28,6 +32,8 @@ export default function App() {
   const [callLead, setCallLead] = useState(null);
   const [chatLead, setChatLead] = useState(null);
   const [previewLead, setPreviewLead] = useState(null);
+  const [proposalLead, setProposalLead] = useState(null);
+  const [aiVoiceLead, setAiVoiceLead] = useState(null);
   const ViewComponent = VIEWS[view];
 
   return (
@@ -44,7 +50,7 @@ export default function App() {
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
             >
-              <ViewComponent openLead={setSelected} />
+              <ViewComponent openLead={setSelected} setView={setView} onAIVoiceCall={(l) => setAiVoiceLead(l)} />
             </motion.div>
           </AnimatePresence>
         </div>
@@ -56,10 +62,14 @@ export default function App() {
         onCall={(l) => setCallLead(l)}
         onWhatsApp={(l) => setChatLead(l)}
         onPreviewCouple={(l) => setPreviewLead(l)}
+        onViewProposal={(l) => setProposalLead(l)}
+        onAIVoiceCall={(l) => setAiVoiceLead(l)}
       />
       <CallModal lead={callLead} onClose={() => setCallLead(null)} />
       <WhatsAppModal lead={chatLead} onClose={() => setChatLead(null)} />
       <CouplePreviewModal lead={previewLead} onClose={() => setPreviewLead(null)} />
+      <ProposalModal lead={proposalLead} onClose={() => setProposalLead(null)} />
+      <AIVoiceCallModal lead={aiVoiceLead} onClose={() => setAiVoiceLead(null)} />
     </div>
   );
 }

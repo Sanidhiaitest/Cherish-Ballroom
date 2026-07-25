@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { LayoutGrid, GitBranch, ListOrdered, Share2, Sparkles } from "lucide-react";
+import { LayoutGrid, GitBranch, ListOrdered, Share2, Sparkles, Zap } from "lucide-react";
 import { ChandelierMotif } from "./Illustrations";
 
 const ITEMS = [
@@ -7,6 +7,7 @@ const ITEMS = [
   { id: "funnel", label: "Live Funnel", Icon: GitBranch },
   { id: "queue", label: "Priority Queue", Icon: ListOrdered },
   { id: "referral", label: "Referral Web", Icon: Share2 },
+  { id: "automation", label: "Automation Engine", Icon: Zap },
 ];
 
 export default function Sidebar({ view, setView }) {
