@@ -6,13 +6,14 @@ import Avatar from "../Avatar";
 import ScoreRing from "../ScoreRing";
 
 export default function QueueView({ openLead }) {
-  const sorted = [...LEADS].sort((a, b) => b.score - a.score);
+  const sorted = LEADS.filter((l) => l.stage !== "booked").sort((a, b) => b.score - a.score);
+  const booked = LEADS.length - sorted.length;
 
   return (
     <div>
       <h1 className="font-serif text-[27px]" style={{ color: "var(--color-ink)" }}>Priority Queue</h1>
       <p className="font-body text-[13.5px] mt-1.5 mb-6" style={{ color: "var(--color-stone)" }}>
-        Who to call first — ranked, not guessed.
+        Who to call first — ranked, not guessed. {booked} already booked and out of the queue.
       </p>
 
       <div className="hidden md:grid grid-cols-[2.2fr_1fr_1fr_0.9fr_1fr_24px] px-5 py-2.5 mb-2 font-mono text-[10px] uppercase tracking-wider" style={{ color: "var(--color-stone)" }}>

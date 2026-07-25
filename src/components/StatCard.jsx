@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import AnimatedNumber from "./AnimatedNumber";
 
 export default function StatCard({ label, value, sub, Icon, tint = "var(--color-gold)", delay = 0 }) {
   return (
@@ -22,7 +23,9 @@ export default function StatCard({ label, value, sub, Icon, tint = "var(--color-
           </div>
         )}
       </div>
-      <div className="font-serif text-[32px] mt-2 leading-none" style={{ color: "var(--color-ink)" }}>{value}</div>
+      <div className="font-serif text-[32px] mt-2 leading-none" style={{ color: "var(--color-ink)" }}>
+        <AnimatedNumber value={value} />
+      </div>
       {sub && <div className="font-body text-[12px] mt-1.5" style={{ color: "var(--color-stone)" }}>{sub}</div>}
     </motion.div>
   );

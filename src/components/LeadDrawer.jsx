@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { X, Phone, MessageCircle, Sparkles, MapPin, FileText, StickyNote, AlertTriangle, PhoneCall } from "lucide-react";
+import { X, Phone, MessageCircle, Sparkles, MapPin, FileText, StickyNote, AlertTriangle, PhoneCall, Smartphone } from "lucide-react";
 import { STAGES, scoreTone, formatINR } from "../data/leads";
 import SourceTag from "./SourceTag";
 import Avatar from "./Avatar";
@@ -15,7 +15,7 @@ const TYPE_ICON = {
   alert: AlertTriangle,
 };
 
-export default function LeadDrawer({ lead, onClose }) {
+export default function LeadDrawer({ lead, onClose, onCall, onWhatsApp, onPreviewCouple }) {
   return (
     <AnimatePresence>
       {lead && (
@@ -73,8 +73,9 @@ export default function LeadDrawer({ lead, onClose }) {
               </div>
             </div>
 
-            <div className="flex gap-2.5 mb-7">
+            <div className="flex gap-2.5 mb-3">
               <motion.button
+                onClick={() => onCall?.(lead)}
                 whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
                 className="flex-1 flex items-center justify-center gap-2 rounded-full py-2.5 font-semibold text-[13px]"
                 style={{ background: "var(--color-ink)", color: "var(--color-paper)" }}
@@ -82,6 +83,7 @@ export default function LeadDrawer({ lead, onClose }) {
                 <Phone size={13.5} /> Call Now
               </motion.button>
               <motion.button
+                onClick={() => onWhatsApp?.(lead)}
                 whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
                 className="flex-1 flex items-center justify-center gap-2 rounded-full py-2.5 font-semibold text-[13px]"
                 style={{ background: "transparent", color: "var(--color-ink)", border: "1.5px solid var(--color-ink)" }}
@@ -89,6 +91,13 @@ export default function LeadDrawer({ lead, onClose }) {
                 <MessageCircle size={13.5} /> WhatsApp
               </motion.button>
             </div>
+            <button
+              onClick={() => onPreviewCouple?.(lead)}
+              className="w-full flex items-center justify-center gap-2 rounded-full py-2 mb-7 font-medium text-[12px] transition-colors hover:bg-black/5"
+              style={{ color: "var(--color-stone)" }}
+            >
+              <Smartphone size={12.5} /> See what {lead.name.split(" ")[0]} sees on their phone
+            </button>
 
             <div className="font-mono text-[10.5px] font-bold uppercase tracking-wider mb-4" style={{ color: "var(--color-stone)" }}>
               One Thread, Every Touchpoint

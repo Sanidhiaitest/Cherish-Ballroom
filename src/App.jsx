@@ -4,10 +4,14 @@ import Sidebar from "./components/Sidebar";
 import Topbar from "./components/Topbar";
 import MobileNav from "./components/MobileNav";
 import LeadDrawer from "./components/LeadDrawer";
+import CallModal from "./components/CallModal";
+import WhatsAppModal from "./components/WhatsAppModal";
+import CouplePreviewModal from "./components/CouplePreviewModal";
 import OverviewView from "./components/views/OverviewView";
 import FunnelView from "./components/views/FunnelView";
 import QueueView from "./components/views/QueueView";
 import ReferralView from "./components/views/ReferralView";
+import { LEADS } from "./data/leads";
 
 const VIEWS = {
   overview: OverviewView,
@@ -16,16 +20,21 @@ const VIEWS = {
   referral: ReferralView,
 };
 
+const DEFAULT_COUPLE_PREVIEW = LEADS.find((l) => l.name === "Diya & Kabir");
+
 export default function App() {
   const [view, setView] = useState("overview");
   const [selected, setSelected] = useState(null);
+  const [callLead, setCallLead] = useState(null);
+  const [chatLead, setChatLead] = useState(null);
+  const [previewLead, setPreviewLead] = useState(null);
   const ViewComponent = VIEWS[view];
 
   return (
     <div className="flex min-h-screen bg-noise" style={{ background: "var(--color-ivory)" }}>
       <Sidebar view={view} setView={setView} />
       <div className="flex-1 flex flex-col min-w-0">
-        <Topbar />
+        <Topbar onPreviewCoupleApp={() => setPreviewLead(DEFAULT_COUPLE_PREVIEW)} />
         <div className="flex-1 px-5 md:px-10 pb-24 md:pb-12 overflow-y-auto">
           <AnimatePresence mode="wait">
             <motion.div
@@ -41,7 +50,16 @@ export default function App() {
         </div>
       </div>
       <MobileNav view={view} setView={setView} />
-      <LeadDrawer lead={selected} onClose={() => setSelected(null)} />
+      <LeadDrawer
+        lead={selected}
+        onClose={() => setSelected(null)}
+        onCall={(l) => setCallLead(l)}
+        onWhatsApp={(l) => setChatLead(l)}
+        onPreviewCouple={(l) => setPreviewLead(l)}
+      />
+      <CallModal lead={callLead} onClose={() => setCallLead(null)} />
+      <WhatsAppModal lead={chatLead} onClose={() => setChatLead(null)} />
+      <CouplePreviewModal lead={previewLead} onClose={() => setPreviewLead(null)} />
     </div>
   );
 }

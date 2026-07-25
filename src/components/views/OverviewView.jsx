@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
-import { Flame, Snowflake, TrendingUp, Wallet, ArrowUpRight, PlusCircle } from "lucide-react";
-import { LEADS, SOURCE_META, formatINR } from "../../data/leads";
+import { Flame, Snowflake, TrendingUp, Wallet, ArrowUpRight, PlusCircle, Lock, Radar } from "lucide-react";
+import { LEADS, formatINR } from "../../data/leads";
 import StatCard from "../StatCard";
 import SourceTag, { sourceColor } from "../SourceTag";
 import Avatar from "../Avatar";
@@ -10,11 +10,12 @@ export default function OverviewView({ openLead }) {
     key: s,
     count: LEADS.filter((l) => l.source === s).length,
   }));
-  const hotAll = LEADS.filter((l) => l.score >= 75).sort((a, b) => b.score - a.score);
+  const hotAll = LEADS.filter((l) => l.score >= 75 && l.stage !== "booked").sort((a, b) => b.score - a.score);
   const hot = hotAll.slice(0, 4);
   const booked = LEADS.filter((l) => l.stage === "booked");
   const bookedValue = booked.reduce((s, l) => s + l.value, 0);
   const cold = LEADS.filter((l) => l.days >= 5);
+  const radarLead = LEADS.find((l) => l.name === "The Chopra Wedding");
 
   return (
     <div>
@@ -37,13 +38,13 @@ export default function OverviewView({ openLead }) {
         <div className="relative flex flex-col md:flex-row md:items-end md:justify-between gap-6">
           <div>
             <div className="font-mono text-[10.5px] uppercase tracking-[0.16em]" style={{ color: "var(--color-gold-soft)" }}>
-              Wednesday · 12 active threads
+              {new Date().toLocaleDateString("en-IN", { weekday: "long" })} · {LEADS.length} threads live right now
             </div>
             <h1 className="font-serif text-[30px] md:text-[36px] mt-2 leading-tight" style={{ color: "var(--color-paper)" }}>
               Good evening, Kritika.
             </h1>
             <p className="font-body text-[13.5px] mt-2.5 max-w-md leading-relaxed" style={{ color: "var(--color-stone)" }}>
-              One system, three channels, no vendor coordination — just like you promise every couple who walks through the door.
+              Nobody falls through the cracks between an Instagram DM and a phone call — one thread, no matter which door they walked in through.
             </p>
           </div>
           <motion.button
@@ -53,7 +54,7 @@ export default function OverviewView({ openLead }) {
             style={{ background: "var(--color-gold)", color: "var(--color-ink)" }}
           >
             <PlusCircle size={15} />
-            Log a new lead
+            Log a lead
           </motion.button>
         </div>
       </motion.div>
@@ -62,7 +63,7 @@ export default function OverviewView({ openLead }) {
         <StatCard label="Active Leads" value={LEADS.length} sub="across all sources" Icon={TrendingUp} tint="var(--color-gold)" delay={0.05} />
         <StatCard label="Hot · Score ≥75" value={hotAll.length} sub="likely to convert" Icon={Flame} tint="var(--color-gold-deep)" delay={0.1} />
         <StatCard label="Going Cold" value={cold.length} sub="5+ days silent" Icon={Snowflake} tint="var(--color-rose)" delay={0.15} />
-        <StatCard label="Booked pipeline" value={formatINR(bookedValue)} sub={`${booked.length} confirmed this month`} Icon={Wallet} tint="var(--color-emerald)" delay={0.2} />
+        <StatCard label="Booked pipeline" value={formatINR(bookedValue)} sub={`${booked.length} weddings on the books`} Icon={Wallet} tint="var(--color-emerald)" delay={0.2} />
       </div>
 
       <div className="flex flex-col lg:flex-row gap-5 mt-5">
@@ -128,6 +129,32 @@ export default function OverviewView({ openLead }) {
           </div>
         </motion.div>
       </div>
+
+      {radarLead && (
+        <motion.button
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, delay: 0.3 }}
+          onClick={() => openLead(radarLead)}
+          className="w-full mt-5 rounded-2xl p-5 text-left flex items-start gap-4"
+          style={{ background: "var(--color-paper)", border: "1.5px dashed var(--color-stone-line)" }}
+        >
+          <div className="flex items-center justify-center rounded-xl w-10 h-10 shrink-0" style={{ background: "rgba(201,162,39,0.12)" }}>
+            <Radar size={17} style={{ color: "var(--color-gold-deep)" }} />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2">
+              <span className="font-serif text-[15px]" style={{ color: "var(--color-ink)" }}>Objection Radar</span>
+              <span className="flex items-center gap-1 font-mono text-[9.5px] uppercase tracking-wider rounded-full px-2 py-0.5" style={{ background: "var(--color-ivory-soft)", color: "var(--color-stone)" }}>
+                <Lock size={9} /> Coming next
+              </span>
+            </div>
+            <div className="font-body text-[12.5px] mt-1 leading-relaxed" style={{ color: "var(--color-stone)" }}>
+              {radarLead.name}'s quote has sat open for {radarLead.days} days with no reply. Today that just sits in Follow-Up. Objection Radar would read this as hesitation, not "gone cold" — and ping Kritika directly instead of firing another automated nudge.
+            </div>
+          </div>
+        </motion.button>
+      )}
     </div>
   );
 }

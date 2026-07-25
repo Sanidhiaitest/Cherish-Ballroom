@@ -1,6 +1,4 @@
-import { scoreTone } from "../data/leads";
-
-const TONE_COLOR = { hot: "var(--color-gold)", warm: "var(--color-emerald-soft)", cold: "var(--color-stone)" };
+import { scoreTone, TONE_COLOR } from "../data/leads";
 
 export default function ScoreRing({ score, size = 44, strokeWidth = 3.5 }) {
   const { tone } = scoreTone(score);

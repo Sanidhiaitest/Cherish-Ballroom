@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { LayoutGrid, GitBranch, ListOrdered, Share2, Sparkles } from "lucide-react";
+import { ChandelierMotif } from "./Illustrations";
 
 const ITEMS = [
   { id: "overview", label: "Overview", Icon: LayoutGrid },
@@ -11,13 +12,17 @@ const ITEMS = [
 export default function Sidebar({ view, setView }) {
   return (
     <div
-      className="hidden md:flex flex-col shrink-0 w-64 px-5 py-7"
+      className="hidden md:flex flex-col shrink-0 w-64 px-5 py-7 relative overflow-hidden"
       style={{
         background: "linear-gradient(190deg, var(--color-ink) 0%, var(--color-ink-soft) 100%)",
         color: "var(--color-ivory)",
       }}
     >
-      <div className="flex items-center gap-3 px-2 mb-10">
+      <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 pointer-events-none" style={{ zIndex: 0 }}>
+        <ChandelierMotif opacity={0.07} width={220} />
+      </div>
+
+      <div className="flex items-center gap-3 px-2 mb-10 relative">
         <div
           className="flex items-center justify-center rounded-xl"
           style={{ width: 38, height: 38, background: "rgba(201,162,39,0.12)", border: "1px solid rgba(201,162,39,0.35)" }}
@@ -36,7 +41,7 @@ export default function Sidebar({ view, setView }) {
         </div>
       </div>
 
-      <nav className="flex flex-col gap-1.5">
+      <nav className="flex flex-col gap-1.5 relative" style={{ zIndex: 1 }}>
         {ITEMS.map((it) => {
           const active = view === it.id;
           const Icon = it.Icon;
@@ -62,7 +67,7 @@ export default function Sidebar({ view, setView }) {
         })}
       </nav>
 
-      <div className="mt-auto pt-6" style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}>
+      <div className="mt-auto pt-6 relative" style={{ borderTop: "1px solid rgba(255,255,255,0.08)", zIndex: 1 }}>
         <div
           className="rounded-2xl p-4"
           style={{ background: "linear-gradient(150deg, rgba(201,162,39,0.14), rgba(31,77,61,0.14))", border: "1px solid rgba(201,162,39,0.2)" }}

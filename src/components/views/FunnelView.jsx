@@ -1,9 +1,7 @@
 import { motion } from "framer-motion";
-import { STAGES, LEADS, scoreTone, formatINR } from "../../data/leads";
+import { STAGES, LEADS, scoreTone, formatINR, TONE_COLOR } from "../../data/leads";
 import SourceTag, { sourceColor } from "../SourceTag";
 import Avatar from "../Avatar";
-
-const TONE_COLOR = { hot: "var(--color-gold-deep)", warm: "var(--color-emerald)", cold: "var(--color-stone)" };
 
 export default function FunnelView({ openLead }) {
   return (
@@ -46,10 +44,8 @@ export default function FunnelView({ openLead }) {
                       className="rounded-xl p-3 text-left cursor-pointer"
                       style={{
                         background: "var(--color-ivory)",
-                        borderLeft: `3px solid ${sourceColor(l.source)}`,
                         border: "1px solid var(--color-stone-line)",
-                        borderLeftWidth: 3,
-                        borderLeftColor: sourceColor(l.source),
+                        borderLeft: `3px solid ${sourceColor(l.source)}`,
                       }}
                     >
                       <div className="flex items-center gap-2 mb-2">
@@ -64,7 +60,7 @@ export default function FunnelView({ openLead }) {
                   );
                 })}
                 {items.length === 0 && (
-                  <div className="text-[11.5px] italic px-1 py-2" style={{ color: "var(--color-stone)" }}>Empty</div>
+                  <div className="text-[11.5px] italic px-1 py-2" style={{ color: "var(--color-stone)" }}>Nothing waiting here — good.</div>
                 )}
               </div>
             </motion.div>
