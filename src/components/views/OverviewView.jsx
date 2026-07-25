@@ -50,7 +50,7 @@ export default function OverviewView({ openLead }) {
           <motion.button
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
-            className="flex items-center gap-2 rounded-full px-5 py-3 font-medium text-[13px] self-start"
+            className="flex items-center gap-2 rounded-full px-5 py-3 font-medium text-[13px] self-start shrink-0 whitespace-nowrap"
             style={{ background: "var(--color-gold)", color: "var(--color-ink)" }}
           >
             <PlusCircle size={15} />
