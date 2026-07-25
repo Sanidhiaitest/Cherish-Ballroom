@@ -1,0 +1,76 @@
+import { motion } from "framer-motion";
+import { STAGES, LEADS, scoreTone, formatINR } from "../../data/leads";
+import SourceTag, { sourceColor } from "../SourceTag";
+import Avatar from "../Avatar";
+
+const TONE_COLOR = { hot: "var(--color-gold-deep)", warm: "var(--color-emerald)", cold: "var(--color-stone)" };
+
+export default function FunnelView({ openLead }) {
+  return (
+    <div>
+      <h1 className="font-serif text-[27px]" style={{ color: "var(--color-ink)" }}>Live Funnel</h1>
+      <p className="font-body text-[13.5px] mt-1.5 mb-6" style={{ color: "var(--color-stone)" }}>
+        Every lead, one thread — regardless of how they arrived.
+      </p>
+      <div className="flex gap-4 overflow-x-auto pb-4" style={{ scrollbarWidth: "thin" }}>
+        {STAGES.map((stage, si) => {
+          const items = LEADS.filter((l) => l.stage === stage.id);
+          const value = items.reduce((s, l) => s + l.value, 0);
+          return (
+            <motion.div
+              key={stage.id}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: si * 0.05 }}
+              className="min-w-[230px] w-[230px] shrink-0 rounded-2xl p-3.5"
+              style={{ background: "var(--color-paper)", border: "1px solid var(--color-stone-line)" }}
+            >
+              <div className="flex justify-between items-baseline px-1 pb-2.5 mb-3" style={{ borderBottom: "2px solid var(--color-ink)" }}>
+                <span className="font-semibold text-[11.5px] uppercase tracking-wide" style={{ color: "var(--color-ink)" }}>{stage.label}</span>
+                <span className="font-mono text-[11px]" style={{ color: "var(--color-stone)" }}>{items.length}</span>
+              </div>
+              {value > 0 && (
+                <div className="px-1 mb-3 font-mono text-[10.5px]" style={{ color: "var(--color-gold-deep)" }}>{formatINR(value)} in play</div>
+              )}
+              <div className="flex flex-col gap-2.5">
+                {items.map((l, i) => {
+                  const tone = scoreTone(l.score);
+                  return (
+                    <motion.button
+                      key={l.id}
+                      initial={{ opacity: 0, scale: 0.96 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.3, delay: si * 0.05 + i * 0.04 }}
+                      whileHover={{ y: -3, boxShadow: "0 10px 20px -8px rgba(20,17,15,0.18)" }}
+                      onClick={() => openLead(l)}
+                      className="rounded-xl p-3 text-left cursor-pointer"
+                      style={{
+                        background: "var(--color-ivory)",
+                        borderLeft: `3px solid ${sourceColor(l.source)}`,
+                        border: "1px solid var(--color-stone-line)",
+                        borderLeftWidth: 3,
+                        borderLeftColor: sourceColor(l.source),
+                      }}
+                    >
+                      <div className="flex items-center gap-2 mb-2">
+                        <Avatar initials={l.initials} source={l.source} size={26} />
+                        <div className="font-semibold text-[12.5px] leading-tight truncate" style={{ color: "var(--color-ink)" }}>{l.name}</div>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <SourceTag source={l.source} />
+                        <span className="font-mono text-[11px] font-bold" style={{ color: TONE_COLOR[tone.tone] }}>{l.score}</span>
+                      </div>
+                    </motion.button>
+                  );
+                })}
+                {items.length === 0 && (
+                  <div className="text-[11.5px] italic px-1 py-2" style={{ color: "var(--color-stone)" }}>Empty</div>
+                )}
+              </div>
+            </motion.div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
