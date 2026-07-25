@@ -1,4 +1,4 @@
-import { LayoutGrid, GitBranch, ListOrdered, Share2, Zap } from "lucide-react";
+import { LayoutGrid, GitBranch, ListOrdered, Share2, Zap, PieChart } from "lucide-react";
 
 const ITEMS = [
   { id: "overview", label: "Home", Icon: LayoutGrid },
@@ -6,6 +6,7 @@ const ITEMS = [
   { id: "queue", label: "Queue", Icon: ListOrdered },
   { id: "referral", label: "Referrals", Icon: Share2 },
   { id: "automation", label: "AI Engine", Icon: Zap },
+  { id: "reports", label: "Reports", Icon: PieChart },
 ];
 
 export default function MobileNav({ view, setView }) {

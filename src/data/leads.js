@@ -160,6 +160,32 @@ export const LEADS = [
   },
 ];
 
+export const WEEKLY_LEAD_TREND = [
+  { label: "Mon", value: 3 }, { label: "Tue", value: 5 }, { label: "Wed", value: 4 },
+  { label: "Thu", value: 7 }, { label: "Fri", value: 6 }, { label: "Sat", value: 9 }, { label: "Sun", value: 8 },
+];
+
+export const BOOKINGS_TREND = [
+  { label: "Feb", value: 2 }, { label: "Mar", value: 3 }, { label: "Apr", value: 2 },
+  { label: "May", value: 4 }, { label: "Jun", value: 3 }, { label: "Jul", value: 4 },
+];
+
+export const MONTHLY_BOOKING_GOAL = 15000000;
+
+export const REVIEWS = [
+  { id: 1, platform: "WedMeGood", author: "Priyanka S.", rating: 5, sentiment: "positive", text: "The Emerald hall + food tasting sealed the deal for us. Naveen ji personally checked in twice.", flagged: false },
+  { id: 2, platform: "Google", author: "Rohan M.", rating: 5, sentiment: "positive", text: "Best banquet in Vasant Kunj, hands down. Valet + guest rooms made it effortless for our 400 guests.", flagged: false },
+  { id: 3, platform: "Instagram", author: "@wedding.diaries.del", rating: 2, sentiment: "negative", text: "Asked about weekend availability twice in DMs, no response for 3 days. Went with another venue.", flagged: true },
+  { id: 4, platform: "WedMeGood", author: "Ankita & Dev", rating: 4, sentiment: "positive", text: "Gorgeous venue, slightly slow on quote turnaround but worth the wait.", flagged: false },
+];
+
+export const SAVED_REPORTS = [
+  { name: "Wedding Season Report", author: "Kritika Gupta", type: "YTD" },
+  { name: "Referral ROI Report", author: "Naveen Sachdeva", type: "Channel" },
+  { name: "Event Co. Margin Report", author: "Kritika Gupta", type: "Partner" },
+  { name: "Spring '26 Pipeline", author: "Kritika Gupta", type: "Season" },
+];
+
 export const NURTURE_STEPS = [
   { id: "thank_you", label: "Thank-you + visit recap", channel: "WhatsApp" },
   { id: "menu_nudge", label: "Menu & tasting nudge", channel: "WhatsApp" },

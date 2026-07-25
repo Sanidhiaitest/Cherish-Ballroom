@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { LayoutGrid, GitBranch, ListOrdered, Share2, Sparkles, Zap } from "lucide-react";
+import { LayoutGrid, GitBranch, ListOrdered, Share2, Sparkles, Zap, PieChart } from "lucide-react";
 import { ChandelierMotif } from "./Illustrations";
 
 const ITEMS = [
@@ -8,6 +8,7 @@ const ITEMS = [
   { id: "queue", label: "Priority Queue", Icon: ListOrdered },
   { id: "referral", label: "Referral Web", Icon: Share2 },
   { id: "automation", label: "Automation Engine", Icon: Zap },
+  { id: "reports", label: "Reports & Insights", Icon: PieChart },
 ];
 
 export default function Sidebar({ view, setView }) {

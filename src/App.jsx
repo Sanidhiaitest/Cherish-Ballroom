@@ -14,6 +14,7 @@ import FunnelView from "./components/views/FunnelView";
 import QueueView from "./components/views/QueueView";
 import ReferralView from "./components/views/ReferralView";
 import AutomationView from "./components/views/AutomationView";
+import ReportsView from "./components/views/ReportsView";
 import { LEADS } from "./data/leads";
 
 const VIEWS = {
@@ -22,6 +23,7 @@ const VIEWS = {
   queue: QueueView,
   referral: ReferralView,
   automation: AutomationView,
+  reports: ReportsView,
 };
 
 const DEFAULT_COUPLE_PREVIEW = LEADS.find((l) => l.name === "Diya & Kabir");
