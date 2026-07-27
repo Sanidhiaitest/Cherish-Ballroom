@@ -5,7 +5,7 @@ import StatCard from "../StatCard";
 import SourceTag, { sourceColor } from "../SourceTag";
 import Avatar from "../Avatar";
 
-export default function OverviewView({ openLead }) {
+export default function OverviewView({ openLead, onLogLead }) {
   const bySource = ["instagram", "reference", "eventco"].map((s) => ({
     key: s,
     count: LEADS.filter((l) => l.source === s).length,
@@ -48,6 +48,7 @@ export default function OverviewView({ openLead }) {
             </p>
           </div>
           <motion.button
+            onClick={onLogLead}
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
             className="flex items-center gap-2 rounded-full px-5 py-3 font-medium text-[13px] self-start shrink-0 whitespace-nowrap"

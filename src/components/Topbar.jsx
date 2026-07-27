@@ -19,11 +19,20 @@ export default function Topbar({ onPreviewCoupleApp }) {
       <div className="flex items-center gap-3 ml-auto">
         <button
           onClick={onPreviewCoupleApp}
-          className="hidden lg:flex items-center gap-2 rounded-full px-4 py-2.5 font-medium text-[12.5px] transition-transform hover:scale-[1.02] active:scale-95"
+          className="hidden sm:flex items-center gap-2 rounded-full px-4 py-2.5 font-medium text-[12.5px] transition-transform hover:scale-[1.02] active:scale-95 shrink-0 whitespace-nowrap"
           style={{ background: "var(--color-ink)", color: "var(--color-paper)" }}
         >
           <Smartphone size={14} style={{ color: "var(--color-gold-soft)" }} />
-          Preview couple's app
+          <span className="hidden md:inline">Preview couple's app</span>
+          <span className="md:hidden">Couple's app</span>
+        </button>
+        <button
+          onClick={onPreviewCoupleApp}
+          className="sm:hidden flex items-center justify-center rounded-full w-10 h-10 shrink-0"
+          style={{ background: "var(--color-ink)", color: "var(--color-paper)" }}
+          aria-label="Preview couple's app"
+        >
+          <Smartphone size={15} style={{ color: "var(--color-gold-soft)" }} />
         </button>
 
         <button

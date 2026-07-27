@@ -10,6 +10,7 @@ import CouplePreviewModal from "./components/CouplePreviewModal";
 import ProposalModal from "./components/ProposalModal";
 import AIVoiceCallModal from "./components/AIVoiceCallModal";
 import VirtualTourModal from "./components/VirtualTourModal";
+import AddLeadModal from "./components/AddLeadModal";
 import OverviewView from "./components/views/OverviewView";
 import FunnelView from "./components/views/FunnelView";
 import QueueView from "./components/views/QueueView";
@@ -38,17 +39,25 @@ export default function App() {
   const [proposalLead, setProposalLead] = useState(null);
   const [aiVoiceCall, setAiVoiceCall] = useState(null);
   const [virtualTourOpen, setVirtualTourOpen] = useState(false);
+  const [addLeadOpen, setAddLeadOpen] = useState(false);
   const ViewComponent = VIEWS[view];
 
   function openAIVoiceCall(lead, script, outcome) {
     setAiVoiceCall(lead ? { lead, script, outcome } : null);
   }
 
+  function handleAddLead(lead) {
+    LEADS.unshift(lead);
+    setAddLeadOpen(false);
+    setView("overview");
+    setSelected(lead);
+  }
+
   return (
     <div className="flex min-h-screen bg-noise" style={{ background: "var(--color-ivory)" }}>
       <Sidebar view={view} setView={setView} />
       <div className="flex-1 flex flex-col min-w-0">
-        <Topbar onPreviewCoupleApp={() => setPreviewLead(DEFAULT_COUPLE_PREVIEW)} />
+        <Topbar onPreviewCoupleApp={() => setPreviewLead(selected || DEFAULT_COUPLE_PREVIEW)} />
         <div className="flex-1 px-5 md:px-10 pb-24 md:pb-12 overflow-y-auto">
           <AnimatePresence mode="wait">
             <motion.div
@@ -63,6 +72,7 @@ export default function App() {
                 setView={setView}
                 onAIVoiceCall={openAIVoiceCall}
                 onOpenVirtualTour={() => setVirtualTourOpen(true)}
+                onLogLead={() => setAddLeadOpen(true)}
               />
             </motion.div>
           </AnimatePresence>
@@ -91,6 +101,7 @@ export default function App() {
         />
       )}
       <VirtualTourModal open={virtualTourOpen} onClose={() => setVirtualTourOpen(false)} />
+      <AddLeadModal open={addLeadOpen} onClose={() => setAddLeadOpen(false)} onAdd={handleAddLead} />
     </div>
   );
 }
