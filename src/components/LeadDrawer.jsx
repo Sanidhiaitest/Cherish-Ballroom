@@ -72,6 +72,7 @@ export default function LeadDrawer({ lead, onClose, onCall, onWhatsApp, onPrevie
             <div className="flex flex-wrap gap-x-4 gap-y-1 mt-3 font-body text-[12px]" style={{ color: "var(--color-stone)" }}>
               <span>{lead.phone}</span>
               {lead.hall !== "—" && <span>{lead.hall} · {lead.guests} pax</span>}
+              {lead.eventDate && <span>Event: {lead.eventDate}</span>}
               {lead.ref && <span>Referred by {lead.ref}</span>}
             </div>
 

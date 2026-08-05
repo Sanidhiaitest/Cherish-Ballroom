@@ -482,6 +482,43 @@ export const PRE_VISIT_PRIMER_EXAMPLE = {
   message: "Looking forward to seeing you at Cherish tomorrow! A quick heads up — parking's right at the main gate, our banquet manager will walk you through, and the hall looks its best if you can catch it toward evening light.",
 };
 
+// Objections that don't come from the transcripts but come from anyone who's
+// sat through a corporate AI pitch before — worth answering before they're
+// asked, not after.
+export const GUARDRAILS = [
+  {
+    title: "Guest data",
+    note: "Phone numbers, budgets, preferences — everything stays inside Cherish's own system. Nothing is sold, shared, or used to train a model for anyone else.",
+  },
+  {
+    title: "Consent & compliance",
+    note: "AI-dialed calls only ever go to guests who've already enquired — no cold-list dialing, no DND-registry numbers, and every call recording used for transcription has consent built into the script.",
+  },
+  {
+    title: "When the AI isn't sure",
+    note: "It escalates to a human, it doesn't guess. Budget objections, off-script questions, anything outside the guest's original enquiry — routed to Kritika, Aman, or Harman, not improvised.",
+  },
+  {
+    title: "Your data, portable",
+    note: "Every lead, thread, and score lives in a format you can export anytime — nothing here locks you in.",
+  },
+];
+
+// Directly answers the room's stated skepticism about off-script handling —
+// "what happens when the guest asks something the script didn't cover."
+// Illustrative, same spirit as the rest of AI_CALL_LOG.
+const OFF_SCRIPT_CALL = {
+  leadName: "Diya & Kabir",
+  outcomeLabel: "Off-script question → escalated, not improvised",
+  tone: "warm",
+  script: [
+    { from: "ai", text: "Namaste! Main Cherish Ballrooms ki taraf se bol rahi hoon. Aapka Emerald Hall ka quote mil gaya tha?" },
+    { from: "lead", text: "Haan mila, but ek cheez batao — kya aap outside catering allow karte ho half the menu ke liye?" },
+    { from: "ai", text: "Yeh ek specific policy question hai jo main confidently answer nahi kar sakti — main isse Kritika ko bhej rahi hoon, woh aapko aaj hi is par clear jawab denge." },
+  ],
+  outcomeDetail: "Guest asked something outside the script (outside-catering policy) — the AI recognized it didn't have a confident answer and routed it to Kritika instead of guessing.",
+};
+
 // Plain-language query box for Kritika/Naveen — "how many leads came from
 // WedMeGood this month and what's our close rate" — so the portfolio-level
 // view doesn't require anyone building a report by hand. Answers computed
@@ -598,6 +635,7 @@ export const AI_CALL_LOG = [
     ],
     outcomeDetail: "Positive signal — tasting date scheduled, no human follow-up needed. Kritika notified for awareness only.",
   },
+  OFF_SCRIPT_CALL,
 ];
 
 export const NURTURE_STEPS = [
@@ -607,6 +645,22 @@ export const NURTURE_STEPS = [
   { id: "social_proof", label: "Testimonial / social proof", channel: "WhatsApp" },
   { id: "voice_call", label: "AI voice follow-up call", channel: "Voice" },
 ];
+
+// "Post-visit recap, drafted not sent... turning 'I'll remember to follow
+// up' into 'it's already written, just hit send.'" The current nurture step
+// gets the same visible-and-editable treatment as the F1-F4 drafts above —
+// not silently marked done.
+const NURTURE_TEMPLATES = {
+  thank_you: (l) => `Thank you so much for visiting Cherish, ${l.name.split(" ")[0]}! It was wonderful hosting you at ${l.hall !== "—" ? l.hall : "the property"}. Quick recap of what we discussed — let us know if we missed anything.`,
+  menu_nudge: (l) => `Hi ${l.name.split(" ")[0]}, whenever you're ready, we'd love to set up a tasting so you can try the menu firsthand.`,
+  date_reminder: (l) => `Hi ${l.name.split(" ")[0]}, just a gentle note — the calendar for your preferred dates is filling up faster than usual this season.`,
+  social_proof: (l) => `Hi ${l.name.split(" ")[0]}, thought you'd like to see what a recent couple said about their day at Cherish — happy to share a few reviews.`,
+};
+export function nurtureDraft(lead) {
+  const step = NURTURE_STEPS[lead.nurtureStep];
+  if (!step || !NURTURE_TEMPLATES[step.id]) return null;
+  return { label: step.label, text: NURTURE_TEMPLATES[step.id](lead) };
+}
 
 export const EVENTCO_COMMISSION_RATE = 0.5;
 

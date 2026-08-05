@@ -1,10 +1,10 @@
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 import { motion } from "framer-motion";
-import { Zap, MessageCircle, Bot, Users2, ArrowUpRight, CheckCircle2, Circle, Globe2, PhoneCall, ChefHat, Check, X as XIcon, ShieldCheck, ListFilter, FileSpreadsheet, Hourglass, Mic, CalendarClock, AlertCircle } from "lucide-react";
+import { Zap, MessageCircle, Bot, Users2, ArrowUpRight, CheckCircle2, Circle, Globe2, PhoneCall, ChefHat, Check, X as XIcon, ShieldCheck, ListFilter, FileSpreadsheet, Hourglass, Mic, CalendarClock, AlertCircle, Send, Pencil, ShieldQuestion } from "lucide-react";
 import {
   LEADS, NURTURE_STEPS, AI_CALL_LOG, COMPETITIVE_CHECKLIST, AI_CALLER_NUMBER, DATA_INTAKE_TODAY, medianResponseSeconds,
   partnerMarginSummary, formatINR, queuedForAICall, triageToday, leadOwner, VOICE_NOTE_FALLBACK_EXAMPLE,
-  PRE_VISIT_PRIMER_EXAMPLE, OPEN_QUESTION_WHATSAPP_VOICE,
+  PRE_VISIT_PRIMER_EXAMPLE, OPEN_QUESTION_WHATSAPP_VOICE, nurtureDraft, GUARDRAILS,
 } from "../../data/leads";
 import Avatar from "../Avatar";
 import PhaseBadge from "../PhaseBadge";
@@ -15,6 +15,8 @@ function fmtSeconds(s) {
 }
 
 export default function AutomationView({ openLead, setView, onAIVoiceCall, onOpenVirtualTour }) {
+  const [nurtureEditing, setNurtureEditing] = useState(false);
+  const [nurtureSent, setNurtureSent] = useState(false);
   const median = medianResponseSeconds();
   const fastestReplies = LEADS.filter((l) => l.firstResponseSeconds).sort((a, b) => a.firstResponseSeconds - b.firstResponseSeconds);
   const dmExample = fastestReplies[0];
@@ -22,6 +24,8 @@ export default function AutomationView({ openLead, setView, onAIVoiceCall, onOpe
   const margin = partnerMarginSummary();
   const queued = queuedForAICall();
   const triage = triageToday();
+  const draft = nurtureDraft(nurtureLead);
+  const [draftText, setDraftText] = useState(draft?.text || "");
 
   return (
     <div>
@@ -67,6 +71,9 @@ export default function AutomationView({ openLead, setView, onAIVoiceCall, onOpe
           <div className="flex flex-col gap-2 max-w-xs">
             <div className="flex items-center gap-2 rounded-full px-3.5 py-2" style={{ background: "rgba(178,58,72,0.18)", border: "1px solid rgba(178,58,72,0.35)" }}>
               <span className="font-mono text-[11px]" style={{ color: "var(--color-rose-soft)" }}>Delhi banquet average: 11–47 hours</span>
+            </div>
+            <div className="font-body text-[11px] leading-relaxed" style={{ color: "var(--color-stone)" }}>
+              Two people are absorbing 15–25 leads a day on Instagram alone — 8–10 hours of someone's day is just calling. This is what buys that time back.
             </div>
             <div className="font-body text-[11px] leading-relaxed" style={{ color: "var(--color-stone)" }}>
               MIT/InsideSales: replying within 5 min vs 30 min drops your odds of qualifying a lead by 21x. Being fast costs nothing — almost no one does it.
@@ -214,26 +221,61 @@ export default function AutomationView({ openLead, setView, onAIVoiceCall, onOpe
             <div className="font-body text-[12px] mb-3" style={{ color: "var(--color-ink)" }}>
               <span className="font-semibold">{nurtureLead.name}</span> — {nurtureLead.days === 0 ? "visited today" : `visited ${nurtureLead.days}d ago`}
             </div>
-            <div className="flex flex-col gap-2">
-              {NURTURE_STEPS.map((step, i) => {
-                const done = i < (nurtureLead.nurtureStep ?? -1);
-                const current = i === (nurtureLead.nurtureStep ?? -1);
-                return (
-                  <div key={step.id} className="flex items-center gap-2.5">
-                    {done ? (
-                      <CheckCircle2 size={15} style={{ color: "var(--color-emerald)" }} />
-                    ) : (
-                      <Circle size={15} style={{ color: current ? "var(--color-gold-deep)" : "var(--color-stone-line)" }} />
-                    )}
-                    <span className="font-body text-[12px]" style={{ color: current ? "var(--color-ink)" : "var(--color-stone)", fontWeight: current ? 600 : 400 }}>
-                      {step.label}
-                    </span>
-                    <span className="ml-auto font-mono text-[9.5px] uppercase" style={{ color: "var(--color-stone)" }}>{step.channel}</span>
-                  </div>
-                );
-              })}
-            </div>
           </button>
+          <div className="flex flex-col gap-2">
+            {NURTURE_STEPS.map((step, i) => {
+              const done = i < (nurtureLead.nurtureStep ?? -1);
+              const current = i === (nurtureLead.nurtureStep ?? -1);
+              return (
+                <div key={step.id} className="flex items-center gap-2.5">
+                  {done ? (
+                    <CheckCircle2 size={15} style={{ color: "var(--color-emerald)" }} />
+                  ) : (
+                    <Circle size={15} style={{ color: current ? "var(--color-gold-deep)" : "var(--color-stone-line)" }} />
+                  )}
+                  <span className="font-body text-[12px]" style={{ color: current ? "var(--color-ink)" : "var(--color-stone)", fontWeight: current ? 600 : 400 }}>
+                    {step.label}
+                  </span>
+                  <span className="ml-auto font-mono text-[9.5px] uppercase" style={{ color: "var(--color-stone)" }}>{step.channel}</span>
+                </div>
+              );
+            })}
+          </div>
+
+          {draft && (
+            <div className="mt-3 pt-3" style={{ borderTop: "1px solid var(--color-stone-line)" }}>
+              <div className="font-mono text-[9px] uppercase tracking-wider mb-1.5" style={{ color: "var(--color-gold-deep)" }}>
+                Drafted, not sent — "{draft.label}"
+              </div>
+              {nurtureSent ? (
+                <div className="flex items-center gap-1.5 font-body text-[11.5px]" style={{ color: "var(--color-emerald)" }}>
+                  <Check size={12} /> Sent — it was already written, just hit send.
+                </div>
+              ) : (
+                <>
+                  {nurtureEditing ? (
+                    <textarea
+                      value={draftText}
+                      onChange={(e) => setDraftText(e.target.value)}
+                      rows={3}
+                      className="w-full rounded-xl px-3 py-2 text-[11.5px] outline-none resize-none"
+                      style={{ background: "var(--color-ivory)", border: "1px solid var(--color-stone-line)", color: "var(--color-ink)" }}
+                    />
+                  ) : (
+                    <p className="font-body text-[11.5px] leading-relaxed" style={{ color: "var(--color-ink)" }}>{draftText}</p>
+                  )}
+                  <div className="flex items-center gap-2 mt-2">
+                    <button onClick={() => setNurtureSent(true)} className="flex items-center gap-1.5 rounded-full px-3 py-1 font-medium text-[10.5px]" style={{ background: "var(--color-gold)", color: "var(--color-ink)" }}>
+                      <Send size={10} /> Approve &amp; send
+                    </button>
+                    <button onClick={() => setNurtureEditing((v) => !v)} className="flex items-center gap-1.5 rounded-full px-3 py-1 font-medium text-[10.5px]" style={{ border: "1px solid var(--color-stone-line)", color: "var(--color-ink)" }}>
+                      <Pencil size={10} /> {nurtureEditing ? "Done" : "Edit"}
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          )}
         </motion.div>
 
         <motion.div
@@ -363,7 +405,7 @@ export default function AutomationView({ openLead, setView, onAIVoiceCall, onOpe
           A Hindi/Hinglish voice, cloned to whichever of Aman or Harman owns that lead's channel, calls 24–48h after the walkthrough. Simple, positive calls close themselves — hesitation gets routed to a human.
         </p>
         <p className="font-body text-[10.5px] mb-5" style={{ color: "var(--color-stone)" }}>
-          Every call goes out from the Cherish business line ({AI_CALLER_NUMBER}) — never Aman's or Harman's personal number. Your cell number stays yours; the Cherish number is what absorbs the cold outreach.
+          Every call goes out from the Cherish business line ({AI_CALLER_NUMBER}) — never Aman's or Harman's personal number. Your cell number stays yours; the Cherish number is what absorbs the cold outreach. Once a lead is warm, handoff can stay on the Cherish number or move to a direct line — your choice, lead by lead.
         </p>
 
         <div className="flex items-center gap-6 mb-4 pb-4" style={{ borderBottom: "1px solid var(--color-ink-line)" }}>
@@ -438,6 +480,31 @@ export default function AutomationView({ openLead, setView, onAIVoiceCall, onOpe
               </div>
             )}
           </div>
+        </div>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+        className="rounded-2xl p-6 mt-5"
+        style={{ background: "var(--color-paper)", border: "1px solid var(--color-stone-line)" }}
+      >
+        <div className="flex items-center gap-2 mb-1">
+          <ShieldQuestion size={15} style={{ color: "var(--color-gold-deep)" }} />
+          <div className="font-serif text-[16px]" style={{ color: "var(--color-ink)" }}>Before you ask</div>
+          <span className="font-mono text-[9px] uppercase tracking-wider rounded-full px-2 py-0.5" style={{ background: "var(--color-ivory)", color: "var(--color-stone)" }}>Guardrails</span>
+        </div>
+        <p className="font-body text-[12px] mb-4" style={{ color: "var(--color-stone)" }}>
+          The questions any of this deserves, answered up front rather than after something goes wrong.
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {GUARDRAILS.map((g, i) => (
+            <div key={i} className="rounded-xl px-3.5 py-3" style={{ background: "var(--color-ivory)" }}>
+              <div className="font-mono text-[9.5px] uppercase tracking-wider mb-1" style={{ color: "var(--color-gold-deep)" }}>{g.title}</div>
+              <div className="font-body text-[12px] leading-relaxed" style={{ color: "var(--color-ink)" }}>{g.note}</div>
+            </div>
+          ))}
         </div>
       </motion.div>
 

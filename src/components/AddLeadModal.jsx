@@ -8,7 +8,7 @@ const HALLS = ["Emerald Hall", "Rubicon Hall", "Pearl Hall", "Solitaire Hall", "
 const INDIRECT_SOURCES = Object.values(SOURCE_META).filter((s) => s.channelType === "indirect");
 const DIRECT_SOURCE = Object.values(SOURCE_META).find((s) => s.channelType === "direct");
 
-const SCANNED_CARD_DEMO = { name: "Naveen & Simran Kaur", phone: "+91 98110 44221", guests: "260" };
+const SCANNED_CARD_DEMO = { name: "Naveen & Simran Kaur", phone: "+91 98110 44221", eventDate: "Feb 14", guests: "260" };
 
 function initialsOf(name) {
   const parts = name.trim().split(/[\s&]+/).filter(Boolean);
@@ -17,7 +17,7 @@ function initialsOf(name) {
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
-const emptyForm = { name: "", source: "meta_ads", phone: "", hall: "", guests: "", note: "" };
+const emptyForm = { name: "", source: "meta_ads", phone: "", hall: "", eventDate: "", guests: "", note: "" };
 
 export default function AddLeadModal({ open, onClose, onAdd }) {
   const [form, setForm] = useState(emptyForm);
@@ -55,6 +55,7 @@ export default function AddLeadModal({ open, onClose, onAdd }) {
       phone: form.phone.trim() || "Not provided",
       ref: null,
       hall: form.hall || "—",
+      eventDate: form.eventDate || "Not given yet",
       guests: Number.isFinite(guests) ? guests : 0,
       value: 0,
       thread: [
@@ -191,18 +192,31 @@ export default function AddLeadModal({ open, onClose, onAdd }) {
                 </div>
                 <div>
                   <label className="font-mono text-[10px] uppercase tracking-wider block mb-1.5" style={{ color: "var(--color-stone)" }}>
-                    Guest count
+                    Event date
                   </label>
                   <input
-                    type="number"
-                    min="0"
-                    value={form.guests}
-                    onChange={(e) => update("guests", e.target.value)}
-                    placeholder="e.g. 350"
+                    value={form.eventDate}
+                    onChange={(e) => update("eventDate", e.target.value)}
+                    placeholder="e.g. Dec 12 or TBD"
                     className="w-full rounded-xl px-3.5 py-2.5 text-[13.5px] outline-none"
                     style={{ background: "var(--color-ivory)", border: "1px solid var(--color-stone-line)", color: "var(--color-ink)" }}
                   />
                 </div>
+              </div>
+
+              <div>
+                <label className="font-mono text-[10px] uppercase tracking-wider block mb-1.5" style={{ color: "var(--color-stone)" }}>
+                  Guest count
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  value={form.guests}
+                  onChange={(e) => update("guests", e.target.value)}
+                  placeholder="e.g. 350"
+                  className="w-full rounded-xl px-3.5 py-2.5 text-[13.5px] outline-none"
+                  style={{ background: "var(--color-ivory)", border: "1px solid var(--color-stone-line)", color: "var(--color-ink)" }}
+                />
               </div>
 
               <div>
