@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { X, Bot, ArrowRightCircle } from "lucide-react";
 import Avatar from "./Avatar";
-import { AI_CALLER_NUMBER } from "../data/leads";
+import { AI_CALLER_NUMBER, leadOwner } from "../data/leads";
 
 const DEFAULT_SCRIPT = [
   { from: "ai", text: "Namaste! Main Cherish Ballrooms ki taraf se bol rahi hoon. Kal aapne Solitaire Hall dekha tha — kaisa laga?" },
@@ -12,7 +12,7 @@ const DEFAULT_SCRIPT = [
   { from: "ai", text: "Samajh sakti hoon. Main Kritika ko is call ka summary bhej rahi hoon — woh aapko best package options ke saath khud call karengi." },
 ];
 
-const DEFAULT_OUTCOME = "Hesitation on budget detected — routed to Kritika directly instead of firing another automated nudge.";
+const DEFAULT_OUTCOME = "Hesitation on budget detected — routed to Kritika directly instead of firing another nudge.";
 
 function Waveform({ active }) {
   const bars = 24;
@@ -96,7 +96,7 @@ export default function AIVoiceCallModal({ lead, script = DEFAULT_SCRIPT, outcom
               <div className="ml-auto font-mono text-[10.5px]" style={{ color: "var(--color-stone)" }}>{lead.phone}</div>
             </div>
             <div className="px-6 pb-3 font-mono text-[9.5px]" style={{ color: "var(--color-stone)" }}>
-              Calling from {AI_CALLER_NUMBER} — the Cherish line, never Aman's or Harman's personal number.
+              Calling from {AI_CALLER_NUMBER} — the Cherish line. Guest hears: "{leadOwner(lead)} calling from Cherish."
             </div>
 
             <div className="px-6"><Waveform active={phase === "talking"} /></div>

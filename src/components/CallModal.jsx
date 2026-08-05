@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Mic, MicOff, Volume2, VolumeX, PhoneOff, Lightbulb } from "lucide-react";
+import { Mic, MicOff, Volume2, VolumeX, PhoneOff, Lightbulb, CalendarCheck } from "lucide-react";
 import Avatar from "./Avatar";
-import { formatINR } from "../data/leads";
+import { formatINR, nextAvailability } from "../data/leads";
 
 function briefLines(lead) {
   const lines = [];
@@ -95,6 +95,24 @@ export default function CallModal({ lead, onClose }) {
                     <li key={i} className="font-body text-[11.5px] leading-relaxed" style={{ color: "var(--color-ivory)" }}>{line}</li>
                   ))}
                 </ul>
+              </motion.div>
+            )}
+
+            {lead.hall !== "—" && nextAvailability(lead.hall).length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.35 }}
+                className="w-full text-left rounded-2xl px-4 py-3 mt-2.5"
+                style={{ background: "rgba(31,77,61,0.1)", border: "1px solid rgba(31,77,61,0.25)" }}
+              >
+                <div className="flex items-center gap-1.5 mb-1.5">
+                  <CalendarCheck size={11} style={{ color: "var(--color-emerald-soft)" }} />
+                  <span className="font-mono text-[9px] uppercase tracking-wider" style={{ color: "var(--color-emerald-soft)" }}>{lead.hall} — next open, live</span>
+                </div>
+                <div className="font-body text-[11.5px]" style={{ color: "var(--color-ivory)" }}>
+                  {nextAvailability(lead.hall).join(" · ")} — no tab-switching to check.
+                </div>
               </motion.div>
             )}
 

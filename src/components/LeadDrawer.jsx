@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { X, Phone, MessageCircle, Sparkles, MapPin, FileText, StickyNote, AlertTriangle, PhoneCall, Smartphone, Bot, ClipboardList, BrainCircuit, Lightbulb, BellRing, HelpCircle } from "lucide-react";
-import { STAGES, AI_CALL_LOG, scoreTone, formatINR, commitmentSource } from "../data/leads";
+import {
+  X, Phone, MessageCircle, Sparkles, MapPin, FileText, StickyNote, AlertTriangle, PhoneCall, Smartphone, Bot,
+  ClipboardList, BrainCircuit, Lightbulb, BellRing, HelpCircle, ThumbsUp, ThumbsDown, ChefHat, Send, Pencil, SkipForward, Check,
+} from "lucide-react";
+import { STAGES, AI_CALL_LOG, scoreTone, formatINR, commitmentSource, nextFollowupDraft } from "../data/leads";
 import SourceTag from "./SourceTag";
 import Avatar from "./Avatar";
 import ScoreRing from "./ScoreRing";
@@ -18,9 +21,20 @@ const TYPE_ICON = {
 
 export default function LeadDrawer({ lead, onClose, onCall, onWhatsApp, onPreviewCouple, onViewProposal, onAIVoiceCall }) {
   const [explainOpen, setExplainOpen] = useState(false);
+  const [scoreFeedback, setScoreFeedback] = useState(null);
+  const [draftText, setDraftText] = useState("");
+  const [draftEditing, setDraftEditing] = useState(false);
+  const [draftSent, setDraftSent] = useState(false);
+  const [escalationChoice, setEscalationChoice] = useState(null);
 
   useEffect(() => {
     setExplainOpen(false);
+    setScoreFeedback(null);
+    setDraftEditing(false);
+    setDraftSent(false);
+    setEscalationChoice(null);
+    const draft = lead ? nextFollowupDraft(lead) : null;
+    setDraftText(draft?.text || "");
   }, [lead?.id]);
 
   return (
@@ -60,6 +74,16 @@ export default function LeadDrawer({ lead, onClose, onCall, onWhatsApp, onPrevie
               {lead.hall !== "—" && <span>{lead.hall} · {lead.guests} pax</span>}
               {lead.ref && <span>Referred by {lead.ref}</span>}
             </div>
+
+            {lead.dietaryNote && (
+              <div className="mt-2.5 flex items-start gap-2 rounded-xl px-3 py-2" style={{ background: "rgba(201,162,39,0.08)" }}>
+                <ChefHat size={12} className="shrink-0 mt-0.5" style={{ color: "var(--color-gold-deep)" }} />
+                <span className="font-body text-[11px] leading-relaxed" style={{ color: "var(--color-ink)" }}>
+                  <span className="font-mono text-[9px] uppercase tracking-wider mr-1" style={{ color: "var(--color-gold-deep)" }}>Kitchen notes:</span>
+                  {lead.dietaryNote}
+                </span>
+              </div>
+            )}
 
             {lead.commitment && (
               <motion.div
@@ -163,10 +187,115 @@ export default function LeadDrawer({ lead, onClose, onCall, onWhatsApp, onPrevie
                         Built from reply speed, engagement signals, and how far this thread has moved through the stages — not a black box, and Kritika can always override it.
                       </p>
                     )}
+                    <div className="flex items-center gap-2 mt-3 pt-3" style={{ borderTop: "1px solid var(--color-stone-line)" }}>
+                      {scoreFeedback ? (
+                        <span className="flex items-center gap-1.5 font-body text-[11px]" style={{ color: "var(--color-emerald)" }}>
+                          <Check size={12} /> Noted — this teaches the system your judgment over time.
+                        </span>
+                      ) : (
+                        <>
+                          <span className="font-mono text-[9.5px] uppercase tracking-wider" style={{ color: "var(--color-stone)" }}>Does this feel right?</span>
+                          <button onClick={() => setScoreFeedback("up")} className="flex items-center justify-center rounded-full w-7 h-7 transition-colors hover:bg-black/5" style={{ border: "1px solid var(--color-stone-line)" }}>
+                            <ThumbsUp size={11} style={{ color: "var(--color-stone)" }} />
+                          </button>
+                          <button onClick={() => setScoreFeedback("down")} className="flex items-center justify-center rounded-full w-7 h-7 transition-colors hover:bg-black/5" style={{ border: "1px solid var(--color-stone-line)" }}>
+                            <ThumbsDown size={11} style={{ color: "var(--color-stone)" }} />
+                          </button>
+                        </>
+                      )}
+                    </div>
                   </div>
                 </motion.div>
               )}
             </AnimatePresence>
+
+            {lead.followupStep === 4 && (
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-4 rounded-2xl p-4"
+                style={{ background: "rgba(178,58,72,0.06)", border: "1px solid rgba(178,58,72,0.22)" }}
+              >
+                <div className="font-mono text-[9.5px] uppercase tracking-wider mb-1.5" style={{ color: "var(--color-rose)" }}>
+                  F4 unanswered — not auto-closed
+                </div>
+                <p className="font-body text-[12px] leading-relaxed mb-3" style={{ color: "var(--color-ink)" }}>
+                  Leads don't die by default here — they die by choice. What do you want to do?
+                </p>
+                {escalationChoice ? (
+                  <div className="flex items-center gap-1.5 font-body text-[12px]" style={{ color: "var(--color-emerald)" }}>
+                    <Check size={13} />
+                    {escalationChoice === "retry" && "Queued for one more try."}
+                    {escalationChoice === "park" && "Parked — out of the active queue, not closed."}
+                    {escalationChoice === "close" && "Closed — marked dead by your decision, not the system's."}
+                  </div>
+                ) : (
+                  <div className="flex flex-wrap gap-2">
+                    <button onClick={() => setEscalationChoice("retry")} className="rounded-full px-3.5 py-1.5 font-medium text-[11.5px]" style={{ background: "var(--color-ink)", color: "var(--color-paper)" }}>
+                      Try once more
+                    </button>
+                    <button onClick={() => setEscalationChoice("park")} className="rounded-full px-3.5 py-1.5 font-medium text-[11.5px]" style={{ border: "1px solid var(--color-stone-line)", color: "var(--color-ink)" }}>
+                      Park it
+                    </button>
+                    <button onClick={() => setEscalationChoice("close")} className="rounded-full px-3.5 py-1.5 font-medium text-[11.5px]" style={{ border: "1px solid var(--color-stone-line)", color: "var(--color-stone)" }}>
+                      Close it
+                    </button>
+                  </div>
+                )}
+              </motion.div>
+            )}
+
+            {nextFollowupDraft(lead) && !draftSent && (
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-4 rounded-2xl p-4"
+                style={{ background: "var(--color-ivory)", border: "1px solid var(--color-stone-line)" }}
+              >
+                <div className="font-mono text-[9.5px] uppercase tracking-wider mb-1.5" style={{ color: "var(--color-gold-deep)" }}>
+                  Next: {nextFollowupDraft(lead).step} draft — visible and editable before it sends
+                </div>
+                {draftEditing ? (
+                  <textarea
+                    value={draftText}
+                    onChange={(e) => setDraftText(e.target.value)}
+                    rows={3}
+                    className="w-full rounded-xl px-3 py-2.5 text-[12px] outline-none resize-none"
+                    style={{ background: "var(--color-paper)", border: "1px solid var(--color-stone-line)", color: "var(--color-ink)" }}
+                  />
+                ) : (
+                  <p className="font-body text-[12px] leading-relaxed" style={{ color: "var(--color-ink)" }}>{draftText}</p>
+                )}
+                <div className="flex items-center gap-2 mt-3">
+                  <button
+                    onClick={() => setDraftSent(true)}
+                    className="flex items-center gap-1.5 rounded-full px-3.5 py-1.5 font-medium text-[11.5px]"
+                    style={{ background: "var(--color-gold)", color: "var(--color-ink)" }}
+                  >
+                    <Send size={11} /> Approve &amp; send
+                  </button>
+                  <button
+                    onClick={() => setDraftEditing((v) => !v)}
+                    className="flex items-center gap-1.5 rounded-full px-3.5 py-1.5 font-medium text-[11.5px]"
+                    style={{ border: "1px solid var(--color-stone-line)", color: "var(--color-ink)" }}
+                  >
+                    <Pencil size={11} /> {draftEditing ? "Done editing" : "Edit"}
+                  </button>
+                  <button
+                    onClick={() => setDraftSent(true)}
+                    className="flex items-center gap-1.5 rounded-full px-3.5 py-1.5 font-medium text-[11.5px]"
+                    style={{ color: "var(--color-stone)" }}
+                  >
+                    <SkipForward size={11} /> Skip
+                  </button>
+                </div>
+              </motion.div>
+            )}
+            {nextFollowupDraft(lead) && draftSent && (
+              <div className="mt-4 flex items-center gap-1.5 font-body text-[12px] rounded-2xl px-4 py-3" style={{ background: "rgba(31,77,61,0.07)", color: "var(--color-emerald)" }}>
+                <Check size={13} /> {nextFollowupDraft(lead).step} sent — nothing goes out without this step.
+              </div>
+            )}
 
             <div className="mb-5" />
 

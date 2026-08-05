@@ -72,6 +72,7 @@ export const LEADS = [
     score: 82, days: 2, phone: "+91 98•• ••71", ref: null, hall: "Emerald Hall", guests: 450, value: 1900000,
     firstResponseSeconds: 118, nurtureStep: 2, followupStep: 2,
     commitment: { text: "Follow-up call re: budget hint (₹18–20L)", due: "Tomorrow AM" },
+    dietaryNote: "Asked specifically about Jain menu options for the groom's side.",
     aiProfile: {
       persona: "Aesthetic-First Planner",
       signals: [
@@ -93,6 +94,7 @@ export const LEADS = [
     id: 2, name: "Meera Kapoor", initials: "MK", source: "walkin", stage: "quoted",
     score: 91, days: 1, phone: "+91 98•• ••90", ref: "Sharma Family", hall: "Rubicon Hall", guests: 300, value: 1650000,
     commitment: { text: "Nudge on the Rubicon quote — opened twice, no reply", due: "Tomorrow" },
+    dietaryNote: "Mentioned a strict no-onion-garlic requirement for half the guest list.",
     aiProfile: {
       persona: "Referral-Trusted Fast Mover",
       signals: [
@@ -162,8 +164,8 @@ export const LEADS = [
   {
     id: 6, name: "The Chopra Wedding", initials: "CW", source: "walkin", stage: "followup",
     score: 66, days: 6, phone: "+91 98•• ••90", ref: "Kavya Malhotra", hall: "Rubicon Hall", guests: 340, value: 1630000,
-    followupStep: 3,
-    commitment: { text: "Overdue human call — quote gone quiet 6 days", due: "Today" },
+    followupStep: 4,
+    commitment: { text: "Overdue human call — F4 went unanswered, needs a decision", due: "Today" },
     aiProfile: {
       persona: "Cooling Referral Lead",
       signals: [
@@ -174,7 +176,8 @@ export const LEADS = [
     },
     thread: [
       { t: "Day 0", type: "dm", e: "Referred by Kavya Malhotra. Visited Rubicon + Solitaire." },
-      { t: "Day 5", type: "alert", e: "Quote sent. Went quiet — 6 days, no reply. F3 due." },
+      { t: "Day 5", type: "alert", e: "Quote sent. Went quiet — 6 days, no reply." },
+      { t: "Day 6", type: "alert", e: "F4 sent, unanswered. Not auto-closed — flagged for Kritika to decide: try once more, park it, or close it." },
     ],
   },
   {
@@ -332,7 +335,7 @@ export const LEADS = [
   },
   {
     id: 17, name: "Naina Chawla", initials: "NC", source: "meta_ads", stage: "query",
-    score: 38, days: 0, phone: "+91 98•• ••56", ref: null, hall: "—", guests: 0, value: 0,
+    score: 58, days: 0, phone: "+91 98•• ••56", ref: null, hall: "—", guests: 0, value: 0,
     firstResponseSeconds: 35,
     aiProfile: {
       persona: "Aesthetic-First Silent Browser",
@@ -415,16 +418,139 @@ export const DATA_INTAKE_TODAY = {
 };
 
 // "If 5 queries come in, AI filters it to the 3 that are actually yours to
-// work" — Aman's own framing for the qualification-screen pain point. This is
-// illustrative demo data, same spirit as AI_CALL_LOG below — not a live feed.
-export const QUALIFICATION_TODAY = {
-  received: 5,
-  routedToHuman: 3,
-  screenedOut: [
-    { note: "Function date already past — auto-replied with next availability, no call queued." },
-    { note: "Enquiry was for a different city's banquet — auto-declined with a referral note." },
+// work" — Aman's own framing. A real green/yellow/red triage, not a single
+// count: green/yellow are computed off today's actual query-stage leads; red
+// is illustrative (leads that never entered the funnel don't exist in LEADS).
+export function triageToday() {
+  const queries = LEADS.filter((l) => l.stage === "query");
+  return {
+    green: queries.filter((l) => l.score >= 50),
+    yellow: queries.filter((l) => l.score < 50),
+    red: [
+      { note: "Function date already past — auto-replied with next availability, no call queued." },
+      { note: "Enquiry was for a different city's banquet — auto-declined with a referral note." },
+    ],
+  };
+}
+
+// One dedicated Cherish number carries every AI touch, but the voice clone
+// still matches whichever manager actually owns that lead's channel — "one
+// owns Instagram, one owns Google/the ballroom side," per the discovery call.
+// Illustrative split, same spirit as the rest of this file's demo data.
+export const OWNER_BY_SOURCE = {
+  meta_ads: "Aman",
+  wedmegood: "Aman",
+  walkin: "Aman",
+  google_ads: "Harman",
+  eventco: "Harman",
+};
+export function leadOwner(lead) {
+  return OWNER_BY_SOURCE[lead.source] || "Aman";
+}
+
+// "The same sheet Aman already checks mentally/manually gets surfaced
+// automatically the second a date is mentioned on a call" — illustrative
+// open dates per hall, same spirit as AI_CALL_LOG.
+export const HALL_AVAILABILITY = {
+  "Emerald Hall": ["Dec 12", "Dec 19", "Jan 9"],
+  "Rubicon Hall": ["Dec 14", "Dec 21", "Jan 4"],
+  "Pearl Hall": ["Dec 11", "Dec 18", "Jan 2"],
+  "Solitaire Hall": ["Dec 13", "Dec 20", "Jan 10"],
+  "Sapphire Hall": ["Dec 15", "Dec 22", "Jan 5"],
+};
+export function nextAvailability(hall) {
+  return HALL_AVAILABILITY[hall] || [];
+}
+
+// Fallback for the calls that happen the old way — no brief, no prep: the
+// recording (with consent) gets transcribed and filed, so nothing said out
+// loud gets lost the way it currently can.
+export const VOICE_NOTE_FALLBACK_EXAMPLE = {
+  raw: "\"Haan dekho, hume December mein chahiye, around 300 log honge, thoda budget tight hai but Rubicon dekhna hai...\"",
+  extracted: [
+    { field: "Date", value: "December (exact TBD)" },
+    { field: "Guests", value: "~300" },
+    { field: "Hall interest", value: "Rubicon" },
+    { field: "Budget signal", value: "Price-sensitive — mentioned unprompted" },
   ],
 };
+
+// "A day before a confirmed visit, the guest automatically gets a short
+// 'here's what to expect' message" — small, but it's the polish that
+// reinforces premium without costing anyone time.
+export const PRE_VISIT_PRIMER_EXAMPLE = {
+  message: "Looking forward to seeing you at Cherish tomorrow! A quick heads up — parking's right at the main gate, our banquet manager will walk you through, and the hall looks its best if you can catch it toward evening light.",
+};
+
+// Plain-language query box for Kritika/Naveen — "how many leads came from
+// WedMeGood this month and what's our close rate" — so the portfolio-level
+// view doesn't require anyone building a report by hand. Answers computed
+// live against LEADS, not canned text.
+export const ASK_THE_SHEET_EXAMPLES = [
+  {
+    q: "How many leads came from WedMeGood, and what's our close rate?",
+    a: () => {
+      const leads = LEADS.filter((l) => l.source === "wedmegood");
+      const booked = leads.filter((l) => l.stage === "booked").length;
+      const rate = leads.length ? Math.round((booked / leads.length) * 100) : 0;
+      return `${leads.length} lead${leads.length === 1 ? "" : "s"} from WedMeGood, ${booked} booked — a ${rate}% close rate.`;
+    },
+  },
+  {
+    q: "Which source books the most for the least ad spend?",
+    a: () => {
+      const walkinBooked = LEADS.filter((l) => l.source === "walkin" && l.stage === "booked").length;
+      const totalBooked = LEADS.filter((l) => l.stage === "booked").length;
+      return `Walk-in / Word of Mouth — zero ad spend, ${walkinBooked} of this pipeline's ${totalBooked} bookings.`;
+    },
+  },
+  {
+    q: "Who's gone quiet and needs a human call today?",
+    a: () => {
+      const cold = LEADS.filter((l) => l.days >= 5 && l.stage !== "booked");
+      return cold.length ? `${cold.map((l) => l.name).join(", ")} — ${cold.length} lead${cold.length === 1 ? "" : "s"}, 5+ days silent.` : "Nobody's gone quiet right now.";
+    },
+  },
+];
+
+// "A short Sunday-evening summary sent automatically — gives Naveen a reason
+// to trust the system without having to log in and dig." Computed live, not
+// a static mockup.
+export function weeklyDigest() {
+  const booked = LEADS.filter((l) => l.stage === "booked");
+  const bookedValue = booked.reduce((s, l) => s + l.value, 0);
+  const bySource = {};
+  LEADS.forEach((l) => { bySource[l.source] = (bySource[l.source] || 0) + 1; });
+  const topSource = Object.entries(bySource).sort((a, b) => b[1] - a[1])[0];
+  const cold = LEADS.filter((l) => l.days >= 5 && l.stage !== "booked").sort((a, b) => b.days - a.days);
+  return {
+    leadsIn: LEADS.length,
+    leadsClosed: booked.length,
+    closedValue: bookedValue,
+    bestSource: topSource ? SOURCE_META[topSource[0]]?.label : "—",
+    biggestMiss: cold[0] ? `${cold[0].name} — ${cold[0].days} days silent, no reply yet` : "Nothing slipping through this week.",
+  };
+}
+
+// Raised in the room, not resolved: most guests call via WhatsApp rather
+// than message, which a Business API doesn't natively solve. Kept visible as
+// an open question rather than assumed away.
+export const OPEN_QUESTION_WHATSAPP_VOICE = "Most guests call on WhatsApp rather than message — the Business API doesn't natively solve voice-over-WhatsApp. Flagged as a real open question, not assumed away.";
+
+// F1-F4, made self-driving but never silent: the draft for the next step is
+// always visible and editable before it sends — "the system remembered what
+// I forgot," not "the system is doing my job."
+const FOLLOWUP_TEMPLATES = {
+  1: (l) => `Hi ${l.name.split(" ")[0]}, just checking in on your ${l.hall !== "—" ? l.hall : "event"} planning — happy to answer anything that's come up since we spoke.`,
+  2: (l) => `Hi ${l.name.split(" ")[0]}, wanted to follow up on the quote we sent over — let us know if you'd like to revisit any of the details.`,
+  3: (l) => `Hi ${l.name.split(" ")[0]}, we'd love to help you lock in a date before the calendar fills up — any update on your side?`,
+  4: (l) => `Hi ${l.name.split(" ")[0]}, this is a final check-in from our side — keen to keep exploring dates with us, or should we free up the hold?`,
+};
+export function nextFollowupDraft(lead) {
+  if (lead.followupStep === undefined || lead.followupStep >= 4) return null;
+  const step = lead.followupStep + 1;
+  return { step: `F${step}`, text: FOLLOWUP_TEMPLATES[step](lead) };
+}
 
 // A lead becomes eligible for the AI voice follow-up once the walkthrough has
 // happened — matching the real 24-48h-after-visit trigger described in the

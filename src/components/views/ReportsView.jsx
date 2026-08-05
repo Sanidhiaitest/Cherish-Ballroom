@@ -1,14 +1,15 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Sparkles, Star, MessageSquareWarning, FileText, TrendingUp, Wand2, ChevronRight, Megaphone, ThumbsUp, ThumbsDown } from "lucide-react";
+import { Sparkles, Star, MessageSquareWarning, FileText, TrendingUp, Wand2, ChevronRight, Megaphone, ThumbsUp, ThumbsDown, MessageSquare, Mail } from "lucide-react";
 import {
   LEADS, STAGES, SOURCE_META, WEEKLY_LEAD_TREND, BOOKINGS_TREND, MONTHLY_BOOKING_GOAL,
-  REVIEWS, SAVED_REPORTS, CAMPAIGNS, CONTENT_TRENDS, formatINR, medianResponseSeconds, partnerMarginSummary,
+  REVIEWS, SAVED_REPORTS, CAMPAIGNS, CONTENT_TRENDS, ASK_THE_SHEET_EXAMPLES, formatINR, medianResponseSeconds, partnerMarginSummary, weeklyDigest,
 } from "../../data/leads";
 import { sourceColor } from "../SourceTag";
 import AreaChart from "../charts/AreaChart";
 import DonutChart from "../charts/DonutChart";
 import BarChart from "../charts/BarChart";
+import PhaseBadge from "../PhaseBadge";
 
 const PERIODS = ["7 Days", "30 Days", "6 Months"];
 
@@ -21,6 +22,8 @@ function seededDay(i) {
 export default function ReportsView() {
   const [period, setPeriod] = useState("7 Days");
   const [showAIReply, setShowAIReply] = useState(false);
+  const [askedIndex, setAskedIndex] = useState(null);
+  const digest = weeklyDigest();
 
   const bySource = Object.keys(SOURCE_META)
     .map((s) => ({
@@ -89,6 +92,71 @@ export default function ReportsView() {
           ))}
         </div>
       </motion.div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-5">
+        <div className="rounded-2xl p-6" style={{ background: "var(--color-paper)", border: "1px solid var(--color-stone-line)" }}>
+          <div className="flex items-center gap-2 mb-1">
+            <MessageSquare size={15} style={{ color: "var(--color-gold-deep)" }} />
+            <div className="font-serif text-[15px]" style={{ color: "var(--color-ink)" }}>Ask the Sheet</div>
+            <PhaseBadge phase={2} />
+          </div>
+          <p className="font-body text-[12px] mb-4" style={{ color: "var(--color-stone)" }}>
+            A plain-language question box for Kritika or Naveen — no report to build by hand.
+          </p>
+          <div className="flex flex-col gap-2">
+            {ASK_THE_SHEET_EXAMPLES.map((ex, i) => (
+              <div key={i}>
+                <button
+                  onClick={() => setAskedIndex(askedIndex === i ? null : i)}
+                  className="w-full text-left rounded-xl px-3.5 py-2.5 font-body text-[12px]"
+                  style={{ background: "var(--color-ivory)", color: "var(--color-ink)" }}
+                >
+                  {ex.q}
+                </button>
+                {askedIndex === i && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    className="overflow-hidden"
+                  >
+                    <div className="flex items-start gap-2 rounded-xl px-3.5 py-2.5 mt-1.5" style={{ background: "rgba(201,162,39,0.1)" }}>
+                      <Sparkles size={12} className="shrink-0 mt-0.5" style={{ color: "var(--color-gold-deep)" }} />
+                      <span className="font-body text-[12px] leading-relaxed" style={{ color: "var(--color-ink)" }}>{ex.a()}</span>
+                    </div>
+                  </motion.div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="rounded-2xl p-6" style={{ background: "var(--color-paper)", border: "1px solid var(--color-stone-line)" }}>
+          <div className="flex items-center gap-2 mb-1">
+            <Mail size={15} style={{ color: "var(--color-gold-deep)" }} />
+            <div className="font-serif text-[15px]" style={{ color: "var(--color-ink)" }}>Weekly Digest — preview</div>
+            <PhaseBadge phase={2} />
+          </div>
+          <p className="font-body text-[12px] mb-4" style={{ color: "var(--color-stone)" }}>
+            A short Sunday-evening summary to Naveen — a reason to trust the system without logging in to dig.
+          </p>
+          <div className="grid grid-cols-2 gap-3 mb-3">
+            <div className="rounded-xl p-3" style={{ background: "var(--color-ivory)" }}>
+              <div className="font-serif text-[19px] leading-none" style={{ color: "var(--color-ink)" }}>{digest.leadsIn}</div>
+              <div className="font-mono text-[9px] uppercase mt-1" style={{ color: "var(--color-stone)" }}>Leads in</div>
+            </div>
+            <div className="rounded-xl p-3" style={{ background: "var(--color-ivory)" }}>
+              <div className="font-serif text-[19px] leading-none" style={{ color: "var(--color-emerald)" }}>{digest.leadsClosed}</div>
+              <div className="font-mono text-[9px] uppercase mt-1" style={{ color: "var(--color-stone)" }}>Closed · {formatINR(digest.closedValue)}</div>
+            </div>
+          </div>
+          <div className="font-body text-[12px] leading-relaxed" style={{ color: "var(--color-ink)" }}>
+            <strong>Best-performing source:</strong> {digest.bestSource}
+          </div>
+          <div className="font-body text-[12px] leading-relaxed mt-1.5" style={{ color: "var(--color-ink)" }}>
+            <strong>Biggest miss:</strong> {digest.biggestMiss}
+          </div>
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-5">
         <div className="rounded-2xl p-6" style={{ background: "var(--color-paper)", border: "1px solid var(--color-stone-line)" }}>
