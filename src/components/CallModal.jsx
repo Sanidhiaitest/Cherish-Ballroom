@@ -1,7 +1,18 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Mic, MicOff, Volume2, VolumeX, PhoneOff } from "lucide-react";
+import { Mic, MicOff, Volume2, VolumeX, PhoneOff, Lightbulb } from "lucide-react";
 import Avatar from "./Avatar";
+import { formatINR } from "../data/leads";
+
+function briefLines(lead) {
+  const lines = [];
+  if (lead.commitment) lines.push(`You said: ${lead.commitment.text}`);
+  if (lead.aiProfile?.tip) lines.push(lead.aiProfile.tip);
+  const lastTouch = lead.thread?.[lead.thread.length - 1];
+  if (lastTouch) lines.push(`Last touch (${lastTouch.t}): ${lastTouch.e}`);
+  if (lead.hall !== "—") lines.push(`${lead.hall} · ${lead.guests} pax${lead.value ? ` · ~${formatINR(lead.value)}` : ""}`);
+  return lines.slice(0, 3);
+}
 
 function useElapsed(running) {
   const [s, setS] = useState(0);
@@ -47,7 +58,7 @@ export default function CallModal({ lead, onClose }) {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.92, y: 12 }}
             transition={{ type: "spring", stiffness: 300, damping: 26 }}
-            className="w-[300px] rounded-[32px] px-6 py-9 flex flex-col items-center text-center"
+            className="w-[320px] rounded-[32px] px-6 py-9 flex flex-col items-center text-center"
             style={{ background: "linear-gradient(175deg, var(--color-ink) 0%, #1c1712 100%)", boxShadow: "0 30px 80px -20px rgba(0,0,0,0.6)" }}
           >
             <div className="font-mono text-[10.5px] uppercase tracking-[0.16em] mb-1" style={{ color: "var(--color-gold-soft)" }}>
@@ -57,15 +68,35 @@ export default function CallModal({ lead, onClose }) {
             <motion.div
               animate={phase === "ringing" ? { scale: [1, 1.06, 1] } : {}}
               transition={{ repeat: Infinity, duration: 1.3 }}
-              className="my-5"
+              className="my-4"
             >
-              <Avatar initials={lead.initials} source={lead.source} size={84} />
+              <Avatar initials={lead.initials} source={lead.source} size={72} />
             </motion.div>
 
-            <div className="font-serif text-[21px]" style={{ color: "var(--color-paper)" }}>{lead.name}</div>
-            <div className="font-mono text-[12.5px] mt-1.5" style={{ color: "var(--color-stone)" }}>
+            <div className="font-serif text-[19px]" style={{ color: "var(--color-paper)" }}>{lead.name}</div>
+            <div className="font-mono text-[12px] mt-1" style={{ color: "var(--color-stone)" }}>
               {phase === "ringing" ? lead.phone : fmt(elapsed)}
             </div>
+
+            {briefLines(lead).length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="w-full text-left rounded-2xl px-4 py-3 mt-5"
+                style={{ background: "rgba(201,162,39,0.1)", border: "1px solid rgba(201,162,39,0.25)" }}
+              >
+                <div className="flex items-center gap-1.5 mb-1.5">
+                  <Lightbulb size={11} style={{ color: "var(--color-gold-soft)" }} />
+                  <span className="font-mono text-[9px] uppercase tracking-wider" style={{ color: "var(--color-gold-soft)" }}>Before you pick up</span>
+                </div>
+                <ul className="flex flex-col gap-1">
+                  {briefLines(lead).map((line, i) => (
+                    <li key={i} className="font-body text-[11.5px] leading-relaxed" style={{ color: "var(--color-ivory)" }}>{line}</li>
+                  ))}
+                </ul>
+              </motion.div>
+            )}
 
             <div className="flex items-center gap-4 mt-9">
               <button

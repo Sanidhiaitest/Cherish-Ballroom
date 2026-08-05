@@ -1,6 +1,9 @@
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
+import { HeartHandshake, ArrowUpRight } from "lucide-react";
 import { LEADS, STAGES } from "../../data/leads";
+import Avatar from "../Avatar";
+import PhaseBadge from "../PhaseBadge";
 
 const VB_W = 760;
 const VB_H = 380;
@@ -37,6 +40,8 @@ export default function ReferralView({ openLead }) {
   const { nodes, edges, roots } = useGraph();
   const totalReferred = nodes.length - roots.length;
   const booked = nodes.filter((n) => n.stage === "booked").length;
+  const anniversaryLead = LEADS.find((l) => l.anniversary);
+  const pastReferrals = anniversaryLead ? LEADS.filter((l) => l.ref === anniversaryLead.name) : [];
 
   const isDimmed = (n) => {
     if (!hover) return false;
@@ -124,6 +129,36 @@ export default function ReferralView({ openLead }) {
           Referred lead — hover to trace, click to open
         </span>
       </div>
+
+      {anniversaryLead && (
+        <motion.button
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          onClick={() => openLead(anniversaryLead)}
+          className="w-full mt-5 rounded-2xl p-5 text-left flex items-start gap-4"
+          style={{ background: "var(--color-paper)", border: "1.5px dashed var(--color-stone-line)" }}
+        >
+          <div className="flex items-center justify-center rounded-xl w-10 h-10 shrink-0" style={{ background: "rgba(201,162,39,0.12)" }}>
+            <HeartHandshake size={17} style={{ color: "var(--color-gold-deep)" }} />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 flex-wrap">
+              <Avatar initials={anniversaryLead.initials} source={anniversaryLead.source} size={22} />
+              <span className="font-serif text-[15px]" style={{ color: "var(--color-ink)" }}>{anniversaryLead.name} — {anniversaryLead.anniversary.label}</span>
+              <PhaseBadge phase={2} />
+            </div>
+            <div className="font-body text-[12.5px] mt-1.5 leading-relaxed" style={{ color: "var(--color-stone)" }}>
+              {anniversaryLead.anniversary.when} — a reconnection note now, not a sales pitch. {pastReferrals.length > 0
+                ? `They've already sent Cherish one referral (${pastReferrals[0].name}); root families tend to think of us again around their own milestones.`
+                : "Root families like this one are where referrals start — worth a personal line, not a template."}
+            </div>
+            <div className="flex items-center gap-1.5 mt-2 font-mono text-[10.5px] uppercase tracking-wide" style={{ color: "var(--color-gold-deep)" }}>
+              Open thread <ArrowUpRight size={12} />
+            </div>
+          </div>
+        </motion.button>
+      )}
     </div>
   );
 }

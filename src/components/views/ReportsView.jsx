@@ -2,7 +2,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Sparkles, Star, MessageSquareWarning, FileText, TrendingUp, Wand2, ChevronRight, Megaphone, ThumbsUp, ThumbsDown } from "lucide-react";
 import {
-  LEADS, STAGES, WEEKLY_LEAD_TREND, BOOKINGS_TREND, MONTHLY_BOOKING_GOAL,
+  LEADS, STAGES, SOURCE_META, WEEKLY_LEAD_TREND, BOOKINGS_TREND, MONTHLY_BOOKING_GOAL,
   REVIEWS, SAVED_REPORTS, CAMPAIGNS, CONTENT_TRENDS, formatINR, medianResponseSeconds, partnerMarginSummary,
 } from "../../data/leads";
 import { sourceColor } from "../SourceTag";
@@ -22,11 +22,14 @@ export default function ReportsView() {
   const [period, setPeriod] = useState("7 Days");
   const [showAIReply, setShowAIReply] = useState(false);
 
-  const bySource = ["instagram", "reference", "eventco"].map((s) => ({
-    label: s === "instagram" ? "Instagram" : s === "reference" ? "Reference" : "Event Co.",
-    value: LEADS.filter((l) => l.source === s).length,
-    color: sourceColor(s),
-  }));
+  const bySource = Object.keys(SOURCE_META)
+    .map((s) => ({
+      label: SOURCE_META[s].label,
+      value: LEADS.filter((l) => l.source === s).length,
+      color: sourceColor(s),
+    }))
+    .filter((s) => s.value > 0)
+    .sort((a, b) => b.value - a.value);
 
   const funnelData = STAGES.map((s) => ({
     label: s.label.replace("Visit Scheduled", "Visit Sch.").replace("Follow-Up", "Follow-Up"),
@@ -44,9 +47,9 @@ export default function ReportsView() {
   const otherReviews = REVIEWS.filter((r) => !r.flagged);
 
   const insights = [
-    `Instagram leads reply in a median of ${median}s — Delhi banquet venues average 11–47 hours. That gap alone is the highest-leverage lever this quarter.`,
-    `Event Co. leads net ${formatINR(margin.eventcoNetPerLead)}/lead after the 50% commission, vs ${formatINR(margin.directNetPerLead)}/lead direct — worth shifting spend toward Instagram + referrals.`,
-    `${cold} lead${cold === 1 ? "" : "s"} have gone quiet 5+ days with no reply — Objection Radar would flag these for a human call instead of another automated nudge.`,
+    `Inbound leads get a first reply in a median of ${median}s — Delhi banquet venues average 11–47 hours. That gap alone is the highest-leverage lever this quarter.`,
+    `Event Co. leads net ${formatINR(margin.eventcoNetPerLead)}/lead after the 50% commission, vs ${formatINR(margin.directNetPerLead)}/lead everywhere else — worth weighing before the next partner renewal.`,
+    `${cold} lead${cold === 1 ? "" : "s"} have gone quiet 5+ days with no reply — Objection Radar would flag these for a human call instead of another nudge.`,
     `Booked pipeline is at ${goalPct}% of this month's ₹${(MONTHLY_BOOKING_GOAL / 10000000).toFixed(1)}Cr goal.`,
   ];
 

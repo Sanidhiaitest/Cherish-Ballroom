@@ -2,9 +2,10 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { X, Bot, ArrowRightCircle } from "lucide-react";
 import Avatar from "./Avatar";
+import { AI_CALLER_NUMBER } from "../data/leads";
 
 const DEFAULT_SCRIPT = [
-  { from: "ai", text: "Namaste! Main Cherish Ballrooms ki AI assistant bol rahi hoon. Kal aapne Solitaire Hall dekha tha — kaisa laga?" },
+  { from: "ai", text: "Namaste! Main Cherish Ballrooms ki taraf se bol rahi hoon. Kal aapne Solitaire Hall dekha tha — kaisa laga?" },
   { from: "lead", text: "Bahut achha tha, hall toh perfect hai." },
   { from: "ai", text: "Wonderful! Kya aap is week tasting date finalize karna chahenge?" },
   { from: "lead", text: "Haan, mujhe interest hai but abhi budget thoda tight hai." },
@@ -89,10 +90,13 @@ export default function AIVoiceCallModal({ lead, script = DEFAULT_SCRIPT, outcom
               </button>
             </div>
 
-            <div className="flex items-center gap-3 px-6 pb-4">
+            <div className="flex items-center gap-3 px-6 pb-1">
               <Avatar initials={lead.initials} source={lead.source} size={34} />
               <div className="font-body text-[13px]" style={{ color: "var(--color-ivory)" }}>{lead.name}</div>
               <div className="ml-auto font-mono text-[10.5px]" style={{ color: "var(--color-stone)" }}>{lead.phone}</div>
+            </div>
+            <div className="px-6 pb-3 font-mono text-[9.5px]" style={{ color: "var(--color-stone)" }}>
+              Calling from {AI_CALLER_NUMBER} — the Cherish line, never Aman's or Harman's personal number.
             </div>
 
             <div className="px-6"><Waveform active={phase === "talking"} /></div>
@@ -131,7 +135,7 @@ export default function AIVoiceCallModal({ lead, script = DEFAULT_SCRIPT, outcom
             </div>
 
             <div className="text-center font-body text-[10px] pb-4" style={{ color: "var(--color-stone)" }}>
-              Simulated preview · placed automatically 24–48h after the site visit
+              Simulated preview · placed 24–48h after the site visit
             </div>
           </motion.div>
         </motion.div>

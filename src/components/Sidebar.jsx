@@ -7,7 +7,7 @@ const ITEMS = [
   { id: "funnel", label: "Live Funnel", Icon: GitBranch },
   { id: "queue", label: "Priority Queue", Icon: ListOrdered },
   { id: "referral", label: "Referral Web", Icon: Share2 },
-  { id: "automation", label: "Automation Engine", Icon: Zap },
+  { id: "automation", label: "Copilot", Icon: Zap },
   { id: "reports", label: "Reports & Insights", Icon: PieChart },
 ];
 

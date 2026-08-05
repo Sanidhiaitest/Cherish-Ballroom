@@ -52,7 +52,7 @@ export default function Topbar({ onPreviewCoupleApp }) {
           className="flex items-center gap-2.5 rounded-full pl-1.5 pr-3.5 py-1.5 transition-transform hover:scale-[1.02] active:scale-95"
           style={{ background: "var(--color-paper)", border: "1px solid var(--color-stone-line)" }}
         >
-          <Avatar initials="KG" source="reference" size={30} />
+          <Avatar initials="KG" source="walkin" size={30} />
           <div className="text-left hidden sm:block">
             <div className="text-[12.5px] font-semibold leading-none" style={{ color: "var(--color-ink)" }}>Kritika Gupta</div>
             <div className="text-[10.5px] font-mono mt-0.5" style={{ color: "var(--color-stone)" }}>Manager</div>

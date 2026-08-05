@@ -144,7 +144,7 @@ export default function WhatsAppModal({ lead, onClose }) {
               </button>
             </div>
             <div className="text-center font-body text-[10px] pb-2.5" style={{ color: "var(--color-stone)", background: "var(--color-paper)" }}>
-              Simulated chat preview · wires in with WhatsApp Business API
+              Simulated chat preview · one-tap send from Aman/Harman's WhatsApp today, fully automatic once the Business API is confirmed
             </div>
           </motion.div>
         </motion.div>

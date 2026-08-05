@@ -1,9 +1,14 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { X, PlusCircle } from "lucide-react";
+import { X, PlusCircle, Camera, Check } from "lucide-react";
 import { SOURCE_META } from "../data/leads";
 
 const HALLS = ["Emerald Hall", "Rubicon Hall", "Pearl Hall", "Solitaire Hall", "Sapphire Hall"];
+
+const INDIRECT_SOURCES = Object.values(SOURCE_META).filter((s) => s.channelType === "indirect");
+const DIRECT_SOURCE = Object.values(SOURCE_META).find((s) => s.channelType === "direct");
+
+const SCANNED_CARD_DEMO = { name: "Naveen & Simran Kaur", phone: "+91 98110 44221", guests: "260" };
 
 function initialsOf(name) {
   const parts = name.trim().split(/[\s&]+/).filter(Boolean);
@@ -12,10 +17,11 @@ function initialsOf(name) {
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
-const emptyForm = { name: "", source: "instagram", phone: "", hall: "", guests: "", note: "" };
+const emptyForm = { name: "", source: "meta_ads", phone: "", hall: "", guests: "", note: "" };
 
 export default function AddLeadModal({ open, onClose, onAdd }) {
   const [form, setForm] = useState(emptyForm);
+  const [scanned, setScanned] = useState(false);
 
   function update(key, value) {
     setForm((f) => ({ ...f, [key]: value }));
@@ -23,7 +29,13 @@ export default function AddLeadModal({ open, onClose, onAdd }) {
 
   function handleClose() {
     setForm(emptyForm);
+    setScanned(false);
     onClose();
+  }
+
+  function handleScanCard() {
+    setForm((f) => ({ ...f, ...SCANNED_CARD_DEMO, note: f.note || "Walk-in — details pulled from guest register photo." }));
+    setScanned(true);
   }
 
   function handleSubmit(e) {
@@ -55,6 +67,7 @@ export default function AddLeadModal({ open, onClose, onAdd }) {
     };
     onAdd(lead);
     setForm(emptyForm);
+    setScanned(false);
   }
 
   return (
@@ -89,7 +102,7 @@ export default function AddLeadModal({ open, onClose, onAdd }) {
               </button>
             </div>
             <p className="font-body text-[12.5px] mb-5" style={{ color: "var(--color-stone)" }}>
-              Every walk-in, call, or off-platform DM gets one thread too — starting here.
+              Every walk-in or phone call gets a thread too — log it here so nothing sits off the board.
             </p>
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -111,13 +124,16 @@ export default function AddLeadModal({ open, onClose, onAdd }) {
                 <label className="font-mono text-[10px] uppercase tracking-wider block mb-1.5" style={{ color: "var(--color-stone)" }}>
                   Source
                 </label>
-                <div className="flex gap-2">
-                  {Object.values(SOURCE_META).map((s) => (
+                <div className="font-mono text-[9.5px] uppercase tracking-wider mb-1.5" style={{ color: "var(--color-stone)" }}>
+                  Indirect — ads &amp; aggregators
+                </div>
+                <div className="grid grid-cols-2 gap-2 mb-3">
+                  {INDIRECT_SOURCES.map((s) => (
                     <button
                       key={s.key}
                       type="button"
                       onClick={() => update("source", s.key)}
-                      className="flex-1 rounded-xl py-2 text-[12.5px] font-medium transition-colors"
+                      className="rounded-xl py-2 text-[12.5px] font-medium transition-colors"
                       style={{
                         background: form.source === s.key ? "var(--color-ink)" : "var(--color-ivory)",
                         color: form.source === s.key ? "var(--color-paper)" : "var(--color-stone)",
@@ -128,6 +144,36 @@ export default function AddLeadModal({ open, onClose, onAdd }) {
                     </button>
                   ))}
                 </div>
+                <div className="font-mono text-[9.5px] uppercase tracking-wider mb-1.5" style={{ color: "var(--color-stone)" }}>
+                  Direct
+                </div>
+                <button
+                  type="button"
+                  onClick={() => update("source", DIRECT_SOURCE.key)}
+                  className="w-full rounded-xl py-2 text-[12.5px] font-medium transition-colors"
+                  style={{
+                    background: form.source === DIRECT_SOURCE.key ? "var(--color-emerald)" : "var(--color-ivory)",
+                    color: form.source === DIRECT_SOURCE.key ? "var(--color-paper)" : "var(--color-stone)",
+                    border: `1px solid ${form.source === DIRECT_SOURCE.key ? "var(--color-emerald)" : "var(--color-stone-line)"}`,
+                  }}
+                >
+                  {DIRECT_SOURCE.label} — walked in or referred by attendance
+                </button>
+                {form.source === DIRECT_SOURCE.key && (
+                  <button
+                    type="button"
+                    onClick={handleScanCard}
+                    className="w-full flex items-center justify-center gap-2 rounded-xl py-2 mt-2 text-[11.5px] font-medium transition-colors"
+                    style={{
+                      background: scanned ? "rgba(63,107,86,0.1)" : "var(--color-paper)",
+                      color: scanned ? "var(--color-emerald)" : "var(--color-stone)",
+                      border: `1px dashed ${scanned ? "var(--color-emerald)" : "var(--color-stone-line)"}`,
+                    }}
+                  >
+                    {scanned ? <Check size={13} /> : <Camera size={13} />}
+                    {scanned ? "Filled from guest card photo" : "Scan guest register / visiting card instead"}
+                  </button>
+                )}
               </div>
 
               <div className="grid grid-cols-2 gap-3">
@@ -215,7 +261,7 @@ export default function AddLeadModal({ open, onClose, onAdd }) {
                 <PlusCircle size={15} /> Add to Live Funnel
               </motion.button>
               <div className="text-center font-body text-[10px]" style={{ color: "var(--color-stone)" }}>
-                Simulated entry point · a real build wires this to inbound DMs, calls, and web forms automatically
+                Simulated entry point · a real build reads this off your ad platforms and sheets — this form is just the walk-in and phone-call door
               </div>
             </form>
           </motion.div>

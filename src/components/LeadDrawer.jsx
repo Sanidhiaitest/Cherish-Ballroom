@@ -1,5 +1,6 @@
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { X, Phone, MessageCircle, Sparkles, MapPin, FileText, StickyNote, AlertTriangle, PhoneCall, Smartphone, Bot, ClipboardList, BrainCircuit, Lightbulb } from "lucide-react";
+import { X, Phone, MessageCircle, Sparkles, MapPin, FileText, StickyNote, AlertTriangle, PhoneCall, Smartphone, Bot, ClipboardList, BrainCircuit, Lightbulb, BellRing, HelpCircle } from "lucide-react";
 import { STAGES, AI_CALL_LOG, scoreTone, formatINR } from "../data/leads";
 import SourceTag from "./SourceTag";
 import Avatar from "./Avatar";
@@ -16,6 +17,12 @@ const TYPE_ICON = {
 };
 
 export default function LeadDrawer({ lead, onClose, onCall, onWhatsApp, onPreviewCouple, onViewProposal, onAIVoiceCall }) {
+  const [explainOpen, setExplainOpen] = useState(false);
+
+  useEffect(() => {
+    setExplainOpen(false);
+  }, [lead?.id]);
+
   return (
     <AnimatePresence>
       {lead && (
@@ -54,6 +61,26 @@ export default function LeadDrawer({ lead, onClose, onCall, onWhatsApp, onPrevie
               {lead.ref && <span>Referred by {lead.ref}</span>}
             </div>
 
+            {lead.commitment && (
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-4 flex items-start gap-2.5 rounded-2xl px-3.5 py-3"
+                style={{
+                  background: lead.commitment.due === "Today" ? "rgba(178,58,72,0.08)" : "var(--color-ivory)",
+                  border: `1px solid ${lead.commitment.due === "Today" ? "rgba(178,58,72,0.28)" : "var(--color-stone-line)"}`,
+                }}
+              >
+                <BellRing size={14} className="shrink-0 mt-0.5" style={{ color: lead.commitment.due === "Today" ? "var(--color-rose)" : "var(--color-gold-deep)" }} />
+                <div>
+                  <div className="font-mono text-[9.5px] uppercase tracking-wider" style={{ color: lead.commitment.due === "Today" ? "var(--color-rose)" : "var(--color-stone)" }}>
+                    What you said you'd do · due {lead.commitment.due}
+                  </div>
+                  <div className="font-body text-[12.5px] mt-1 leading-relaxed" style={{ color: "var(--color-ink)" }}>{lead.commitment.text}</div>
+                </div>
+              </motion.div>
+            )}
+
             {lead.aiProfile && (
               <motion.div
                 initial={{ opacity: 0, y: 8 }}
@@ -82,13 +109,21 @@ export default function LeadDrawer({ lead, onClose, onCall, onWhatsApp, onPrevie
               </motion.div>
             )}
 
-            <div className="grid grid-cols-3 gap-2.5 mt-5 mb-5">
-              <div className="rounded-2xl py-3 flex flex-col items-center justify-center" style={{ border: "1px solid var(--color-stone-line)" }}>
+            <div className="grid grid-cols-3 gap-2.5 mt-5">
+              <button
+                onClick={() => setExplainOpen((v) => !v)}
+                aria-label="Explain this score"
+                className="rounded-2xl py-3 flex flex-col items-center justify-center transition-colors hover:bg-black/[0.03]"
+                style={{ border: `1px solid ${explainOpen ? "var(--color-gold)" : "var(--color-stone-line)"}` }}
+              >
                 <ScoreRing score={lead.score} size={40} strokeWidth={3} />
-                <div className="font-mono text-[9.5px] mt-1.5 uppercase" style={{ color: "var(--color-stone)" }}>
-                  {scoreTone(lead.score).label}
+                <div className="flex items-center gap-1 mt-1.5">
+                  <span className="font-mono text-[9.5px] uppercase" style={{ color: "var(--color-stone)" }}>
+                    {scoreTone(lead.score).label}
+                  </span>
+                  <HelpCircle size={10} style={{ color: "var(--color-gold-deep)" }} />
                 </div>
-              </div>
+              </button>
               <div className="rounded-2xl py-3 px-1 flex flex-col items-center justify-center text-center" style={{ border: "1px solid var(--color-stone-line)" }}>
                 <div className="font-serif text-[15px] leading-tight" style={{ color: "var(--color-ink)" }}>
                   {STAGES.find((s) => s.id === lead.stage)?.label}
@@ -100,6 +135,39 @@ export default function LeadDrawer({ lead, onClose, onCall, onWhatsApp, onPrevie
                 <div className="font-mono text-[9.5px] mt-2 uppercase" style={{ color: "var(--color-stone)" }}>Est. value</div>
               </div>
             </div>
+
+            <AnimatePresence>
+              {explainOpen && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="overflow-hidden"
+                >
+                  <div className="mt-2.5 rounded-2xl p-4" style={{ background: "var(--color-ivory)", border: "1px solid var(--color-stone-line)" }}>
+                    <div className="font-mono text-[9.5px] uppercase tracking-wider mb-2" style={{ color: "var(--color-gold-deep)" }}>
+                      Why {lead.score}?
+                    </div>
+                    {lead.aiProfile?.signals?.length ? (
+                      <ul className="flex flex-col gap-1.5">
+                        {lead.aiProfile.signals.map((s, i) => (
+                          <li key={i} className="font-body text-[12px] leading-relaxed flex items-start gap-2" style={{ color: "var(--color-ink)" }}>
+                            <span className="mt-1.5 shrink-0 rounded-full" style={{ width: 3.5, height: 3.5, background: "var(--color-gold-deep)" }} />
+                            {s}
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="font-body text-[12px] leading-relaxed" style={{ color: "var(--color-ink)" }}>
+                        Built from reply speed, engagement signals, and how far this thread has moved through the stages — not a black box, and Kritika can always override it.
+                      </p>
+                    )}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <div className="mb-5" />
 
             <div className="flex gap-2.5 mb-3">
               <motion.button

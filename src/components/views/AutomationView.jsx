@@ -1,8 +1,9 @@
 import { Fragment } from "react";
 import { motion } from "framer-motion";
 import { Zap, MessageCircle, Bot, Users2, ArrowUpRight, CheckCircle2, Circle, Globe2, PhoneCall, ChefHat, Check, X as XIcon } from "lucide-react";
-import { LEADS, NURTURE_STEPS, AI_CALL_LOG, COMPETITIVE_CHECKLIST, medianResponseSeconds, partnerMarginSummary, formatINR } from "../../data/leads";
+import { LEADS, NURTURE_STEPS, AI_CALL_LOG, COMPETITIVE_CHECKLIST, AI_CALLER_NUMBER, medianResponseSeconds, partnerMarginSummary, formatINR } from "../../data/leads";
 import Avatar from "../Avatar";
+import PhaseBadge from "../PhaseBadge";
 
 function fmtSeconds(s) {
   if (s < 60) return `${s} sec`;
@@ -18,9 +19,9 @@ export default function AutomationView({ openLead, setView, onAIVoiceCall, onOpe
 
   return (
     <div>
-      <h1 className="font-serif text-[27px]" style={{ color: "var(--color-ink)" }}>Automation Engine</h1>
+      <h1 className="font-serif text-[27px]" style={{ color: "var(--color-ink)" }}>Cherish Copilot</h1>
       <p className="font-body text-[13.5px] mt-1.5 mb-6" style={{ color: "var(--color-stone)" }}>
-        The venue that responds first wins the booking — here's what runs while nobody's watching.
+        The venue that responds first wins the booking — what's already live, and what's proposed to run alongside Aman and Harman next.
       </p>
 
       <motion.div
@@ -39,7 +40,7 @@ export default function AutomationView({ openLead, setView, onAIVoiceCall, onOpe
               {fmtSeconds(median)}
             </div>
             <div className="font-body text-[13px] mt-2" style={{ color: "var(--color-ivory)" }}>
-              Median first response across Instagram &amp; WhatsApp inquiries
+              Median first response across every inbound channel — ads, aggregators, walk-ins
             </div>
           </div>
           <div className="flex flex-col gap-2 max-w-xs">
@@ -61,12 +62,13 @@ export default function AutomationView({ openLead, setView, onAIVoiceCall, onOpe
           className="rounded-2xl p-6"
           style={{ background: "var(--color-paper)", border: "1px solid var(--color-stone-line)" }}
         >
-          <div className="flex items-center gap-2 mb-1">
+          <div className="flex items-center gap-2 mb-1.5">
             <Zap size={15} style={{ color: "var(--color-gold-deep)" }} />
-            <div className="font-serif text-[16px]" style={{ color: "var(--color-ink)" }}>Instant AI Response</div>
+            <div className="font-serif text-[16px]" style={{ color: "var(--color-ink)" }}>Instant First Reply</div>
+            <PhaseBadge phase={2} />
           </div>
           <p className="font-body text-[12px] mb-4" style={{ color: "var(--color-stone)" }}>
-            Every Instagram DM and ad click gets qualified — date, guest count, budget, function type — before a human ever sees it.
+            Every ad click and aggregator inquiry gets a reply drafted in seconds — date, guest count, budget, function type surfaced for whoever picks it up next.
           </p>
           {dmExample && (
             <button onClick={() => openLead(dmExample)} className="w-full flex flex-col gap-2 rounded-2xl p-4 text-left" style={{ background: "var(--color-ivory)" }}>
@@ -89,12 +91,13 @@ export default function AutomationView({ openLead, setView, onAIVoiceCall, onOpe
           className="rounded-2xl p-6"
           style={{ background: "var(--color-paper)", border: "1px solid var(--color-stone-line)" }}
         >
-          <div className="flex items-center gap-2 mb-1">
+          <div className="flex items-center gap-2 mb-1.5">
             <MessageCircle size={15} style={{ color: "var(--color-gold-deep)" }} />
             <div className="font-serif text-[16px]" style={{ color: "var(--color-ink)" }}>Post-Visit Nurture Sequence</div>
+            <PhaseBadge phase={2} />
           </div>
           <p className="font-body text-[12px] mb-4" style={{ color: "var(--color-stone)" }}>
-            Answers "ghar wapis aana ya nahi" automatically — a five-touch sequence fires the moment a walkthrough ends.
+            Answers "ghar wapis aana ya nahi" — a five-touch sequence drafts itself the moment a walkthrough ends, queued for one-tap send from Aman or Harman's WhatsApp today, fully automatic once the business line is confirmed.
           </p>
           <button onClick={() => openLead(nurtureLead)} className="w-full text-left">
             <div className="font-body text-[12px] mb-3" style={{ color: "var(--color-ink)" }}>
@@ -129,12 +132,16 @@ export default function AutomationView({ openLead, setView, onAIVoiceCall, onOpe
           className="rounded-2xl p-6"
           style={{ background: "var(--color-ink)" }}
         >
-          <div className="flex items-center gap-2 mb-1">
+          <div className="flex items-center gap-2 mb-1.5">
             <Bot size={15} style={{ color: "var(--color-gold-soft)" }} />
             <div className="font-serif text-[16px]" style={{ color: "var(--color-paper)" }}>AI Voice Follow-up — Call Log</div>
+            <PhaseBadge phase={2} />
           </div>
-          <p className="font-body text-[12px] mb-4" style={{ color: "var(--color-stone)" }}>
-            A Hindi/Hinglish voice agent calls 24–48h after the walkthrough. Simple, positive calls close themselves — hesitation gets routed to a human.
+          <p className="font-body text-[12px] mb-1.5" style={{ color: "var(--color-stone)" }}>
+            A Hindi/Hinglish voice, cloned to whichever of Aman or Harman the lead belongs to, calls 24–48h after the walkthrough. Simple, positive calls close themselves — hesitation gets routed to a human.
+          </p>
+          <p className="font-body text-[10.5px] mb-4" style={{ color: "var(--color-stone)" }}>
+            Every call goes out from the Cherish business line ({AI_CALLER_NUMBER}) — never Aman's or Harman's personal number.
           </p>
           <div className="flex flex-col gap-2">
             {AI_CALL_LOG.map((entry) => {
@@ -181,9 +188,9 @@ export default function AutomationView({ openLead, setView, onAIVoiceCall, onOpe
               <div className="font-mono text-[10px] mt-1" style={{ color: "var(--color-stone)" }}>{margin.eventcoCount} leads, after 50% cut</div>
             </div>
             <div className="rounded-2xl p-3.5" style={{ background: "var(--color-ivory)" }}>
-              <div className="font-mono text-[9.5px] uppercase" style={{ color: "var(--color-stone)" }}>Direct · net per lead</div>
+              <div className="font-mono text-[9.5px] uppercase" style={{ color: "var(--color-stone)" }}>All other channels · net per lead</div>
               <div className="font-serif text-[19px] mt-1" style={{ color: "var(--color-emerald)" }}>{formatINR(margin.directNetPerLead)}</div>
-              <div className="font-mono text-[10px] mt-1" style={{ color: "var(--color-stone)" }}>{margin.directCount} leads, Instagram + reference</div>
+              <div className="font-mono text-[10px] mt-1" style={{ color: "var(--color-stone)" }}>{margin.directCount} leads, ads + WedMeGood + walk-in</div>
             </div>
           </div>
           <button onClick={() => setView("referral")} className="flex items-center gap-1.5 mt-4 font-mono text-[11px] uppercase tracking-wide" style={{ color: "var(--color-gold-deep)" }}>
@@ -198,9 +205,10 @@ export default function AutomationView({ openLead, setView, onAIVoiceCall, onOpe
           className="rounded-2xl p-6"
           style={{ background: "linear-gradient(150deg, #3a2410, var(--color-ink))" }}
         >
-          <div className="flex items-center gap-2 mb-1">
+          <div className="flex items-center gap-2 mb-1.5">
             <ChefHat size={15} style={{ color: "var(--color-gold-soft)" }} />
             <div className="font-serif text-[16px]" style={{ color: "var(--color-paper)" }}>Virtual Kitchen Tour & Menu Concierge</div>
+            <PhaseBadge phase={2} />
           </div>
           <p className="font-body text-[12px] mb-4" style={{ color: "var(--color-stone)" }}>
             The kitchen is the actual differentiator — most venues only show halls. This travels to a lead's phone before the in-person tasting.
