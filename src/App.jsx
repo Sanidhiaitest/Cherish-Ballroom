@@ -42,8 +42,8 @@ export default function App() {
   const [addLeadOpen, setAddLeadOpen] = useState(false);
   const ViewComponent = VIEWS[view];
 
-  function openAIVoiceCall(lead, script, outcome) {
-    setAiVoiceCall(lead ? { lead, script, outcome } : null);
+  function openAIVoiceCall(lead, script, outcome, transfer) {
+    setAiVoiceCall(lead ? { lead, script, outcome, transfer } : null);
   }
 
   function handleAddLead(lead) {
@@ -97,6 +97,7 @@ export default function App() {
           lead={aiVoiceCall.lead}
           script={aiVoiceCall.script}
           outcome={aiVoiceCall.outcome}
+          transfer={aiVoiceCall.transfer}
           onClose={() => setAiVoiceCall(null)}
         />
       )}

@@ -177,7 +177,7 @@ export const LEADS = [
     thread: [
       { t: "Day 0", type: "dm", e: "Referred by Kavya Malhotra. Visited Rubicon + Solitaire." },
       { t: "Day 5", type: "alert", e: "Quote sent. Went quiet — 6 days, no reply." },
-      { t: "Day 6", type: "alert", e: "F4 sent, unanswered. Not auto-closed — flagged for Kritika to decide: try once more, park it, or close it." },
+      { t: "Day 6", type: "alert", e: "F4 sent, unanswered. Not auto-closed — flagged for Aman to decide: try once more, park it, or close it." },
     ],
   },
   {
@@ -496,7 +496,7 @@ export const GUARDRAILS = [
   },
   {
     title: "When the AI isn't sure",
-    note: "It escalates to a human, it doesn't guess. Budget objections, off-script questions, anything outside the guest's original enquiry — routed to Kritika, Aman, or Harman, not improvised.",
+    note: "It escalates to a human, it doesn't guess. Budget objections, off-script questions, anything outside the guest's original enquiry — routed to whichever of Aman or Harman owns that lead, not improvised.",
   },
   {
     title: "Your data, portable",
@@ -514,9 +514,10 @@ const OFF_SCRIPT_CALL = {
   script: [
     { from: "ai", text: "Namaste! Main Cherish Ballrooms ki taraf se bol rahi hoon. Aapka Emerald Hall ka quote mil gaya tha?" },
     { from: "lead", text: "Haan mila, but ek cheez batao — kya aap outside catering allow karte ho half the menu ke liye?" },
-    { from: "ai", text: "Yeh ek specific policy question hai jo main confidently answer nahi kar sakti — main isse Kritika ko bhej rahi hoon, woh aapko aaj hi is par clear jawab denge." },
+    { from: "ai", text: "Yeh ek specific policy question hai jo main confidently answer nahi kar sakti — ek second rukiye please, main aapko Harman se directly connect kar rahi hoon." },
   ],
-  outcomeDetail: "Guest asked something outside the script (outside-catering policy) — the AI recognized it didn't have a confident answer and routed it to Kritika instead of guessing.",
+  transfer: { to: "Harman", line: "Please hold — connecting you to Harman now." },
+  outcomeDetail: "Guest asked something outside the script (outside-catering policy) — the AI recognized it didn't have a confident answer and transferred the call live to Harman instead of guessing.",
 };
 
 // Plain-language query box for Kritika/Naveen — "how many leads came from
@@ -602,27 +603,29 @@ export function queuedForAICall() {
 export const AI_CALL_LOG = [
   {
     leadName: "Ishaan & Priya",
-    outcomeLabel: "Hesitation on budget → routed to Kritika",
+    outcomeLabel: "Hesitation on budget → routed to Aman",
     tone: "warm",
     script: [
       { from: "ai", text: "Namaste! Main Cherish Ballrooms ki taraf se bol rahi hoon. Kal aapne Solitaire Hall dekha tha — kaisa laga?" },
       { from: "lead", text: "Bahut achha tha, hall toh perfect hai." },
       { from: "ai", text: "Wonderful! Kya aap is week tasting date finalize karna chahenge?" },
       { from: "lead", text: "Haan, mujhe interest hai but abhi budget thoda tight hai." },
-      { from: "ai", text: "Samajh sakti hoon. Main Kritika ko is call ka summary bhej rahi hoon — woh aapko best package options ke saath khud call karengi." },
+      { from: "ai", text: "Samajh sakti hoon. Ek second rukiye please, main aapko Aman se directly connect kar rahi hoon." },
     ],
-    outcomeDetail: "Hesitation on budget detected — routed to Kritika directly instead of firing another nudge.",
+    transfer: { to: "Aman", line: "Please hold — connecting you to Aman now." },
+    outcomeDetail: "Hesitation on budget detected — transferred live to Aman instead of firing another nudge.",
   },
   {
     leadName: "The Chopra Wedding",
-    outcomeLabel: "Comparison-shopping → routed to Kritika",
+    outcomeLabel: "Comparison-shopping → routed to Aman",
     tone: "warm",
     script: [
       { from: "ai", text: "Namaste! Main Cherish Ballrooms ki taraf se bol rahi hoon. Aapka Rubicon Hall ka quote kaisa laga?" },
       { from: "lead", text: "Actually hum kuch aur venues bhi dekh rahe hain, thoda confuse hain abhi." },
-      { from: "ai", text: "Bilkul samajh sakti hoon, bade decisions mein time lagta hai. Main Kritika ko bata rahi hoon — woh khud aapse baat karke koi bhi doubt clear kar dengi." },
+      { from: "ai", text: "Bilkul samajh sakti hoon, bade decisions mein time lagta hai. Ek second rukiye please, main aapko Aman se connect kar rahi hoon — woh khud aapse baat karke koi bhi doubt clear kar denge." },
     ],
-    outcomeDetail: "Comparison-shopping signal detected — routed to Kritika for a personal close, not a discount nudge.",
+    transfer: { to: "Aman", line: "Please hold — connecting you to Aman now." },
+    outcomeDetail: "Comparison-shopping signal detected — transferred live to Aman for a personal close, not a discount nudge.",
   },
   {
     leadName: "Verma Family",
@@ -633,7 +636,7 @@ export const AI_CALL_LOG = [
       { from: "lead", text: "Bahut sundar tha, hum aage badhne ke liye ready hain." },
       { from: "ai", text: "Wonderful! Main aapke liye agle Saturday tasting date book kar rahi hoon — confirmation WhatsApp par bhej rahi hoon." },
     ],
-    outcomeDetail: "Positive signal — tasting date scheduled, no human follow-up needed. Kritika notified for awareness only.",
+    outcomeDetail: "Positive signal — tasting date scheduled, no human follow-up needed. Aman notified for awareness only.",
   },
   OFF_SCRIPT_CALL,
 ];

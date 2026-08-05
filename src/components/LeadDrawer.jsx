@@ -339,7 +339,7 @@ export default function LeadDrawer({ lead, onClose, onCall, onWhatsApp, onPrevie
                 const callEntry = AI_CALL_LOG.find((e) => e.leadName === lead.name);
                 return callEntry ? (
                   <button
-                    onClick={() => onAIVoiceCall?.(lead, callEntry.script, callEntry.outcomeDetail)}
+                    onClick={() => onAIVoiceCall?.(lead, callEntry.script, callEntry.outcomeDetail, callEntry.transfer)}
                     className="flex items-center gap-1.5 rounded-full px-3 py-1.5 font-medium text-[11.5px] transition-colors hover:bg-black/5"
                     style={{ color: "var(--color-stone)", border: "1px solid var(--color-stone-line)" }}
                   >

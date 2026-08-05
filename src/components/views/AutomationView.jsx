@@ -434,7 +434,7 @@ export default function AutomationView({ openLead, setView, onAIVoiceCall, onOpe
                 return (
                   <button
                     key={entry.leadName}
-                    onClick={() => onAIVoiceCall(callLead, entry.script, entry.outcomeDetail)}
+                    onClick={() => onAIVoiceCall(callLead, entry.script, entry.outcomeDetail, entry.transfer)}
                     className="w-full flex items-center gap-3 rounded-2xl p-3.5 text-left"
                     style={{ background: "rgba(255,255,255,0.04)", border: `1px solid ${positive ? "rgba(31,77,61,0.4)" : "rgba(201,162,39,0.25)"}` }}
                   >

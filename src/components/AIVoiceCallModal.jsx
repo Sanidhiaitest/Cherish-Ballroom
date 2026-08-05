@@ -9,10 +9,10 @@ const DEFAULT_SCRIPT = [
   { from: "lead", text: "Bahut achha tha, hall toh perfect hai." },
   { from: "ai", text: "Wonderful! Kya aap is week tasting date finalize karna chahenge?" },
   { from: "lead", text: "Haan, mujhe interest hai but abhi budget thoda tight hai." },
-  { from: "ai", text: "Samajh sakti hoon. Main Kritika ko is call ka summary bhej rahi hoon — woh aapko best package options ke saath khud call karengi." },
+  { from: "ai", text: "Samajh sakti hoon. Ek second rukiye please, main aapko Aman se directly connect kar rahi hoon." },
 ];
 
-const DEFAULT_OUTCOME = "Hesitation on budget detected — routed to Kritika directly instead of firing another nudge.";
+const DEFAULT_OUTCOME = "Hesitation on budget detected — transferred live to Aman instead of firing another nudge.";
 
 function Waveform({ active }) {
   const bars = 24;
@@ -31,7 +31,7 @@ function Waveform({ active }) {
   );
 }
 
-export default function AIVoiceCallModal({ lead, script = DEFAULT_SCRIPT, outcome = DEFAULT_OUTCOME, onClose }) {
+export default function AIVoiceCallModal({ lead, script = DEFAULT_SCRIPT, outcome = DEFAULT_OUTCOME, transfer, onClose }) {
   const [visibleLines, setVisibleLines] = useState(0);
   const [phase, setPhase] = useState("dialing");
 
@@ -46,12 +46,20 @@ export default function AIVoiceCallModal({ lead, script = DEFAULT_SCRIPT, outcom
   useEffect(() => {
     if (phase !== "talking") return;
     if (visibleLines >= script.length) {
-      const done = setTimeout(() => setPhase("complete"), 700);
+      const next = transfer ? "transferring" : "complete";
+      const wait = transfer ? 900 : 700;
+      const done = setTimeout(() => setPhase(next), wait);
       return () => clearTimeout(done);
     }
     const t = setTimeout(() => setVisibleLines((v) => v + 1), 1500);
     return () => clearTimeout(t);
-  }, [phase, visibleLines, script.length]);
+  }, [phase, visibleLines, script.length, transfer]);
+
+  useEffect(() => {
+    if (phase !== "transferring") return;
+    const t = setTimeout(() => setPhase("complete"), 2200);
+    return () => clearTimeout(t);
+  }, [phase]);
 
   return (
     <AnimatePresence>
@@ -82,7 +90,7 @@ export default function AIVoiceCallModal({ lead, script = DEFAULT_SCRIPT, outcom
                   AI Voice Follow-up · Hindi/Hinglish
                 </div>
                 <div className="font-serif text-[16px] mt-0.5" style={{ color: "var(--color-paper)" }}>
-                  {phase === "dialing" ? "Dialing…" : phase === "complete" ? "Call complete" : "In progress"}
+                  {phase === "dialing" ? "Dialing…" : phase === "transferring" ? "Transferring…" : phase === "complete" ? "Call complete" : "In progress"}
                 </div>
               </div>
               <button onClick={onClose} className="rounded-full p-1.5 hover:bg-white/10">
@@ -99,7 +107,7 @@ export default function AIVoiceCallModal({ lead, script = DEFAULT_SCRIPT, outcom
               Calling from {AI_CALLER_NUMBER} — the Cherish line. Guest hears: "{leadOwner(lead)} calling from Cherish."
             </div>
 
-            <div className="px-6"><Waveform active={phase === "talking"} /></div>
+            <div className="px-6"><Waveform active={phase === "talking" || phase === "transferring"} /></div>
 
             <div className="px-6 py-5 flex flex-col gap-3 min-h-[210px]">
               {script.slice(0, visibleLines).map((line, i) => (
@@ -120,6 +128,23 @@ export default function AIVoiceCallModal({ lead, script = DEFAULT_SCRIPT, outcom
                   {line.text}
                 </motion.div>
               ))}
+
+              {phase === "transferring" && transfer && (
+                <motion.div
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="flex items-center gap-2.5 rounded-2xl px-4 py-3 mt-1 self-center"
+                  style={{ background: "rgba(201,162,39,0.12)", border: "1px dashed rgba(201,162,39,0.35)" }}
+                >
+                  <motion.span
+                    animate={{ rotate: 360 }}
+                    transition={{ repeat: Infinity, duration: 1.1, ease: "linear" }}
+                    className="rounded-full shrink-0"
+                    style={{ width: 12, height: 12, border: "2px solid var(--color-gold-soft)", borderTopColor: "transparent" }}
+                  />
+                  <div className="font-body text-[12px] leading-relaxed" style={{ color: "var(--color-ivory)" }}>{transfer.line}</div>
+                </motion.div>
+              )}
 
               {phase === "complete" && (
                 <motion.div

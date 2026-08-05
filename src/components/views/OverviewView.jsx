@@ -1,5 +1,6 @@
-import { motion } from "framer-motion";
-import { Flame, Snowflake, TrendingUp, Wallet, ArrowUpRight, PlusCircle, Radar, BellRing, ChevronRight, Bot } from "lucide-react";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Flame, Snowflake, TrendingUp, Wallet, ArrowUpRight, PlusCircle, Radar, BellRing, ChevronRight, Bot, CalendarClock, Check, X } from "lucide-react";
 import { LEADS, SOURCE_META, formatINR, liveChannelSplit, pendingCommitments, commitmentSource } from "../../data/leads";
 import StatCard from "../StatCard";
 import SourceTag, { sourceColor } from "../SourceTag";
@@ -7,6 +8,18 @@ import Avatar from "../Avatar";
 import PhaseBadge from "../PhaseBadge";
 
 export default function OverviewView({ openLead, onLogLead }) {
+  const [syncDismissed, setSyncDismissed] = useState(false);
+  const [syncLogged, setSyncLogged] = useState(false);
+  const [syncHall, setSyncHall] = useState("");
+  const [syncDate, setSyncDate] = useState("");
+
+  function logSync() {
+    setSyncLogged(true);
+    setSyncHall("");
+    setSyncDate("");
+    setTimeout(() => setSyncDismissed(true), 1600);
+  }
+
   const bySource = Object.keys(SOURCE_META).map((s) => ({
     key: s,
     count: LEADS.filter((l) => l.source === s).length,
@@ -62,6 +75,65 @@ export default function OverviewView({ openLead, onLogLead }) {
           </motion.button>
         </div>
       </motion.div>
+
+      <AnimatePresence>
+        {!syncDismissed && (
+          <motion.div
+            initial={{ opacity: 0, y: -8, height: 0 }}
+            animate={{ opacity: 1, y: 0, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="rounded-2xl p-5 mb-6 overflow-hidden"
+            style={{ background: "var(--color-paper)", border: "1px solid var(--color-stone-line)" }}
+          >
+            <div className="flex items-start gap-3">
+              <div className="flex items-center justify-center rounded-xl w-9 h-9 shrink-0" style={{ background: "rgba(31,77,61,0.1)" }}>
+                <CalendarClock size={16} style={{ color: "var(--color-emerald)" }} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between gap-3">
+                  <span className="font-serif text-[15px]" style={{ color: "var(--color-ink)" }}>Quick sync before today's calls</span>
+                  <button onClick={() => setSyncDismissed(true)} className="rounded-full p-1 hover:bg-black/5 shrink-0">
+                    <X size={14} style={{ color: "var(--color-stone)" }} />
+                  </button>
+                </div>
+                {syncLogged ? (
+                  <div className="flex items-center gap-1.5 mt-2 font-body text-[12.5px]" style={{ color: "var(--color-emerald)" }}>
+                    <Check size={13} /> Noted — today's AI calls will reflect this.
+                  </div>
+                ) : (
+                  <>
+                    <p className="font-body text-[12px] mt-1 mb-3" style={{ color: "var(--color-stone)" }}>
+                      Anything booked or blocked since yesterday? Availability lives in your head today — this is the only place that ever asks.
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      <input
+                        value={syncHall}
+                        onChange={(e) => setSyncHall(e.target.value)}
+                        placeholder="Hall — e.g. Rubicon"
+                        className="rounded-lg px-3 py-1.5 text-[12px] outline-none"
+                        style={{ background: "var(--color-ivory)", border: "1px solid var(--color-stone-line)", color: "var(--color-ink)", minWidth: 140 }}
+                      />
+                      <input
+                        value={syncDate}
+                        onChange={(e) => setSyncDate(e.target.value)}
+                        placeholder="Date — e.g. Dec 24"
+                        className="rounded-lg px-3 py-1.5 text-[12px] outline-none"
+                        style={{ background: "var(--color-ivory)", border: "1px solid var(--color-stone-line)", color: "var(--color-ink)", minWidth: 140 }}
+                      />
+                      <button onClick={logSync} className="rounded-full px-4 py-1.5 font-medium text-[11.5px]" style={{ background: "var(--color-gold)", color: "var(--color-ink)" }}>
+                        Log it
+                      </button>
+                      <button onClick={() => setSyncDismissed(true)} className="rounded-full px-4 py-1.5 font-medium text-[11.5px]" style={{ border: "1px solid var(--color-stone-line)", color: "var(--color-stone)" }}>
+                        Nothing's changed
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <div className="flex flex-wrap gap-4">
         <StatCard label="Active Leads" value={LEADS.length} sub="across all sources" Icon={TrendingUp} tint="var(--color-gold)" delay={0.05} />
@@ -216,7 +288,7 @@ export default function OverviewView({ openLead, onLogLead }) {
               <PhaseBadge phase={2} />
             </div>
             <div className="font-body text-[12.5px] mt-1 leading-relaxed" style={{ color: "var(--color-stone)" }}>
-              {radarLead.name}'s quote has sat open for {radarLead.days} days with no reply. Today that just sits in Follow-Up. Objection Radar would read this as hesitation, not "gone cold" — and flag Kritika directly instead of firing another nudge.
+              {radarLead.name}'s quote has sat open for {radarLead.days} days with no reply. Today that just sits in Follow-Up. Objection Radar would read this as hesitation, not "gone cold" — and flag Aman directly instead of firing another nudge.
             </div>
           </div>
         </motion.button>
