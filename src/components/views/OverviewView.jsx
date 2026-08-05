@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
-import { Flame, Snowflake, TrendingUp, Wallet, ArrowUpRight, PlusCircle, Radar, BellRing, ChevronRight } from "lucide-react";
-import { LEADS, SOURCE_META, formatINR, liveChannelSplit, pendingCommitments } from "../../data/leads";
+import { Flame, Snowflake, TrendingUp, Wallet, ArrowUpRight, PlusCircle, Radar, BellRing, ChevronRight, Bot } from "lucide-react";
+import { LEADS, SOURCE_META, formatINR, liveChannelSplit, pendingCommitments, commitmentSource } from "../../data/leads";
 import StatCard from "../StatCard";
 import SourceTag, { sourceColor } from "../SourceTag";
 import Avatar from "../Avatar";
@@ -184,7 +184,12 @@ export default function OverviewView({ openLead, onLogLead }) {
                 </span>
                 <div className="flex-1 min-w-0">
                   <div className="text-[12.5px] font-medium truncate" style={{ color: "var(--color-ink)" }}>{text}</div>
-                  <div className="font-mono text-[10px] mt-0.5" style={{ color: "var(--color-stone)" }}>{lead.name}</div>
+                  <div className="flex items-center gap-1 font-mono text-[10px] mt-0.5" style={{ color: "var(--color-stone)" }}>
+                    {lead.name}
+                    <span style={{ opacity: 0.5 }}>·</span>
+                    {commitmentSource(lead.name) === "Parsed from the AI call transcript" && <Bot size={9} />}
+                    {commitmentSource(lead.name)}
+                  </div>
                 </div>
                 <ChevronRight size={14} style={{ color: "var(--color-stone)" }} />
               </motion.button>

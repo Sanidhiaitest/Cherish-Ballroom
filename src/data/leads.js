@@ -404,6 +404,38 @@ export const COMPETITIVE_CHECKLIST = [
 // once the lead is already warm.
 export const AI_CALLER_NUMBER = "+91 11 4900 0100";
 
+// Today, an aggregator drops an Excel/Google Sheet into a WhatsApp group and
+// someone retypes it into the team's own F1-F4 working sheet by hand before a
+// single lead can be called. This is the one line in the product that names
+// that gap — the actual live-sheet ingestion is being designed separately,
+// this just states what it replaces.
+export const DATA_INTAKE_TODAY = {
+  today: "Aggregator sheets land as a WhatsApp export, then get retyped by hand into your F1-F4 sheet before anyone can call.",
+  proposed: "A live link to the same sheet — leads land already split by source and call-ready, no retyping.",
+};
+
+// "If 5 queries come in, AI filters it to the 3 that are actually yours to
+// work" — Aman's own framing for the qualification-screen pain point. This is
+// illustrative demo data, same spirit as AI_CALL_LOG below — not a live feed.
+export const QUALIFICATION_TODAY = {
+  received: 5,
+  routedToHuman: 3,
+  screenedOut: [
+    { note: "Function date already past — auto-replied with next availability, no call queued." },
+    { note: "Enquiry was for a different city's banquet — auto-declined with a referral note." },
+  ],
+};
+
+// A lead becomes eligible for the AI voice follow-up once the walkthrough has
+// happened — matching the real 24-48h-after-visit trigger described in the
+// discovery call, not before.
+const AI_CALL_ELIGIBLE_STAGES = ["visited", "quoted", "followup"];
+
+export function queuedForAICall() {
+  const called = new Set(AI_CALL_LOG.map((e) => e.leadName));
+  return LEADS.filter((l) => AI_CALL_ELIGIBLE_STAGES.includes(l.stage) && !called.has(l.name));
+}
+
 export const AI_CALL_LOG = [
   {
     leadName: "Ishaan & Priya",
@@ -494,6 +526,14 @@ export function liveChannelSplit() {
 // Commitments extracted from thread notes ("call me Tuesday") — the single most
 // concretely requested feature in the discovery calls. Surfaced as reminders rather
 // than silently auto-actioned; every entry is visible and editable.
+// "Call transcript is parsed for commitments... auto-populates the calendar,
+// no manual writing" — the real gain point this feature answers. Where a
+// commitment's lead has an AI_CALL_LOG entry, it was lifted straight from
+// that transcript; otherwise it's a human note, same as today.
+export function commitmentSource(leadName) {
+  return AI_CALL_LOG.some((e) => e.leadName === leadName) ? "Parsed from the AI call transcript" : "Logged by hand, same as today";
+}
+
 export function pendingCommitments() {
   return LEADS.filter((l) => l.commitment && l.stage !== "booked").map((l) => ({ lead: l, ...l.commitment }));
 }

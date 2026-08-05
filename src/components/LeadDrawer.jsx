@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { X, Phone, MessageCircle, Sparkles, MapPin, FileText, StickyNote, AlertTriangle, PhoneCall, Smartphone, Bot, ClipboardList, BrainCircuit, Lightbulb, BellRing, HelpCircle } from "lucide-react";
-import { STAGES, AI_CALL_LOG, scoreTone, formatINR } from "../data/leads";
+import { STAGES, AI_CALL_LOG, scoreTone, formatINR, commitmentSource } from "../data/leads";
 import SourceTag from "./SourceTag";
 import Avatar from "./Avatar";
 import ScoreRing from "./ScoreRing";
@@ -77,6 +77,7 @@ export default function LeadDrawer({ lead, onClose, onCall, onWhatsApp, onPrevie
                     What you said you'd do · due {lead.commitment.due}
                   </div>
                   <div className="font-body text-[12.5px] mt-1 leading-relaxed" style={{ color: "var(--color-ink)" }}>{lead.commitment.text}</div>
+                  <div className="font-mono text-[9.5px] mt-1.5" style={{ color: "var(--color-stone)" }}>{commitmentSource(lead.name)}</div>
                 </div>
               </motion.div>
             )}

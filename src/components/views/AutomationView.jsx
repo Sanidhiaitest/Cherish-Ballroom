@@ -1,7 +1,7 @@
 import { Fragment } from "react";
 import { motion } from "framer-motion";
-import { Zap, MessageCircle, Bot, Users2, ArrowUpRight, CheckCircle2, Circle, Globe2, PhoneCall, ChefHat, Check, X as XIcon } from "lucide-react";
-import { LEADS, NURTURE_STEPS, AI_CALL_LOG, COMPETITIVE_CHECKLIST, AI_CALLER_NUMBER, medianResponseSeconds, partnerMarginSummary, formatINR } from "../../data/leads";
+import { Zap, MessageCircle, Bot, Users2, ArrowUpRight, CheckCircle2, Circle, Globe2, PhoneCall, ChefHat, Check, X as XIcon, ShieldCheck, ListFilter, FileSpreadsheet, Hourglass } from "lucide-react";
+import { LEADS, NURTURE_STEPS, AI_CALL_LOG, COMPETITIVE_CHECKLIST, AI_CALLER_NUMBER, DATA_INTAKE_TODAY, QUALIFICATION_TODAY, medianResponseSeconds, partnerMarginSummary, formatINR, queuedForAICall } from "../../data/leads";
 import Avatar from "../Avatar";
 import PhaseBadge from "../PhaseBadge";
 
@@ -16,13 +16,26 @@ export default function AutomationView({ openLead, setView, onAIVoiceCall, onOpe
   const dmExample = fastestReplies[0];
   const nurtureLead = LEADS.find((l) => l.nurtureStep !== undefined) || LEADS[0];
   const margin = partnerMarginSummary();
+  const queued = queuedForAICall();
 
   return (
     <div>
       <h1 className="font-serif text-[27px]" style={{ color: "var(--color-ink)" }}>Cherish Copilot</h1>
-      <p className="font-body text-[13.5px] mt-1.5 mb-6" style={{ color: "var(--color-stone)" }}>
+      <p className="font-body text-[13.5px] mt-1.5 mb-4" style={{ color: "var(--color-stone)" }}>
         The venue that responds first wins the booking — what's already live, and what's proposed to run alongside Aman and Harman next.
       </p>
+
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex items-start gap-2.5 rounded-2xl px-4 py-3 mb-5"
+        style={{ background: "rgba(31,77,61,0.07)", border: "1px solid rgba(31,77,61,0.22)" }}
+      >
+        <ShieldCheck size={15} className="shrink-0 mt-0.5" style={{ color: "var(--color-emerald)" }} />
+        <span className="font-body text-[12px] leading-relaxed" style={{ color: "var(--color-ink)" }}>
+          Everything below feeds Aman and Harman — the negotiation, the tasting, the close stay theirs. And it's fully reversible: any of it can be switched off, anytime you say so.
+        </span>
+      </motion.div>
 
       <motion.div
         initial={{ opacity: 0, y: 14 }}
@@ -42,6 +55,9 @@ export default function AutomationView({ openLead, setView, onAIVoiceCall, onOpe
             <div className="font-body text-[13px] mt-2" style={{ color: "var(--color-ivory)" }}>
               Median first response across every inbound channel — ads, aggregators, walk-ins
             </div>
+            <div className="font-mono text-[10.5px] mt-2" style={{ color: "var(--color-gold-soft)" }}>
+              A 2:00pm lead gets a first touch by 2:02pm — not whenever someone's free between calls.
+            </div>
           </div>
           <div className="flex flex-col gap-2 max-w-xs">
             <div className="flex items-center gap-2 rounded-full px-3.5 py-2" style={{ background: "rgba(178,58,72,0.18)", border: "1px solid rgba(178,58,72,0.35)" }}>
@@ -50,6 +66,30 @@ export default function AutomationView({ openLead, setView, onAIVoiceCall, onOpe
             <div className="font-body text-[11px] leading-relaxed" style={{ color: "var(--color-stone)" }}>
               MIT/InsideSales: replying within 5 min vs 30 min drops your odds of qualifying a lead by 21x. Being fast costs nothing — almost no one does it.
             </div>
+          </div>
+        </div>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.08 }}
+        className="flex flex-col sm:flex-row sm:items-center gap-3 rounded-2xl px-5 py-4 mb-5"
+        style={{ background: "var(--color-paper)", border: "1px dashed var(--color-stone-line)" }}
+      >
+        <div className="flex items-center justify-center rounded-xl w-9 h-9 shrink-0" style={{ background: "rgba(201,162,39,0.12)" }}>
+          <FileSpreadsheet size={16} style={{ color: "var(--color-gold-deep)" }} />
+        </div>
+        <div className="flex-1">
+          <div className="flex items-center gap-2 flex-wrap mb-0.5">
+            <span className="font-serif text-[14px]" style={{ color: "var(--color-ink)" }}>Data intake</span>
+            <PhaseBadge phase={2} />
+          </div>
+          <div className="font-body text-[11.5px] leading-relaxed" style={{ color: "var(--color-stone)" }}>
+            <span style={{ color: "var(--color-rose)" }}>Today:</span> {DATA_INTAKE_TODAY.today}
+          </div>
+          <div className="font-body text-[11.5px] leading-relaxed mt-0.5" style={{ color: "var(--color-stone)" }}>
+            <span style={{ color: "var(--color-emerald)" }}>Proposed:</span> {DATA_INTAKE_TODAY.proposed}
           </div>
         </div>
       </motion.div>
@@ -64,11 +104,11 @@ export default function AutomationView({ openLead, setView, onAIVoiceCall, onOpe
         >
           <div className="flex items-center gap-2 mb-1.5">
             <Zap size={15} style={{ color: "var(--color-gold-deep)" }} />
-            <div className="font-serif text-[16px]" style={{ color: "var(--color-ink)" }}>Instant First Reply</div>
+            <div className="font-serif text-[16px]" style={{ color: "var(--color-ink)" }}>First Touch — Profile + Video Folder</div>
             <PhaseBadge phase={2} />
           </div>
           <p className="font-body text-[12px] mb-4" style={{ color: "var(--color-stone)" }}>
-            Every ad click and aggregator inquiry gets a reply drafted in seconds — date, guest count, budget, function type surfaced for whoever picks it up next.
+            Today someone manually picks from the curated folders (cocktail, haldi, mehendi, reception, baby shower, birthday) and sends a reel by hand. This sends the right folder plus the company profile the moment a lead lands — matched to function type, no searching.
           </p>
           {dmExample && (
             <button onClick={() => openLead(dmExample)} className="w-full flex flex-col gap-2 rounded-2xl p-4 text-left" style={{ background: "var(--color-ivory)" }}>
@@ -82,6 +122,41 @@ export default function AutomationView({ openLead, setView, onAIVoiceCall, onOpe
               </div>
             </button>
           )}
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.12 }}
+          className="rounded-2xl p-6"
+          style={{ background: "var(--color-paper)", border: "1px solid var(--color-stone-line)" }}
+        >
+          <div className="flex items-center gap-2 mb-1.5">
+            <ListFilter size={15} style={{ color: "var(--color-gold-deep)" }} />
+            <div className="font-serif text-[16px]" style={{ color: "var(--color-ink)" }}>Qualification Screen</div>
+            <PhaseBadge phase={2} />
+          </div>
+          <p className="font-body text-[12px] mb-4" style={{ color: "var(--color-stone)" }}>
+            "If 5 queries come in, this filters it to the 3 that are actually yours to work" — Aman's own framing. A first pass on date/location/fit before anyone's time gets spent.
+          </p>
+          <div className="flex items-center gap-4 mb-3">
+            <div>
+              <div className="font-serif text-[26px] leading-none" style={{ color: "var(--color-ink)" }}>{QUALIFICATION_TODAY.received}</div>
+              <div className="font-mono text-[9.5px] uppercase mt-1" style={{ color: "var(--color-stone)" }}>Queries in</div>
+            </div>
+            <ArrowUpRight size={14} style={{ color: "var(--color-stone)" }} />
+            <div>
+              <div className="font-serif text-[26px] leading-none" style={{ color: "var(--color-emerald)" }}>{QUALIFICATION_TODAY.routedToHuman}</div>
+              <div className="font-mono text-[9.5px] uppercase mt-1" style={{ color: "var(--color-stone)" }}>Routed to you</div>
+            </div>
+          </div>
+          <div className="flex flex-col gap-1.5">
+            {QUALIFICATION_TODAY.screenedOut.map((s, i) => (
+              <div key={i} className="font-body text-[11px] leading-relaxed rounded-xl px-3 py-2" style={{ background: "var(--color-ivory)", color: "var(--color-stone)" }}>
+                {s.note}
+              </div>
+            ))}
+          </div>
         </motion.div>
 
         <motion.div
@@ -123,48 +198,6 @@ export default function AutomationView({ openLead, setView, onAIVoiceCall, onOpe
               })}
             </div>
           </button>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="rounded-2xl p-6"
-          style={{ background: "var(--color-ink)" }}
-        >
-          <div className="flex items-center gap-2 mb-1.5">
-            <Bot size={15} style={{ color: "var(--color-gold-soft)" }} />
-            <div className="font-serif text-[16px]" style={{ color: "var(--color-paper)" }}>AI Voice Follow-up — Call Log</div>
-            <PhaseBadge phase={2} />
-          </div>
-          <p className="font-body text-[12px] mb-1.5" style={{ color: "var(--color-stone)" }}>
-            A Hindi/Hinglish voice, cloned to whichever of Aman or Harman the lead belongs to, calls 24–48h after the walkthrough. Simple, positive calls close themselves — hesitation gets routed to a human.
-          </p>
-          <p className="font-body text-[10.5px] mb-4" style={{ color: "var(--color-stone)" }}>
-            Every call goes out from the Cherish business line ({AI_CALLER_NUMBER}) — never Aman's or Harman's personal number.
-          </p>
-          <div className="flex flex-col gap-2">
-            {AI_CALL_LOG.map((entry) => {
-              const callLead = LEADS.find((l) => l.name === entry.leadName);
-              if (!callLead) return null;
-              const positive = entry.tone === "positive";
-              return (
-                <button
-                  key={entry.leadName}
-                  onClick={() => onAIVoiceCall(callLead, entry.script, entry.outcomeDetail)}
-                  className="w-full flex items-center gap-3 rounded-2xl p-3.5 text-left"
-                  style={{ background: "rgba(255,255,255,0.04)", border: `1px solid ${positive ? "rgba(31,77,61,0.4)" : "rgba(201,162,39,0.25)"}` }}
-                >
-                  <Avatar initials={callLead.initials} source={callLead.source} size={28} />
-                  <div className="flex-1 min-w-0">
-                    <div className="font-semibold text-[12px]" style={{ color: "var(--color-paper)" }}>{callLead.name}</div>
-                    <div className="font-body text-[10.5px] truncate" style={{ color: positive ? "var(--color-emerald-soft)" : "var(--color-gold-soft)" }}>{entry.outcomeLabel}</div>
-                  </div>
-                  <PhoneCall size={13} style={{ color: "var(--color-stone)" }} />
-                </button>
-              );
-            })}
-          </div>
         </motion.div>
 
         <motion.div
@@ -229,6 +262,98 @@ export default function AutomationView({ openLead, setView, onAIVoiceCall, onOpe
           </button>
         </motion.div>
       </div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.28 }}
+        className="rounded-2xl p-6 mt-5"
+        style={{ background: "var(--color-ink)" }}
+      >
+        <div className="flex items-center gap-2 mb-1.5">
+          <Bot size={15} style={{ color: "var(--color-gold-soft)" }} />
+          <div className="font-serif text-[16px]" style={{ color: "var(--color-paper)" }}>AI Voice Follow-up — Call Log</div>
+          <PhaseBadge phase={2} />
+        </div>
+        <p className="font-body text-[12px] mb-1.5" style={{ color: "var(--color-stone)" }}>
+          A Hindi/Hinglish voice, cloned to whichever of Aman or Harman the lead belongs to, calls 24–48h after the walkthrough. Simple, positive calls close themselves — hesitation gets routed to a human.
+        </p>
+        <p className="font-body text-[10.5px] mb-5" style={{ color: "var(--color-stone)" }}>
+          Every call goes out from the Cherish business line ({AI_CALLER_NUMBER}) — never Aman's or Harman's personal number.
+        </p>
+
+        <div className="flex items-center gap-6 mb-4 pb-4" style={{ borderBottom: "1px solid var(--color-ink-line)" }}>
+          <div>
+            <div className="font-serif text-[22px] leading-none" style={{ color: "var(--color-paper)" }}>{AI_CALL_LOG.length}</div>
+            <div className="font-mono text-[9.5px] uppercase mt-1" style={{ color: "var(--color-stone)" }}>Called</div>
+          </div>
+          <div>
+            <div className="font-serif text-[22px] leading-none" style={{ color: "var(--color-gold-soft)" }}>{AI_CALL_LOG.filter((e) => e.tone !== "positive").length}</div>
+            <div className="font-mono text-[9.5px] uppercase mt-1" style={{ color: "var(--color-stone)" }}>Routed to a human</div>
+          </div>
+          <div>
+            <div className="font-serif text-[22px] leading-none" style={{ color: "var(--color-emerald-soft)" }}>{queued.length}</div>
+            <div className="font-mono text-[9.5px] uppercase mt-1" style={{ color: "var(--color-stone)" }}>Queued, not yet called</div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div>
+            <div className="font-mono text-[9.5px] uppercase tracking-wider mb-2" style={{ color: "var(--color-stone)" }}>What happened</div>
+            <div className="flex flex-col gap-2">
+              {AI_CALL_LOG.map((entry) => {
+                const callLead = LEADS.find((l) => l.name === entry.leadName);
+                if (!callLead) return null;
+                const positive = entry.tone === "positive";
+                return (
+                  <button
+                    key={entry.leadName}
+                    onClick={() => onAIVoiceCall(callLead, entry.script, entry.outcomeDetail)}
+                    className="w-full flex items-center gap-3 rounded-2xl p-3.5 text-left"
+                    style={{ background: "rgba(255,255,255,0.04)", border: `1px solid ${positive ? "rgba(31,77,61,0.4)" : "rgba(201,162,39,0.25)"}` }}
+                  >
+                    <Avatar initials={callLead.initials} source={callLead.source} size={28} />
+                    <div className="flex-1 min-w-0">
+                      <div className="font-semibold text-[12px]" style={{ color: "var(--color-paper)" }}>{callLead.name}</div>
+                      <div className="font-body text-[10.5px] truncate" style={{ color: positive ? "var(--color-emerald-soft)" : "var(--color-gold-soft)" }}>{entry.outcomeLabel}</div>
+                    </div>
+                    <PhoneCall size={13} style={{ color: "var(--color-stone)" }} />
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div>
+            <div className="flex items-center gap-1.5 mb-2">
+              <Hourglass size={11} style={{ color: "var(--color-stone)" }} />
+              <span className="font-mono text-[9.5px] uppercase tracking-wider" style={{ color: "var(--color-stone)" }}>What's not happening yet</span>
+            </div>
+            {queued.length > 0 ? (
+              <div className="flex flex-col gap-2">
+                {queued.map((lead) => (
+                  <button
+                    key={lead.id}
+                    onClick={() => openLead(lead)}
+                    className="w-full flex items-center gap-3 rounded-2xl p-3.5 text-left"
+                    style={{ background: "rgba(255,255,255,0.03)", border: "1px dashed rgba(255,255,255,0.14)" }}
+                  >
+                    <Avatar initials={lead.initials} source={lead.source} size={28} />
+                    <div className="flex-1 min-w-0">
+                      <div className="font-semibold text-[12px]" style={{ color: "var(--color-paper)" }}>{lead.name}</div>
+                      <div className="font-body text-[10.5px] truncate" style={{ color: "var(--color-stone)" }}>Visited — eligible, waiting on a call</div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <div className="font-body text-[12px] leading-relaxed" style={{ color: "var(--color-stone)" }}>
+                Everyone past their walkthrough has already been called.
+              </div>
+            )}
+          </div>
+        </div>
+      </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mt-5">
       <motion.div
