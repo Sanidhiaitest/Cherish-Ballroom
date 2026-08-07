@@ -6,6 +6,7 @@ import StatCard from "../StatCard";
 import SourceTag, { sourceColor } from "../SourceTag";
 import Avatar from "../Avatar";
 import PhaseBadge from "../PhaseBadge";
+import HeroOrnament from "../HeroOrnament";
 
 function greetingPeriod() {
   const h = new Date().getHours();
@@ -51,7 +52,8 @@ export default function OverviewView({ openLead, onLogLead, viewer = "Aman" }) {
         className="relative overflow-hidden rounded-3xl px-7 py-8 md:px-9 md:py-10 mb-6"
         style={{ background: "linear-gradient(120deg, var(--color-ink) 0%, #1c2e26 58%, var(--color-emerald) 130%)" }}
       >
-        <svg className="absolute right-0 top-0 h-full opacity-40" width="360" viewBox="0 0 360 240" fill="none">
+        <HeroOrnament className="hidden md:block absolute -right-6 -top-10" style={{ width: 220, height: 220 }} />
+        <svg className="absolute right-0 top-0 h-full opacity-25" width="360" viewBox="0 0 360 240" fill="none">
           <path d="M40 20 C 160 20, 160 120, 300 120 S 340 220, 360 220" stroke="url(#heroThread)" strokeWidth="1.4" fill="none" />
           <defs>
             <linearGradient id="heroThread" x1="0" y1="0" x2="1" y2="1">
