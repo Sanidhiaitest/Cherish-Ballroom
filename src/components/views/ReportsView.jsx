@@ -50,10 +50,10 @@ export default function ReportsView() {
   const otherReviews = REVIEWS.filter((r) => !r.flagged);
 
   const insights = [
-    `Inbound leads get a first reply in a median of ${median}s — Delhi banquet venues average 11–47 hours. That gap alone is the highest-leverage lever this quarter.`,
-    `Event Co. leads net ${formatINR(margin.eventcoNetPerLead)}/lead after the 50% commission, vs ${formatINR(margin.directNetPerLead)}/lead everywhere else — worth weighing before the next partner renewal.`,
-    `${cold} lead${cold === 1 ? "" : "s"} have gone quiet 5+ days with no reply — Objection Radar would flag these for a human call instead of another nudge.`,
-    `Booked pipeline is at ${goalPct}% of this month's ₹${(MONTHLY_BOOKING_GOAL / 10000000).toFixed(1)}Cr goal.`,
+    `Median first reply: ${median}s. Delhi average: 11–47 hrs.`,
+    `Event Co. nets ${formatINR(margin.eventcoNetPerLead)}/lead vs ${formatINR(margin.directNetPerLead)}/lead direct.`,
+    `${cold} lead${cold === 1 ? "" : "s"} quiet 5+ days — flagged, not nudged again.`,
+    `Booked pipeline: ${goalPct}% of ₹${(MONTHLY_BOOKING_GOAL / 10000000).toFixed(1)}Cr goal.`,
   ];
 
   return (
@@ -101,7 +101,7 @@ export default function ReportsView() {
             <PhaseBadge phase={2} />
           </div>
           <p className="font-body text-[12px] mb-4" style={{ color: "var(--color-stone)" }}>
-            A plain-language question box for Kritika or Naveen — no report to build by hand.
+            Plain-language questions, no report to build by hand.
           </p>
           <div className="flex flex-col gap-2">
             {ASK_THE_SHEET_EXAMPLES.map((ex, i) => (
@@ -137,7 +137,7 @@ export default function ReportsView() {
             <PhaseBadge phase={2} />
           </div>
           <p className="font-body text-[12px] mb-4" style={{ color: "var(--color-stone)" }}>
-            A short Sunday-evening summary to Naveen — a reason to trust the system without logging in to dig.
+            Sunday-evening summary to Naveen — no login needed.
           </p>
           <div className="grid grid-cols-2 gap-3 mb-3">
             <div className="rounded-xl p-3" style={{ background: "var(--color-ivory)" }}>
@@ -165,7 +165,7 @@ export default function ReportsView() {
             <div className="font-serif text-[15px]" style={{ color: "var(--color-ink)" }}>Content & Trends Advisor</div>
           </div>
           <p className="font-body text-[12px] mb-4" style={{ color: "var(--color-stone)" }}>
-            Before the ad spend — what's actually earning attention right now, and what to leave alone.
+            What's earning attention right now — before the ad spend.
           </p>
           <div className="flex flex-col gap-2.5">
             {CONTENT_TRENDS.map((t, i) => {
@@ -197,7 +197,7 @@ export default function ReportsView() {
             <div className="font-serif text-[15px]" style={{ color: "var(--color-ink)" }}>Campaign Performance</div>
           </div>
           <p className="font-body text-[12px] mb-4" style={{ color: "var(--color-stone)" }}>
-            Which ad spend is actually turning into leads and bookings.
+            Which spend turns into leads and bookings.
           </p>
           <div className="flex flex-col">
             {CAMPAIGNS.map((c, i) => (

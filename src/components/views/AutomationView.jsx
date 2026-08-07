@@ -31,18 +31,18 @@ export default function AutomationView({ openLead, setView, onAIVoiceCall, onOpe
     <div>
       <h1 className="font-serif text-[27px]" style={{ color: "var(--color-ink)" }}>Cherish Copilot</h1>
       <p className="font-body text-[13.5px] mt-1.5 mb-4" style={{ color: "var(--color-stone)" }}>
-        The venue that responds first wins the booking — what's already live, and what's proposed to run alongside Aman and Harman next.
+        Live today, and what's next — built alongside Aman and Harman.
       </p>
 
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex items-start gap-2.5 rounded-2xl px-4 py-3 mb-5"
+        className="flex items-center gap-2.5 rounded-2xl px-4 py-3 mb-5"
         style={{ background: "rgba(31,77,61,0.07)", border: "1px solid rgba(31,77,61,0.22)" }}
       >
-        <ShieldCheck size={15} className="shrink-0 mt-0.5" style={{ color: "var(--color-emerald)" }} />
-        <span className="font-body text-[12px] leading-relaxed" style={{ color: "var(--color-ink)" }}>
-          Everything below feeds Aman and Harman — the negotiation, the tasting, the close stay theirs. And it's fully reversible: any of it can be switched off, anytime you say so. The goal isn't fewer of you — it's each of you working 10 leads a day instead of 3, same person, not more hours.
+        <ShieldCheck size={15} className="shrink-0" style={{ color: "var(--color-emerald)" }} />
+        <span className="font-body text-[12px]" style={{ color: "var(--color-ink)" }}>
+          Negotiation, tasting, close — stay yours. Reversible anytime. 10 leads/day instead of 3, same people.
         </span>
       </motion.div>
 
@@ -62,21 +62,15 @@ export default function AutomationView({ openLead, setView, onAIVoiceCall, onOpe
               {fmtSeconds(median)}
             </div>
             <div className="font-body text-[13px] mt-2" style={{ color: "var(--color-ivory)" }}>
-              Median first response across every inbound channel — ads, aggregators, walk-ins
-            </div>
-            <div className="font-mono text-[10.5px] mt-2" style={{ color: "var(--color-gold-soft)" }}>
-              A 2:00pm lead gets a first touch by 2:02pm — not whenever someone's free between calls.
+              Median first response, all channels
             </div>
           </div>
           <div className="flex flex-col gap-2 max-w-xs">
             <div className="flex items-center gap-2 rounded-full px-3.5 py-2" style={{ background: "rgba(178,58,72,0.18)", border: "1px solid rgba(178,58,72,0.35)" }}>
-              <span className="font-mono text-[11px]" style={{ color: "var(--color-rose-soft)" }}>Delhi banquet average: 11–47 hours</span>
+              <span className="font-mono text-[11px]" style={{ color: "var(--color-rose-soft)" }}>Delhi banquet average: 11–47 hrs</span>
             </div>
-            <div className="font-body text-[11px] leading-relaxed" style={{ color: "var(--color-stone)" }}>
-              Two people are absorbing 15–25 leads a day on Instagram alone — 8–10 hours of someone's day is just calling. This is what buys that time back.
-            </div>
-            <div className="font-body text-[11px] leading-relaxed" style={{ color: "var(--color-stone)" }}>
-              MIT/InsideSales: replying within 5 min vs 30 min drops your odds of qualifying a lead by 21x. Being fast costs nothing — almost no one does it.
+            <div className="flex items-center gap-2 rounded-full px-3.5 py-2" style={{ background: "rgba(201,162,39,0.14)", border: "1px solid rgba(201,162,39,0.3)" }}>
+              <span className="font-mono text-[11px]" style={{ color: "var(--color-gold-soft)" }}>5 min vs 30 min reply → 21x odds (MIT)</span>
             </div>
           </div>
         </div>
@@ -134,7 +128,7 @@ export default function AutomationView({ openLead, setView, onAIVoiceCall, onOpe
             <PhaseBadge phase={2} />
           </div>
           <p className="font-body text-[12px] mb-4" style={{ color: "var(--color-stone)" }}>
-            Today someone manually picks from the curated folders (cocktail, haldi, mehendi, reception, baby shower, birthday) and sends a reel by hand. This sends the right folder plus the company profile the moment a lead lands — matched to function type, no searching.
+            Right folder + profile, sent the moment a lead lands — matched to function type, no manual searching.
           </p>
           {dmExample && (
             <button onClick={() => openLead(dmExample)} className="w-full flex flex-col gap-2 rounded-2xl p-4 text-left" style={{ background: "var(--color-ivory)" }}>
@@ -163,7 +157,7 @@ export default function AutomationView({ openLead, setView, onAIVoiceCall, onOpe
             <PhaseBadge phase={2} />
           </div>
           <p className="font-body text-[12px] mb-4" style={{ color: "var(--color-stone)" }}>
-            "If 5 queries come in, this filters it to the 3 that are actually yours to work" — Aman's own framing. Not a rejection system, a triage: every query gets a light before it hits the queue.
+            Every query gets a light before it hits the queue — not rejection, triage.
           </p>
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-2 mb-1">
@@ -215,7 +209,7 @@ export default function AutomationView({ openLead, setView, onAIVoiceCall, onOpe
             <PhaseBadge phase={2} />
           </div>
           <p className="font-body text-[12px] mb-4" style={{ color: "var(--color-stone)" }}>
-            Answers "ghar wapis aana ya nahi" — a five-touch sequence drafts itself the moment a walkthrough ends, queued for one-tap send from Aman or Harman's WhatsApp today, fully automatic once the business line is confirmed.
+            5-touch sequence drafts itself when a walkthrough ends — one-tap send today, automatic once the business line is live.
           </p>
           <button onClick={() => openLead(nurtureLead)} className="w-full text-left">
             <div className="font-body text-[12px] mb-3" style={{ color: "var(--color-ink)" }}>
@@ -291,7 +285,7 @@ export default function AutomationView({ openLead, setView, onAIVoiceCall, onOpe
             <PhaseBadge phase={2} />
           </div>
           <p className="font-body text-[12px] mb-3" style={{ color: "var(--color-stone)" }}>
-            For calls that happen the old way — no brief, no prep. The recording (with consent) gets transcribed so nothing said out loud gets lost.
+            Old-way calls, no brief — recorded (with consent) and transcribed so nothing's lost.
           </p>
           <div className="rounded-xl px-3.5 py-2.5 mb-2" style={{ background: "var(--color-ivory)" }}>
             <div className="font-body text-[11.5px] italic leading-relaxed" style={{ color: "var(--color-ink)" }}>{VOICE_NOTE_FALLBACK_EXAMPLE.raw}</div>
@@ -319,7 +313,7 @@ export default function AutomationView({ openLead, setView, onAIVoiceCall, onOpe
             <PhaseBadge phase={2} />
           </div>
           <p className="font-body text-[12px] mb-3" style={{ color: "var(--color-stone)" }}>
-            A day before a confirmed visit, this goes out automatically — small, but it's the polish that reinforces premium without costing anyone time.
+            Sent automatically, a day before every confirmed visit.
           </p>
           <div className="rounded-xl px-3.5 py-2.5" style={{ background: "var(--color-ivory)" }}>
             <div className="font-body text-[11.5px] leading-relaxed" style={{ color: "var(--color-ink)" }}>{PRE_VISIT_PRIMER_EXAMPLE.message}</div>
@@ -338,7 +332,7 @@ export default function AutomationView({ openLead, setView, onAIVoiceCall, onOpe
             <div className="font-serif text-[16px]" style={{ color: "var(--color-ink)" }}>Partner Margin Tracker</div>
           </div>
           <p className="font-body text-[12px] mb-4" style={{ color: "var(--color-stone)" }}>
-            Event-company leads carry a ~50% commission — tracked separately so spend can shift toward the channel that actually nets more.
+            Event-co. leads carry a ~50% cut — tracked so spend shifts to what nets more.
           </p>
           <div className="grid grid-cols-2 gap-3">
             <div className="rounded-2xl p-3.5" style={{ background: "var(--color-ivory)" }}>
@@ -370,7 +364,7 @@ export default function AutomationView({ openLead, setView, onAIVoiceCall, onOpe
             <PhaseBadge phase={2} />
           </div>
           <p className="font-body text-[12px] mb-4" style={{ color: "var(--color-stone)" }}>
-            The kitchen is the actual differentiator — most venues only show halls. This travels to a lead's phone before the in-person tasting.
+            Most venues only show halls. This reaches a lead's phone before the tasting.
           </p>
           <button
             onClick={onOpenVirtualTour}
@@ -401,12 +395,13 @@ export default function AutomationView({ openLead, setView, onAIVoiceCall, onOpe
           <div className="font-serif text-[16px]" style={{ color: "var(--color-paper)" }}>AI Voice Follow-up — Call Log</div>
           <PhaseBadge phase={2} />
         </div>
-        <p className="font-body text-[12px] mb-1.5" style={{ color: "var(--color-stone)" }}>
-          A Hindi/Hinglish voice, cloned to whichever of Aman or Harman owns that lead's channel, calls 24–48h after the walkthrough. Simple, positive calls close themselves — hesitation gets routed to a human.
+        <p className="font-body text-[12px] mb-2" style={{ color: "var(--color-stone)" }}>
+          Hindi/Hinglish voice, cloned per owner, calls 24–48h after the walkthrough. Hesitation routes to a human.
         </p>
-        <p className="font-body text-[10.5px] mb-5" style={{ color: "var(--color-stone)" }}>
-          Every call goes out from the Cherish business line ({AI_CALLER_NUMBER}) — never Aman's or Harman's personal number. Your cell number stays yours; the Cherish number is what absorbs the cold outreach. Once a lead is warm, handoff can stay on the Cherish number or move to a direct line — your choice, lead by lead.
-        </p>
+        <div className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 mb-5" style={{ background: "rgba(255,255,255,0.05)" }}>
+          <PhoneCall size={10} style={{ color: "var(--color-gold-soft)" }} />
+          <span className="font-mono text-[9.5px]" style={{ color: "var(--color-stone)" }}>Always from {AI_CALLER_NUMBER} — never a personal number</span>
+        </div>
 
         <div className="flex items-center gap-6 mb-4 pb-4" style={{ borderBottom: "1px solid var(--color-ink-line)" }}>
           <div>
@@ -496,7 +491,7 @@ export default function AutomationView({ openLead, setView, onAIVoiceCall, onOpe
           <span className="font-mono text-[9px] uppercase tracking-wider rounded-full px-2 py-0.5" style={{ background: "var(--color-ivory)", color: "var(--color-stone)" }}>Guardrails</span>
         </div>
         <p className="font-body text-[12px] mb-4" style={{ color: "var(--color-stone)" }}>
-          The questions any of this deserves, answered up front rather than after something goes wrong.
+          Answered up front, before something goes wrong.
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {GUARDRAILS.map((g, i) => (
@@ -524,13 +519,13 @@ export default function AutomationView({ openLead, setView, onAIVoiceCall, onOpe
             <div className="font-serif text-[16px]" style={{ color: "var(--color-ink)" }}>The Dubai Benchmark</div>
             <span className="font-mono text-[9px] uppercase tracking-wider rounded-full px-2 py-0.5" style={{ background: "var(--color-ivory)", color: "var(--color-stone)" }}>Industry context</span>
           </div>
-          <p className="font-body text-[12.5px] leading-relaxed mb-3" style={{ color: "var(--color-ink)" }}>
-            <strong>70–80% of Middle East luxury hotels</strong> already run WhatsApp-native AI concierges tied into their CRM — Jumeirah uses AI-driven campaigns to send dining experiences to food-lovers specifically, not blanket offers. This isn't experimental technology anymore; it's table stakes at the top end of hospitality.
+          <p className="font-body text-[12.5px] mb-3" style={{ color: "var(--color-ink)" }}>
+            <strong>70–80% of Middle East luxury hotels</strong> already run WhatsApp-native AI concierges. Table stakes, not experimental.
           </p>
-          <div className="flex items-start gap-2 rounded-xl px-3.5 py-3" style={{ background: "var(--color-ivory)" }}>
-            <Zap size={13} className="shrink-0 mt-0.5" style={{ color: "var(--color-gold-deep)" }} />
-            <span className="font-body text-[12px] italic leading-relaxed" style={{ color: "var(--color-ink)" }}>
-              "Innovation should amplify high-touch moments, not replace them." Every automation on this page exists to protect the walkthrough and the tasting — the two moments Cherish actually wins on.
+          <div className="flex items-center gap-2 rounded-xl px-3.5 py-2.5" style={{ background: "var(--color-ivory)" }}>
+            <Zap size={13} className="shrink-0" style={{ color: "var(--color-gold-deep)" }} />
+            <span className="font-body text-[12px] italic" style={{ color: "var(--color-ink)" }}>
+              Amplifies the walkthrough and tasting — doesn't replace them.
             </span>
           </div>
         </div>

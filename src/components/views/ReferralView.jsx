@@ -54,7 +54,7 @@ export default function ReferralView({ openLead }) {
     <div>
       <h1 className="font-serif text-[27px]" style={{ color: "var(--color-ink)" }}>Referral Web</h1>
       <p className="font-body text-[13.5px] mt-1.5 mb-6" style={{ color: "var(--color-stone)" }}>
-        The channel that was never tracked before — {roots.length} root families, {totalReferred} referred weddings, {booked} booked. Same leads as everywhere else in Cherish — click any name to open its thread.
+        {roots.length} root families · {totalReferred} referred · {booked} booked
       </p>
 
       <div className="rounded-3xl p-6 md:p-8" style={{ background: "linear-gradient(160deg, var(--color-ink) 0%, #1a1512 100%)" }}>
@@ -148,10 +148,10 @@ export default function ReferralView({ openLead }) {
               <span className="font-serif text-[15px]" style={{ color: "var(--color-ink)" }}>{anniversaryLead.name} — {anniversaryLead.anniversary.label}</span>
               <PhaseBadge phase={2} />
             </div>
-            <div className="font-body text-[12.5px] mt-1.5 leading-relaxed" style={{ color: "var(--color-stone)" }}>
-              {anniversaryLead.anniversary.when} — a reconnection note now, not a sales pitch. {pastReferrals.length > 0
-                ? `They've already sent Cherish one referral (${pastReferrals[0].name}); root families tend to think of us again around their own milestones.`
-                : "Root families like this one are where referrals start — worth a personal line, not a template."}
+            <div className="font-body text-[12.5px] mt-1.5" style={{ color: "var(--color-stone)" }}>
+              {anniversaryLead.anniversary.when} — reconnection note, not a pitch. {pastReferrals.length > 0
+                ? `Already referred ${pastReferrals[0].name}.`
+                : "Where referrals start — worth a personal line."}
             </div>
             <div className="flex items-center gap-1.5 mt-2 font-mono text-[10.5px] uppercase tracking-wide" style={{ color: "var(--color-gold-deep)" }}>
               Open thread <ArrowUpRight size={12} />

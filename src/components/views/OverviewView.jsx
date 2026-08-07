@@ -59,8 +59,8 @@ export default function OverviewView({ openLead, onLogLead }) {
             <h1 className="font-serif text-[30px] md:text-[36px] mt-2 leading-tight" style={{ color: "var(--color-paper)" }}>
               Good evening, Kritika.
             </h1>
-            <p className="font-body text-[13.5px] mt-2.5 max-w-md leading-relaxed" style={{ color: "var(--color-stone)" }}>
-              Nobody falls through the cracks between an ad, an aggregator, or a walk-in — one thread, no matter which door they came through.
+            <p className="font-body text-[13.5px] mt-2.5 max-w-md" style={{ color: "var(--color-stone)" }}>
+              One thread, no matter which door they came through.
             </p>
           </div>
           <motion.button
@@ -103,7 +103,7 @@ export default function OverviewView({ openLead, onLogLead }) {
                 ) : (
                   <>
                     <p className="font-body text-[12px] mt-1 mb-3" style={{ color: "var(--color-stone)" }}>
-                      Anything booked or blocked since yesterday? Availability lives in your head today — this is the only place that ever asks.
+                      Anything booked or blocked since yesterday?
                     </p>
                     <div className="flex flex-wrap gap-2">
                       <input
@@ -179,8 +179,8 @@ export default function OverviewView({ openLead, onLogLead }) {
               </div>
             </div>
           ))}
-          <div className="mt-4 pt-4 font-body text-[10.5px] leading-relaxed" style={{ borderTop: "1px solid var(--color-stone-line)", color: "var(--color-stone)" }}>
-            This is this pipeline's live sample — Naveen's stated business-wide split (confirmed on the discovery call) is ~70% indirect / ~30% direct.
+          <div className="mt-4 pt-4 font-body text-[10.5px]" style={{ borderTop: "1px solid var(--color-stone-line)", color: "var(--color-stone)" }}>
+            Live sample · business-wide split is ~70/30 indirect/direct
           </div>
         </motion.div>
 
@@ -233,7 +233,7 @@ export default function OverviewView({ openLead, onLogLead }) {
             <span className="font-serif text-[15px]" style={{ color: "var(--color-ink)" }}>What you said you'd do</span>
           </div>
           <p className="font-body text-[11.5px] mb-4" style={{ color: "var(--color-stone)" }}>
-            Pulled from your own calls and notes — nobody has to remember these, the system does.
+            Pulled from your calls and notes — the system remembers.
           </p>
           <div className="flex flex-col gap-1">
             {commitments.map(({ lead, text, due }, i) => (
@@ -287,8 +287,8 @@ export default function OverviewView({ openLead, onLogLead }) {
               <span className="font-serif text-[15px]" style={{ color: "var(--color-ink)" }}>Objection Radar</span>
               <PhaseBadge phase={2} />
             </div>
-            <div className="font-body text-[12.5px] mt-1 leading-relaxed" style={{ color: "var(--color-stone)" }}>
-              {radarLead.name}'s quote has sat open for {radarLead.days} days with no reply. Today that just sits in Follow-Up. Objection Radar would read this as hesitation, not "gone cold" — and flag Aman directly instead of firing another nudge.
+            <div className="font-body text-[12.5px] mt-1" style={{ color: "var(--color-stone)" }}>
+              {radarLead.name} — {radarLead.days}d silent. Reads as hesitation, not cold — flags Aman directly.
             </div>
           </div>
         </motion.button>
