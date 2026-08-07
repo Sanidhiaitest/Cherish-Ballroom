@@ -1,18 +1,19 @@
 import { motion } from "framer-motion";
-import { STAGES, LEADS, scoreTone, formatINR, TONE_COLOR } from "../../data/leads";
+import { STAGES, LEADS, scoreTone, formatINR, TONE_COLOR, leadOwner } from "../../data/leads";
 import SourceTag, { sourceColor } from "../SourceTag";
 import Avatar from "../Avatar";
 
-export default function FunnelView({ openLead }) {
+export default function FunnelView({ openLead, viewer = "Aman" }) {
+  const myLeads = LEADS.filter((l) => leadOwner(l) === viewer);
   return (
     <div>
       <h1 className="font-serif text-[27px]" style={{ color: "var(--color-ink)" }}>Live Funnel</h1>
       <p className="font-body text-[13.5px] mt-1.5 mb-6" style={{ color: "var(--color-stone)" }}>
-        Every lead, one thread — regardless of how they arrived.
+        {viewer}'s leads, one thread each — regardless of how they arrived.
       </p>
       <div className="flex gap-4 overflow-x-auto pb-4" style={{ scrollbarWidth: "thin" }}>
         {STAGES.map((stage, si) => {
-          const items = LEADS.filter((l) => l.stage === stage.id);
+          const items = myLeads.filter((l) => l.stage === stage.id);
           const value = items.reduce((s, l) => s + l.value, 0);
           return (
             <motion.div

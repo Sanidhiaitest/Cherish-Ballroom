@@ -14,16 +14,22 @@ function fmtSeconds(s) {
   return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")} min`;
 }
 
-export default function AutomationView({ openLead, setView, onAIVoiceCall, onOpenVirtualTour }) {
+export default function AutomationView({ openLead, setView, onAIVoiceCall, onOpenVirtualTour, viewer = "Aman" }) {
   const [nurtureEditing, setNurtureEditing] = useState(false);
   const [nurtureSent, setNurtureSent] = useState(false);
+  const myLeads = LEADS.filter((l) => leadOwner(l) === viewer);
   const median = medianResponseSeconds();
-  const fastestReplies = LEADS.filter((l) => l.firstResponseSeconds).sort((a, b) => a.firstResponseSeconds - b.firstResponseSeconds);
+  const fastestReplies = myLeads.filter((l) => l.firstResponseSeconds).sort((a, b) => a.firstResponseSeconds - b.firstResponseSeconds);
   const dmExample = fastestReplies[0];
-  const nurtureLead = LEADS.find((l) => l.nurtureStep !== undefined) || LEADS[0];
+  const nurtureLead = myLeads.find((l) => l.nurtureStep !== undefined) || myLeads[0];
   const margin = partnerMarginSummary();
-  const queued = queuedForAICall();
-  const triage = triageToday();
+  const queued = queuedForAICall().filter((l) => leadOwner(l) === viewer);
+  const myCallLog = AI_CALL_LOG.filter((e) => {
+    const l = LEADS.find((lead) => lead.name === e.leadName);
+    return l && leadOwner(l) === viewer;
+  });
+  const triageAll = triageToday();
+  const triage = { ...triageAll, green: triageAll.green.filter((l) => leadOwner(l) === viewer), yellow: triageAll.yellow.filter((l) => leadOwner(l) === viewer) };
   const draft = nurtureDraft(nurtureLead);
   const [draftText, setDraftText] = useState(draft?.text || "");
 
@@ -405,11 +411,11 @@ export default function AutomationView({ openLead, setView, onAIVoiceCall, onOpe
 
         <div className="flex items-center gap-6 mb-4 pb-4" style={{ borderBottom: "1px solid var(--color-ink-line)" }}>
           <div>
-            <div className="font-serif text-[22px] leading-none" style={{ color: "var(--color-paper)" }}>{AI_CALL_LOG.length}</div>
+            <div className="font-serif text-[22px] leading-none" style={{ color: "var(--color-paper)" }}>{myCallLog.length}</div>
             <div className="font-mono text-[9.5px] uppercase mt-1" style={{ color: "var(--color-stone)" }}>Called</div>
           </div>
           <div>
-            <div className="font-serif text-[22px] leading-none" style={{ color: "var(--color-gold-soft)" }}>{AI_CALL_LOG.filter((e) => e.tone !== "positive").length}</div>
+            <div className="font-serif text-[22px] leading-none" style={{ color: "var(--color-gold-soft)" }}>{myCallLog.filter((e) => e.tone !== "positive").length}</div>
             <div className="font-mono text-[9.5px] uppercase mt-1" style={{ color: "var(--color-stone)" }}>Routed to a human</div>
           </div>
           <div>
@@ -422,7 +428,7 @@ export default function AutomationView({ openLead, setView, onAIVoiceCall, onOpe
           <div>
             <div className="font-mono text-[9.5px] uppercase tracking-wider mb-2" style={{ color: "var(--color-stone)" }}>What happened</div>
             <div className="flex flex-col gap-2">
-              {AI_CALL_LOG.map((entry) => {
+              {myCallLog.map((entry) => {
                 const callLead = LEADS.find((l) => l.name === entry.leadName);
                 if (!callLead) return null;
                 const positive = entry.tone === "positive";

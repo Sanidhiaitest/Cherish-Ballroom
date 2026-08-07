@@ -32,6 +32,7 @@ const DEFAULT_COUPLE_PREVIEW = LEADS.find((l) => l.name === "Diya & Kabir");
 
 export default function App() {
   const [view, setView] = useState("overview");
+  const [viewer, setViewer] = useState("Aman");
   const [selected, setSelected] = useState(null);
   const [callLead, setCallLead] = useState(null);
   const [chatLead, setChatLead] = useState(null);
@@ -57,7 +58,7 @@ export default function App() {
     <div className="flex min-h-screen bg-noise" style={{ background: "var(--color-ivory)" }}>
       <Sidebar view={view} setView={setView} />
       <div className="flex-1 flex flex-col min-w-0">
-        <Topbar onPreviewCoupleApp={() => setPreviewLead(selected || DEFAULT_COUPLE_PREVIEW)} />
+        <Topbar viewer={viewer} setViewer={setViewer} onPreviewCoupleApp={() => setPreviewLead(selected || DEFAULT_COUPLE_PREVIEW)} />
         <div className="flex-1 px-5 md:px-10 pb-24 md:pb-12 overflow-y-auto">
           <AnimatePresence mode="wait">
             <motion.div
@@ -73,6 +74,7 @@ export default function App() {
                 onAIVoiceCall={openAIVoiceCall}
                 onOpenVirtualTour={() => setVirtualTourOpen(true)}
                 onLogLead={() => setAddLeadOpen(true)}
+                viewer={viewer}
               />
             </motion.div>
           </AnimatePresence>

@@ -1,13 +1,18 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Flame, Snowflake, TrendingUp, Wallet, ArrowUpRight, PlusCircle, Radar, BellRing, ChevronRight, Bot, CalendarClock, Check, X } from "lucide-react";
-import { LEADS, SOURCE_META, formatINR, liveChannelSplit, pendingCommitments, commitmentSource } from "../../data/leads";
+import { LEADS, SOURCE_META, formatINR, liveChannelSplit, pendingCommitments, commitmentSource, leadOwner } from "../../data/leads";
 import StatCard from "../StatCard";
 import SourceTag, { sourceColor } from "../SourceTag";
 import Avatar from "../Avatar";
 import PhaseBadge from "../PhaseBadge";
 
-export default function OverviewView({ openLead, onLogLead }) {
+function greetingPeriod() {
+  const h = new Date().getHours();
+  return h < 12 ? "morning" : h < 17 ? "afternoon" : "evening";
+}
+
+export default function OverviewView({ openLead, onLogLead, viewer = "Aman" }) {
   const [syncDismissed, setSyncDismissed] = useState(false);
   const [syncLogged, setSyncLogged] = useState(false);
   const [syncHall, setSyncHall] = useState("");
@@ -20,18 +25,22 @@ export default function OverviewView({ openLead, onLogLead }) {
     setTimeout(() => setSyncDismissed(true), 1600);
   }
 
+  const myLeads = LEADS.filter((l) => leadOwner(l) === viewer);
   const bySource = Object.keys(SOURCE_META).map((s) => ({
     key: s,
     count: LEADS.filter((l) => l.source === s).length,
   })).sort((a, b) => b.count - a.count);
   const split = liveChannelSplit();
-  const hotAll = LEADS.filter((l) => l.score >= 75 && l.stage !== "booked").sort((a, b) => b.score - a.score);
+  const hotAll = myLeads.filter((l) => l.score >= 75 && l.stage !== "booked").sort((a, b) => b.score - a.score);
   const hot = hotAll.slice(0, 4);
-  const booked = LEADS.filter((l) => l.stage === "booked");
+  const booked = myLeads.filter((l) => l.stage === "booked");
   const bookedValue = booked.reduce((s, l) => s + l.value, 0);
-  const cold = LEADS.filter((l) => l.days >= 5);
-  const radarLead = LEADS.find((l) => l.name === "The Chopra Wedding");
-  const commitments = pendingCommitments().sort((a, b) => (a.due === "Today" ? -1 : 1)).slice(0, 4);
+  const cold = myLeads.filter((l) => l.days >= 5);
+  const radarLead = cold.find((l) => l.name === "The Chopra Wedding") || cold[0];
+  const commitments = pendingCommitments()
+    .filter(({ lead }) => leadOwner(lead) === viewer)
+    .sort((a, b) => (a.due === "Today" ? -1 : 1))
+    .slice(0, 4);
 
   return (
     <div>
@@ -54,10 +63,10 @@ export default function OverviewView({ openLead, onLogLead }) {
         <div className="relative flex flex-col md:flex-row md:items-end md:justify-between gap-6">
           <div>
             <div className="font-mono text-[10.5px] uppercase tracking-[0.16em]" style={{ color: "var(--color-gold-soft)" }}>
-              {new Date().toLocaleDateString("en-IN", { weekday: "long" })} · {LEADS.length} threads live right now
+              {new Date().toLocaleDateString("en-IN", { weekday: "long" })} · {myLeads.length} threads in your book
             </div>
             <h1 className="font-serif text-[30px] md:text-[36px] mt-2 leading-tight" style={{ color: "var(--color-paper)" }}>
-              Good evening, Kritika.
+              Good {greetingPeriod()}, {viewer}.
             </h1>
             <p className="font-body text-[13.5px] mt-2.5 max-w-md" style={{ color: "var(--color-stone)" }}>
               One thread, no matter which door they came through.
@@ -136,7 +145,7 @@ export default function OverviewView({ openLead, onLogLead }) {
       </AnimatePresence>
 
       <div className="flex flex-wrap gap-4">
-        <StatCard label="Active Leads" value={LEADS.length} sub="across all sources" Icon={TrendingUp} tint="var(--color-gold)" delay={0.05} />
+        <StatCard label="Active Leads" value={myLeads.length} sub="in your book" Icon={TrendingUp} tint="var(--color-gold)" delay={0.05} />
         <StatCard label="Hot · Score ≥75" value={hotAll.length} sub="likely to convert" Icon={Flame} tint="var(--color-gold-deep)" delay={0.1} />
         <StatCard label="Going Cold" value={cold.length} sub="5+ days silent" Icon={Snowflake} tint="var(--color-rose)" delay={0.15} />
         <StatCard label="Booked pipeline" value={formatINR(bookedValue)} sub={`${booked.length} weddings on the books`} Icon={Wallet} tint="var(--color-emerald)" delay={0.2} />
@@ -288,7 +297,7 @@ export default function OverviewView({ openLead, onLogLead }) {
               <PhaseBadge phase={2} />
             </div>
             <div className="font-body text-[12.5px] mt-1" style={{ color: "var(--color-stone)" }}>
-              {radarLead.name} — {radarLead.days}d silent. Reads as hesitation, not cold — flags Aman directly.
+              {radarLead.name} — {radarLead.days}d silent. Reads as hesitation, not cold — flags {viewer} directly.
             </div>
           </div>
         </motion.button>

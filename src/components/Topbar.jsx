@@ -1,7 +1,9 @@
 import { Search, Bell, Smartphone } from "lucide-react";
 import Avatar from "./Avatar";
 
-export default function Topbar({ onPreviewCoupleApp }) {
+const VIEWERS = { Aman: { initials: "AK", role: "Sales Manager" }, Harman: { initials: "HS", role: "Sales Manager" } };
+
+export default function Topbar({ viewer = "Aman", setViewer, onPreviewCoupleApp }) {
   return (
     <div className="flex items-center gap-4 px-5 md:px-10 py-5 shrink-0">
       <div
@@ -48,16 +50,25 @@ export default function Topbar({ onPreviewCoupleApp }) {
           </span>
         </button>
 
-        <button
-          className="flex items-center gap-2.5 rounded-full pl-1.5 pr-3.5 py-1.5 transition-transform hover:scale-[1.02] active:scale-95"
-          style={{ background: "var(--color-paper)", border: "1px solid var(--color-stone-line)" }}
-        >
-          <Avatar initials="KG" source="walkin" size={30} />
+        <div className="flex items-center gap-2.5 rounded-full pl-1.5 pr-1.5 py-1.5" style={{ background: "var(--color-paper)", border: "1px solid var(--color-stone-line)" }}>
+          <Avatar initials={VIEWERS[viewer].initials} source="walkin" size={30} />
           <div className="text-left hidden sm:block">
-            <div className="text-[12.5px] font-semibold leading-none" style={{ color: "var(--color-ink)" }}>Kritika Gupta</div>
-            <div className="text-[10.5px] font-mono mt-0.5" style={{ color: "var(--color-stone)" }}>Manager</div>
+            <div className="text-[12.5px] font-semibold leading-none" style={{ color: "var(--color-ink)" }}>{viewer}</div>
+            <div className="text-[10.5px] font-mono mt-0.5" style={{ color: "var(--color-stone)" }}>{VIEWERS[viewer].role}</div>
           </div>
-        </button>
+          <div className="flex gap-0.5 rounded-full p-0.5 ml-1" style={{ background: "var(--color-ivory-soft)" }}>
+            {Object.keys(VIEWERS).map((name) => (
+              <button
+                key={name}
+                onClick={() => setViewer?.(name)}
+                className="rounded-full px-2.5 py-1 font-mono text-[10px] uppercase tracking-wide transition-colors"
+                style={{ background: viewer === name ? "var(--color-ink)" : "transparent", color: viewer === name ? "var(--color-paper)" : "var(--color-stone)" }}
+              >
+                {name}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
