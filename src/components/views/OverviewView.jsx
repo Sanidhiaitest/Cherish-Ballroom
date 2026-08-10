@@ -60,39 +60,47 @@ export default function OverviewView({ openLead, onLogLead, viewer = "Aman" }) {
         initial={{ opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-        className="relative overflow-hidden rounded-3xl px-7 py-8 md:px-9 md:py-10 mb-6"
+        className="relative rounded-3xl px-7 pt-14 pb-8 md:pt-16 md:pb-10 mt-12 md:mt-16 mb-6"
         style={{ background: "linear-gradient(120deg, var(--color-ink) 0%, #1c2e26 58%, var(--color-emerald) 130%)" }}
       >
+        <div className="absolute inset-0 rounded-3xl overflow-hidden pointer-events-none">
+          <svg className="absolute right-0 top-0 h-full opacity-25" width="360" viewBox="0 0 360 240" fill="none">
+            <path d="M40 20 C 160 20, 160 120, 300 120 S 340 220, 360 220" stroke="url(#heroThread)" strokeWidth="1.4" fill="none" />
+            <defs>
+              <linearGradient id="heroThread" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stopColor="var(--color-gold)" stopOpacity="0" />
+                <stop offset="100%" stopColor="var(--color-gold)" stopOpacity="0.6" />
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+
         <Mascot
-          className="absolute -right-2 -top-7 md:-right-4 md:-top-11"
-          style={{ width: "clamp(64px, 9vw, 118px)", height: "clamp(64px, 9vw, 118px)" }}
+          className="absolute left-1/2 -translate-x-1/2 -top-11 md:-top-14 z-10"
+          style={{ width: "clamp(84px, 11vw, 132px)", height: "clamp(84px, 11vw, 132px)" }}
         />
-        <svg className="absolute right-0 top-0 h-full opacity-25" width="360" viewBox="0 0 360 240" fill="none">
-          <path d="M40 20 C 160 20, 160 120, 300 120 S 340 220, 360 220" stroke="url(#heroThread)" strokeWidth="1.4" fill="none" />
-          <defs>
-            <linearGradient id="heroThread" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stopColor="var(--color-gold)" stopOpacity="0" />
-              <stop offset="100%" stopColor="var(--color-gold)" stopOpacity="0.6" />
-            </linearGradient>
-          </defs>
-        </svg>
-        <div className="relative flex flex-col md:flex-row md:items-end md:justify-between gap-6">
-          <div>
-            <div className="font-mono text-[10.5px] uppercase tracking-[0.16em]" style={{ color: "var(--color-gold-soft)" }}>
-              {now.toLocaleDateString("en-IN", { weekday: "long", month: "short", day: "numeric" })} · {now.toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit" })}
-            </div>
-            <h1 className="font-serif text-[30px] md:text-[36px] mt-2 leading-tight" style={{ color: "var(--color-paper)" }}>
-              Good {greetingPeriod(now.getHours())}, {viewer}.
-            </h1>
-            <p className="font-body text-[13.5px] mt-2.5 max-w-md" style={{ color: "var(--color-stone)" }}>
-              One thread, no matter which door they came through — {myLeads.length} in your book right now.
-            </p>
+
+        <div className="relative flex flex-col items-center text-center max-w-md mx-auto">
+          <div className="font-mono text-[10.5px] uppercase tracking-[0.16em]" style={{ color: "var(--color-gold-soft)" }}>
+            {now.toLocaleDateString("en-IN", { weekday: "long", month: "short", day: "numeric" })}
           </div>
+          <div className="font-serif leading-none mt-2" style={{ color: "var(--color-paper)", fontSize: "clamp(44px, 8vw, 60px)", fontVariantNumeric: "tabular-nums" }}>
+            {now.toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit" }).replace(/\s?(AM|PM)/i, "")}
+            <span className="font-mono text-[16px] ml-1.5 align-top" style={{ color: "var(--color-gold-soft)" }}>
+              {now.toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit" }).match(/AM|PM/i)?.[0]}
+            </span>
+          </div>
+          <h1 className="font-serif text-[24px] md:text-[27px] mt-3 leading-tight" style={{ color: "var(--color-paper)" }}>
+            Good {greetingPeriod(now.getHours())}, {viewer}.
+          </h1>
+          <p className="font-body text-[13.5px] mt-2.5 max-w-sm" style={{ color: "var(--color-stone)" }}>
+            One thread, no matter which door they came through — {myLeads.length} in your book right now.
+          </p>
           <motion.button
             onClick={onLogLead}
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
-            className="flex items-center gap-2 rounded-full px-5 py-3 font-medium text-[13px] self-start shrink-0 whitespace-nowrap"
+            className="flex items-center gap-2 rounded-full px-5 py-3 font-medium text-[13px] mt-5 whitespace-nowrap"
             style={{ background: "var(--color-gold)", color: "var(--color-ink)" }}
           >
             <PlusCircle size={15} />
