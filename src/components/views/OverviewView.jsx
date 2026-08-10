@@ -60,8 +60,8 @@ export default function OverviewView({ openLead, onLogLead, viewer = "Aman" }) {
         initial={{ opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-        className="relative rounded-3xl px-7 pt-14 pb-8 md:pt-16 md:pb-10 mt-12 md:mt-16 mb-6"
-        style={{ background: "linear-gradient(120deg, var(--color-ink) 0%, #1c2e26 58%, var(--color-emerald) 130%)" }}
+        className="relative rounded-3xl px-7 pb-8 md:pb-10 mt-24 md:mt-32 mb-6"
+        style={{ background: "linear-gradient(120deg, var(--color-ink) 0%, #1c2e26 58%, var(--color-emerald) 130%)", paddingTop: "clamp(120px, 20vw, 210px)" }}
       >
         <div className="absolute inset-0 rounded-3xl overflow-hidden pointer-events-none">
           <svg className="absolute right-0 top-0 h-full opacity-25" width="360" viewBox="0 0 360 240" fill="none">
@@ -73,11 +73,20 @@ export default function OverviewView({ openLead, onLogLead, viewer = "Aman" }) {
               </linearGradient>
             </defs>
           </svg>
+          <div
+            className="absolute left-1/2 -translate-x-1/2 -top-[8%] rounded-full"
+            style={{
+              width: "min(70vw, 640px)",
+              height: "min(70vw, 640px)",
+              background: "radial-gradient(circle, rgba(125,211,252,0.32) 0%, rgba(240,128,176,0.22) 46%, rgba(240,128,176,0) 72%)",
+              filter: "blur(30px)",
+            }}
+          />
         </div>
 
         <Mascot
-          className="absolute left-1/2 -translate-x-1/2 -top-11 md:-top-14 z-10"
-          style={{ width: "clamp(84px, 11vw, 132px)", height: "clamp(84px, 11vw, 132px)" }}
+          className="absolute left-1/2 -translate-x-1/2 z-10"
+          style={{ width: "clamp(150px, 20vw, 260px)", height: "clamp(150px, 20vw, 260px)", top: "clamp(-96px, -14vw, -64px)" }}
         />
 
         <div className="relative flex flex-col items-center text-center max-w-md mx-auto">
