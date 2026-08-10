@@ -125,6 +125,12 @@ export default function AutomationView({ openLead, setView, onAIVoiceCall, onOpe
         <div className="mb-4">
           <SheetPreview />
         </div>
+        <div className="flex items-center gap-2 mb-4 rounded-xl px-3.5 py-2.5" style={{ background: "rgba(255,255,255,0.03)", border: "1px dashed rgba(255,255,255,0.12)" }}>
+          <PhoneCall size={12} className="shrink-0" style={{ color: "var(--color-stone)" }} />
+          <span className="font-body text-[11px] leading-relaxed" style={{ color: "var(--color-stone)" }}>
+            The calling side runs on your existing Caller Monkey line — its Inbound API dials the moment a row lands, and its webhook syncs duration + sentiment back here the moment the call ends.
+          </span>
+        </div>
         <a
           href="https://claude.ai/code/artifact/a7fc95cc-bbb2-47bd-959a-09b006d70983"
           target="_blank"
@@ -439,7 +445,7 @@ export default function AutomationView({ openLead, setView, onAIVoiceCall, onOpe
           <span className="font-mono text-[9.5px]" style={{ color: "var(--color-stone)" }}>Always from {AI_CALLER_NUMBER} — never a personal number</span>
         </div>
 
-        <div className="flex items-center gap-6 mb-4 pb-4" style={{ borderBottom: "1px solid var(--color-ink-line)" }}>
+        <div className="flex items-center gap-6 mb-4 pb-4 flex-wrap" style={{ borderBottom: "1px solid var(--color-ink-line)" }}>
           <div>
             <div className="font-serif text-[22px] leading-none" style={{ color: "var(--color-paper)" }}>{myCallLog.length}</div>
             <div className="font-mono text-[9.5px] uppercase mt-1" style={{ color: "var(--color-stone)" }}>Called</div>
@@ -452,6 +458,18 @@ export default function AutomationView({ openLead, setView, onAIVoiceCall, onOpe
             <div className="font-serif text-[22px] leading-none" style={{ color: "var(--color-emerald-soft)" }}>{queued.length}</div>
             <div className="font-mono text-[9.5px] uppercase mt-1" style={{ color: "var(--color-stone)" }}>Queued, not yet called</div>
           </div>
+          {myCallLog.length > 0 && (
+            <div>
+              <div className="font-serif text-[22px] leading-none" style={{ color: "var(--color-paper)" }}>
+                {(() => {
+                  const secs = myCallLog.map((e) => { const [m, s] = (e.duration || "0:00").split(":").map(Number); return m * 60 + s; });
+                  const avg = Math.round(secs.reduce((a, b) => a + b, 0) / secs.length);
+                  return `${Math.floor(avg / 60)}:${String(avg % 60).padStart(2, "0")}`;
+                })()}
+              </div>
+              <div className="font-mono text-[9.5px] uppercase mt-1" style={{ color: "var(--color-stone)" }}>Avg call duration</div>
+            </div>
+          )}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -462,6 +480,8 @@ export default function AutomationView({ openLead, setView, onAIVoiceCall, onOpe
                 const callLead = LEADS.find((l) => l.name === entry.leadName);
                 if (!callLead) return null;
                 const positive = entry.tone === "positive";
+                const sentimentColor = { positive: "var(--color-emerald-soft)", neutral: "var(--color-stone)", negative: "var(--color-rose-soft)" }[entry.sentiment];
+                const sentimentBg = { positive: "rgba(61,120,99,0.18)", neutral: "rgba(255,255,255,0.06)", negative: "rgba(178,58,72,0.18)" }[entry.sentiment];
                 return (
                   <button
                     key={entry.leadName}
@@ -474,6 +494,14 @@ export default function AutomationView({ openLead, setView, onAIVoiceCall, onOpe
                       <div className="font-semibold text-[12px]" style={{ color: "var(--color-paper)" }}>{callLead.name}</div>
                       <div className="font-body text-[10.5px] truncate" style={{ color: positive ? "var(--color-emerald-soft)" : "var(--color-gold-soft)" }}>{entry.outcomeLabel}</div>
                     </div>
+                    {entry.duration && (
+                      <span className="font-mono text-[9.5px] shrink-0" style={{ color: "var(--color-stone)" }}>{entry.duration}</span>
+                    )}
+                    {entry.sentiment && (
+                      <span className="font-mono text-[8px] uppercase tracking-wide rounded-full px-1.5 py-0.5 shrink-0" style={{ background: sentimentBg, color: sentimentColor }}>
+                        {entry.sentiment}
+                      </span>
+                    )}
                     <span className="font-mono text-[9px] uppercase shrink-0" style={{ color: "var(--color-stone)" }}>{leadOwner(callLead)}'s voice</span>
                     <PhoneCall size={13} style={{ color: "var(--color-stone)" }} />
                   </button>

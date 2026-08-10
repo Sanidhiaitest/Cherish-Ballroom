@@ -511,6 +511,8 @@ const OFF_SCRIPT_CALL = {
   leadName: "Diya & Kabir",
   outcomeLabel: "Off-script question → escalated, not improvised",
   tone: "warm",
+  duration: "0:39",
+  sentiment: "neutral",
   script: [
     { from: "ai", text: "Namaste! Main Cherish Ballrooms ki taraf se bol rahi hoon. Aapka Emerald Hall ka quote mil gaya tha?" },
     { from: "lead", text: "Haan mila, but ek cheez batao — kya aap outside catering allow karte ho half the menu ke liye?" },
@@ -605,6 +607,8 @@ export const AI_CALL_LOG = [
     leadName: "Ishaan & Priya",
     outcomeLabel: "Hesitation on budget → routed to Aman",
     tone: "warm",
+    duration: "1:04",
+    sentiment: "neutral",
     script: [
       { from: "ai", text: "Namaste! Main Cherish Ballrooms ki taraf se bol rahi hoon. Kal aapne Solitaire Hall dekha tha — kaisa laga?" },
       { from: "lead", text: "Bahut achha tha, hall toh perfect hai." },
@@ -619,6 +623,8 @@ export const AI_CALL_LOG = [
     leadName: "The Chopra Wedding",
     outcomeLabel: "Comparison-shopping → routed to Aman",
     tone: "warm",
+    duration: "0:47",
+    sentiment: "neutral",
     script: [
       { from: "ai", text: "Namaste! Main Cherish Ballrooms ki taraf se bol rahi hoon. Aapka Rubicon Hall ka quote kaisa laga?" },
       { from: "lead", text: "Actually hum kuch aur venues bhi dekh rahe hain, thoda confuse hain abhi." },
@@ -631,6 +637,8 @@ export const AI_CALL_LOG = [
     leadName: "Verma Family",
     outcomeLabel: "Ready to proceed → tasting auto-scheduled",
     tone: "positive",
+    duration: "1:38",
+    sentiment: "positive",
     script: [
       { from: "ai", text: "Namaste! Aapne Pearl Hall dekha tha apni engagement function ke liye — kaisa laga?" },
       { from: "lead", text: "Bahut sundar tha, hum aage badhne ke liye ready hain." },
