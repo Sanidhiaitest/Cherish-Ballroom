@@ -8,6 +8,7 @@ import {
 } from "../../data/leads";
 import Avatar from "../Avatar";
 import PhaseBadge from "../PhaseBadge";
+import SheetPreview from "../SheetPreview";
 
 function fmtSeconds(s) {
   if (s < 60) return `${s} sec`;
@@ -119,19 +120,15 @@ export default function AutomationView({ openLead, setView, onAIVoiceCall, onOpe
           <PhaseBadge phase={2} />
         </div>
         <p className="font-body text-[12px] mb-4" style={{ color: "var(--color-stone)" }}>
-          The moment a row lands in the Followup Sheet, a message sends and a call gets queued — status updates live, not after the fact.
+          The moment a row lands in the Followup Sheet, a message sends and a call gets queued — status updates live, not after the fact. This is the real sheet, watched live:
         </p>
-        <div className="flex flex-col sm:flex-row gap-2.5 mb-4">
-          <div className="flex-1 flex items-center gap-2.5 rounded-xl px-3.5 py-2.5" style={{ background: "rgba(255,255,255,0.04)" }}>
-            <span className="rounded-full" style={{ width: 8, height: 8, background: "var(--color-gold)" }} />
-            <span className="font-body text-[11.5px]" style={{ color: "var(--color-paper)" }}>New row — Simran Sharma, sent</span>
-            <span className="ml-auto font-mono text-[9.5px] uppercase" style={{ color: "var(--color-gold-soft)" }}>Aman</span>
-          </div>
-          <div className="flex-1 flex items-center gap-2.5 rounded-xl px-3.5 py-2.5" style={{ background: "rgba(255,255,255,0.04)" }}>
-            <span className="rounded-full animate-pulse" style={{ width: 8, height: 8, background: "var(--color-rose)" }} />
-            <span className="font-body text-[11.5px]" style={{ color: "var(--color-paper)" }}>Call — Ringing</span>
-            <span className="ml-auto font-mono text-[9.5px] uppercase" style={{ color: "var(--color-emerald-soft)" }}>Harman</span>
-          </div>
+        <div className="mb-4">
+          <SheetPreview />
+        </div>
+        <div className="flex items-center gap-2.5 rounded-xl px-3.5 py-2.5 mb-4" style={{ background: "rgba(255,255,255,0.04)" }}>
+          <span className="rounded-full animate-pulse" style={{ width: 8, height: 8, background: "var(--color-rose)" }} />
+          <span className="font-body text-[11.5px]" style={{ color: "var(--color-paper)" }}>Call — Ringing</span>
+          <span className="ml-auto font-mono text-[9.5px] uppercase" style={{ color: "var(--color-emerald-soft)" }}>Harman</span>
         </div>
         <a
           href="https://claude.ai/code/artifact/a7fc95cc-bbb2-47bd-959a-09b006d70983"
