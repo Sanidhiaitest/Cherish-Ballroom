@@ -78,3 +78,17 @@ button {
   border: 1.5px solid currentColor;
   animation: pulse-dot 1.8s ease-in-out infinite;
 }
+
+@keyframes mascot-bob {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-5px) rotate(-1.5deg); }
+}
+@keyframes mascot-blink {
+  0%, 92%, 100% { transform: scaleY(1); }
+  95% { transform: scaleY(0.12); }
+}
+.mascot-body { animation: mascot-bob 3.6s ease-in-out infinite; transform-origin: 60px 70px; }
+.mascot-eyes { animation: mascot-blink 4.4s ease-in-out infinite; animation-delay: 1.2s; transform-origin: 60px 65px; }
+@media (prefers-reduced-motion: reduce) {
+  .mascot-body, .mascot-eyes { animation: none; }
+}

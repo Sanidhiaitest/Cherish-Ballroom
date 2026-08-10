@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Flame, Snowflake, TrendingUp, Wallet, ArrowUpRight, PlusCircle, Radar, BellRing, ChevronRight, Bot, CalendarClock, Check, X } from "lucide-react";
 import { LEADS, SOURCE_META, formatINR, liveChannelSplit, pendingCommitments, commitmentSource, leadOwner } from "../../data/leads";
@@ -6,14 +6,25 @@ import StatCard from "../StatCard";
 import SourceTag, { sourceColor } from "../SourceTag";
 import Avatar from "../Avatar";
 import PhaseBadge from "../PhaseBadge";
-import HeroOrnament from "../HeroOrnament";
+import Mascot from "../Mascot";
 
-function greetingPeriod() {
-  const h = new Date().getHours();
+function greetingPeriod(h) {
   return h < 12 ? "morning" : h < 17 ? "afternoon" : "evening";
 }
 
+// Ticks once a minute so the hero's clock and greeting period stay honest
+// without forcing the whole view to re-render constantly.
+function useClock() {
+  const [now, setNow] = useState(new Date());
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 30000);
+    return () => clearInterval(id);
+  }, []);
+  return now;
+}
+
 export default function OverviewView({ openLead, onLogLead, viewer = "Aman" }) {
+  const now = useClock();
   const [syncDismissed, setSyncDismissed] = useState(false);
   const [syncLogged, setSyncLogged] = useState(false);
   const [syncHall, setSyncHall] = useState("");
@@ -52,7 +63,10 @@ export default function OverviewView({ openLead, onLogLead, viewer = "Aman" }) {
         className="relative overflow-hidden rounded-3xl px-7 py-8 md:px-9 md:py-10 mb-6"
         style={{ background: "linear-gradient(120deg, var(--color-ink) 0%, #1c2e26 58%, var(--color-emerald) 130%)" }}
       >
-        <HeroOrnament className="hidden md:block absolute -right-6 -top-10" style={{ width: 220, height: 220 }} />
+        <Mascot
+          className="absolute -right-2 -top-7 md:-right-4 md:-top-11"
+          style={{ width: "clamp(64px, 9vw, 118px)", height: "clamp(64px, 9vw, 118px)" }}
+        />
         <svg className="absolute right-0 top-0 h-full opacity-25" width="360" viewBox="0 0 360 240" fill="none">
           <path d="M40 20 C 160 20, 160 120, 300 120 S 340 220, 360 220" stroke="url(#heroThread)" strokeWidth="1.4" fill="none" />
           <defs>
@@ -65,13 +79,13 @@ export default function OverviewView({ openLead, onLogLead, viewer = "Aman" }) {
         <div className="relative flex flex-col md:flex-row md:items-end md:justify-between gap-6">
           <div>
             <div className="font-mono text-[10.5px] uppercase tracking-[0.16em]" style={{ color: "var(--color-gold-soft)" }}>
-              {new Date().toLocaleDateString("en-IN", { weekday: "long" })} · {myLeads.length} threads in your book
+              {now.toLocaleDateString("en-IN", { weekday: "long", month: "short", day: "numeric" })} · {now.toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit" })}
             </div>
             <h1 className="font-serif text-[30px] md:text-[36px] mt-2 leading-tight" style={{ color: "var(--color-paper)" }}>
-              Good {greetingPeriod()}, {viewer}.
+              Good {greetingPeriod(now.getHours())}, {viewer}.
             </h1>
             <p className="font-body text-[13.5px] mt-2.5 max-w-md" style={{ color: "var(--color-stone)" }}>
-              One thread, no matter which door they came through.
+              One thread, no matter which door they came through — {myLeads.length} in your book right now.
             </p>
           </div>
           <motion.button
