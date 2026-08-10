@@ -1,9 +1,10 @@
 import { motion } from "framer-motion";
-import { LayoutGrid, GitBranch, ListOrdered, Share2, Sparkles, Zap, PieChart } from "lucide-react";
+import { LayoutGrid, GitBranch, ListOrdered, Share2, Sparkles, Zap, PieChart, Workflow } from "lucide-react";
 import { ChandelierMotif } from "./Illustrations";
 
 const ITEMS = [
   { id: "overview", label: "Overview", Icon: LayoutGrid },
+  { id: "flow", label: "Lead → Call Flow", Icon: Workflow },
   { id: "funnel", label: "Live Funnel", Icon: GitBranch },
   { id: "queue", label: "Priority Queue", Icon: ListOrdered },
   { id: "referral", label: "Referral Web", Icon: Share2 },

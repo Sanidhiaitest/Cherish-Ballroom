@@ -13,6 +13,7 @@ export const SOURCE_META = {
   wedmegood: { label: "WedMeGood", channelType: "indirect", key: "wedmegood" },
   eventco: { label: "Event Company", channelType: "indirect", key: "eventco" },
   walkin: { label: "Walk-in / Word of Mouth", channelType: "direct", key: "walkin" },
+  sheet: { label: "Followup Sheet", channelType: "indirect", key: "sheet" },
 };
 
 export const CHANNEL_TYPE_META = {
@@ -445,7 +446,7 @@ export const OWNER_BY_SOURCE = {
   eventco: "Harman",
 };
 export function leadOwner(lead) {
-  return OWNER_BY_SOURCE[lead.source] || "Aman";
+  return lead.ownerOverride || OWNER_BY_SOURCE[lead.source] || "Aman";
 }
 
 // "The same sheet Aman already checks mentally/manually gets surfaced

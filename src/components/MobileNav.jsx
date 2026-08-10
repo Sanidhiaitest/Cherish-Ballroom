@@ -1,7 +1,8 @@
-import { LayoutGrid, GitBranch, ListOrdered, Share2, Zap, PieChart } from "lucide-react";
+import { LayoutGrid, GitBranch, ListOrdered, Share2, Zap, PieChart, Workflow } from "lucide-react";
 
 const ITEMS = [
   { id: "overview", label: "Home", Icon: LayoutGrid },
+  { id: "flow", label: "Flow", Icon: Workflow },
   { id: "funnel", label: "Funnel", Icon: GitBranch },
   { id: "queue", label: "Queue", Icon: ListOrdered },
   { id: "referral", label: "Referrals", Icon: Share2 },

@@ -12,6 +12,7 @@ import AIVoiceCallModal from "./components/AIVoiceCallModal";
 import VirtualTourModal from "./components/VirtualTourModal";
 import AddLeadModal from "./components/AddLeadModal";
 import OverviewView from "./components/views/OverviewView";
+import LeadFlowView from "./components/views/LeadFlowView";
 import FunnelView from "./components/views/FunnelView";
 import QueueView from "./components/views/QueueView";
 import ReferralView from "./components/views/ReferralView";
@@ -21,6 +22,7 @@ import { LEADS } from "./data/leads";
 
 const VIEWS = {
   overview: OverviewView,
+  flow: LeadFlowView,
   funnel: FunnelView,
   queue: QueueView,
   referral: ReferralView,
@@ -54,6 +56,10 @@ export default function App() {
     setSelected(lead);
   }
 
+  function handleFlowLeadBooked(lead) {
+    if (!LEADS.some((l) => l.id === lead.id)) LEADS.unshift(lead);
+  }
+
   return (
     <div className="flex min-h-screen bg-noise" style={{ background: "var(--color-ivory)" }}>
       <Sidebar view={view} setView={setView} />
@@ -74,6 +80,7 @@ export default function App() {
                 onAIVoiceCall={openAIVoiceCall}
                 onOpenVirtualTour={() => setVirtualTourOpen(true)}
                 onLogLead={() => setAddLeadOpen(true)}
+                onLeadBooked={handleFlowLeadBooked}
                 viewer={viewer}
               />
             </motion.div>

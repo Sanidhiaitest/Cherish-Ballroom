@@ -1,4 +1,4 @@
-import { Megaphone, Search, Heart, Building2, Users } from "lucide-react";
+import { Megaphone, Search, Heart, Building2, Users, FileSpreadsheet } from "lucide-react";
 import { SOURCE_META } from "../data/leads";
 
 const SOURCE_STYLE = {
@@ -7,6 +7,7 @@ const SOURCE_STYLE = {
   wedmegood: { Icon: Heart, text: "text-rose", bg: "bg-rose/10", ring: "ring-rose/25" },
   eventco: { Icon: Building2, text: "text-stone", bg: "bg-stone/10", ring: "ring-stone/25" },
   walkin: { Icon: Users, text: "text-emerald", bg: "bg-emerald/10", ring: "ring-emerald/25" },
+  sheet: { Icon: FileSpreadsheet, text: "text-gold-deep", bg: "bg-gold/12", ring: "ring-gold/25" },
 };
 
 export function sourceColor(source) {
@@ -16,6 +17,7 @@ export function sourceColor(source) {
     wedmegood: "var(--color-rose)",
     eventco: "var(--color-stone)",
     walkin: "var(--color-emerald)",
+    sheet: "var(--color-gold-deep)",
   }[source];
 }
 
