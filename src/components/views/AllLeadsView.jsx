@@ -24,6 +24,11 @@ function LastTouch({ days, stale }) {
   );
 }
 
+function stageLabel(l) {
+  const base = STAGES.find((s) => s.id === l.stage)?.label;
+  return l.followupStep === undefined ? base : `${base} · F${l.followupStep}`;
+}
+
 function Field({ label, value }) {
   return (
     <div className="min-w-0">
@@ -99,8 +104,8 @@ export default function AllLeadsView({ openLead, setView, viewer = "Aman" }) {
 
                   <div><SourceTag source={l.source} /></div>
 
-                  <span className="text-[12px]" style={{ color: "var(--color-stone)" }}>
-                    {STAGES.find((s) => s.id === l.stage)?.label}
+                  <span className="text-[12px]" style={{ color: l.followupStep >= 4 ? "var(--color-rose)" : "var(--color-stone)" }}>
+                    {stageLabel(l)}
                   </span>
 
                   <div className="min-w-0">
@@ -159,7 +164,7 @@ export default function AllLeadsView({ openLead, setView, viewer = "Aman" }) {
               </div>
 
               <div className="grid grid-cols-2 gap-x-3 gap-y-2.5 rounded-xl p-3 mb-3" style={{ background: "var(--color-ivory-soft)" }}>
-                <Field label="Stage" value={STAGES.find((s) => s.id === l.stage)?.label} />
+                <Field label="Stage" value={stageLabel(l)} />
                 <Field label="Event Date" value={l.eventDate || "—"} />
                 <Field label="Guests" value={l.guests ? `${l.guests} pax` : "—"} />
                 <Field label="Rooms" value={roomsRequirement(l.guests)} />

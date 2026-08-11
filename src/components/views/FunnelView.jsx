@@ -1,8 +1,41 @@
 import { motion } from "framer-motion";
-import { STAGES, LEADS, scoreTone, formatINR, TONE_COLOR, leadOwner } from "../../data/leads";
+import { STAGES, LEADS, FOLLOWUP_STEPS, scoreTone, formatINR, TONE_COLOR, leadOwner } from "../../data/leads";
 import SourceTag, { sourceColor } from "../SourceTag";
 import Avatar from "../Avatar";
 import EventBadge from "../EventBadge";
+
+// The team's own F1-F4 vocabulary for the follow-up sequence, made visible
+// on the card instead of living only inside the lead drawer -- a lead
+// sitting in "Follow-Up" is meaningless without knowing which step it's on.
+function FollowupStatus({ step }) {
+  if (step === undefined) return null;
+  const overdue = step >= 4;
+  return (
+    <div className="flex items-center gap-1 mb-2">
+      {FOLLOWUP_STEPS.map((label, i) => {
+        const idx = i + 1;
+        const reached = idx <= step;
+        const current = idx === step;
+        return (
+          <span
+            key={label}
+            className="font-mono text-[8px] font-bold rounded-full px-1.5 py-0.5"
+            style={{
+              background: reached ? (overdue && current ? "rgba(178,58,72,0.14)" : "rgba(201,162,39,0.14)") : "var(--color-paper)",
+              color: reached ? (overdue && current ? "var(--color-rose)" : "var(--color-gold-deep)") : "var(--color-stone)",
+              border: reached ? "none" : "1px solid var(--color-stone-line)",
+            }}
+          >
+            {label}
+          </span>
+        );
+      })}
+      {overdue && (
+        <span className="font-mono text-[8px] uppercase tracking-wide ml-0.5" style={{ color: "var(--color-rose)" }}>unanswered</span>
+      )}
+    </div>
+  );
+}
 
 export default function FunnelView({ openLead, viewer = "Aman" }) {
   const myLeads = LEADS.filter((l) => leadOwner(l) === viewer);
@@ -60,6 +93,7 @@ export default function FunnelView({ openLead, viewer = "Aman" }) {
                         </div>
                       </div>
                       <div className="mb-2"><EventBadge eventType={l.eventType} /></div>
+                      <FollowupStatus step={l.followupStep} />
                       <div className="flex justify-between items-center">
                         <SourceTag source={l.source} />
                         <span className="font-mono text-[11px] font-bold" style={{ color: TONE_COLOR[tone.tone] }}>{l.score}</span>
