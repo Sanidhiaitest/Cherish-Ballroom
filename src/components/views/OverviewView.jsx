@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Flame, Snowflake, TrendingUp, Wallet, ArrowUpRight, PlusCircle, Radar, BellRing, ChevronRight, Bot, CalendarClock, Check, X } from "lucide-react";
-import { LEADS, SOURCE_META, formatINR, liveChannelSplit, pendingCommitments, commitmentSource, leadOwner } from "../../data/leads";
-import StatCard from "../StatCard";
+import { Flame, ArrowUpRight, PlusCircle, Radar, BellRing, ChevronRight, Bot, CalendarClock, Check, X } from "lucide-react";
+import { LEADS, SOURCE_META, liveChannelSplit, pendingCommitments, commitmentSource, leadOwner } from "../../data/leads";
 import SourceTag, { sourceColor } from "../SourceTag";
 import Avatar from "../Avatar";
 import PhaseBadge from "../PhaseBadge";
@@ -45,8 +44,6 @@ export default function OverviewView({ openLead, onLogLead, viewer = "Aman" }) {
   const split = liveChannelSplit();
   const hotAll = myLeads.filter((l) => l.score >= 75 && l.stage !== "booked").sort((a, b) => b.score - a.score);
   const hot = hotAll.slice(0, 4);
-  const booked = myLeads.filter((l) => l.stage === "booked");
-  const bookedValue = booked.reduce((s, l) => s + l.value, 0);
   const cold = myLeads.filter((l) => l.days >= 5);
   const radarLead = cold.find((l) => l.name === "The Chopra Wedding") || cold[0];
   const commitments = pendingCommitments()
@@ -193,14 +190,7 @@ export default function OverviewView({ openLead, onLogLead, viewer = "Aman" }) {
         )}
       </AnimatePresence>
 
-      <div className="flex flex-wrap gap-4">
-        <StatCard label="Active Leads" value={myLeads.length} sub="in your book" Icon={TrendingUp} tint="var(--color-gold)" delay={0.05} />
-        <StatCard label="Hot · Score ≥75" value={hotAll.length} sub="likely to convert" Icon={Flame} tint="var(--color-gold-deep)" delay={0.1} />
-        <StatCard label="Going Cold" value={cold.length} sub="5+ days silent" Icon={Snowflake} tint="var(--color-rose)" delay={0.15} />
-        <StatCard label="Booked pipeline" value={formatINR(bookedValue)} sub={`${booked.length} weddings on the books`} Icon={Wallet} tint="var(--color-emerald)" delay={0.2} />
-      </div>
-
-      <div className="flex flex-col lg:flex-row gap-5 mt-5">
+      <div className="flex flex-col lg:flex-row gap-5">
         <motion.div
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
