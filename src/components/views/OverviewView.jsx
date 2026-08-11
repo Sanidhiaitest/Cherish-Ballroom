@@ -87,6 +87,18 @@ export default function OverviewView({ openLead, onLogLead, viewer = "Aman" }) {
         />
 
         <div className="relative flex flex-col items-center text-center max-w-md mx-auto">
+          {hotAll.length + cold.length > 0 && (
+            <button
+              onClick={() => document.getElementById("needs-attention")?.scrollIntoView({ behavior: "smooth", block: "center" })}
+              className="flex items-center gap-1.5 rounded-full pl-2 pr-3 py-1.5 mb-4"
+              style={{ background: "rgba(178,58,72,0.18)", border: "1px solid rgba(178,58,72,0.4)" }}
+            >
+              <span className="rounded-full animate-pulse" style={{ width: 6, height: 6, background: "var(--color-rose-soft)" }} />
+              <span className="font-mono text-[10px] uppercase tracking-wide" style={{ color: "var(--color-rose-soft)" }}>
+                {hotAll.length + cold.length} need attention
+              </span>
+            </button>
+          )}
           <div className="font-mono text-[10.5px] uppercase tracking-[0.16em]" style={{ color: "var(--color-gold-soft)" }}>
             {now.toLocaleDateString("en-IN", { weekday: "long", month: "short", day: "numeric" })}
           </div>
@@ -233,6 +245,7 @@ export default function OverviewView({ openLead, onLogLead, viewer = "Aman" }) {
         </motion.div>
 
         <motion.div
+          id="needs-attention"
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.45, delay: 0.2 }}
