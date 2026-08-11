@@ -13,7 +13,6 @@ import SourceTag, { sourceColor } from "../SourceTag";
 import AreaChart from "../charts/AreaChart";
 import DonutChart from "../charts/DonutChart";
 import BarChart from "../charts/BarChart";
-import PhaseBadge from "../PhaseBadge";
 
 const PERIODS = ["7 Days", "30 Days", "6 Months"];
 const REPORT_RECIPIENTS = ["Kritika", "Naveen", "Rahul"];
@@ -192,7 +191,6 @@ export default function ReportsView() {
           <div className="flex items-center gap-2 mb-1">
             <MessageSquare size={15} style={{ color: "var(--color-gold-deep)" }} />
             <div className="font-serif text-[15px]" style={{ color: "var(--color-ink)" }}>Ask the Sheet</div>
-            <PhaseBadge phase={2} />
           </div>
           <p className="font-body text-[12px] mb-4" style={{ color: "var(--color-stone)" }}>
             Plain-language questions, no report to build by hand.
@@ -228,7 +226,6 @@ export default function ReportsView() {
           <div className="flex items-center gap-2 mb-1">
             <Mail size={15} style={{ color: "var(--color-gold-deep)" }} />
             <div className="font-serif text-[15px]" style={{ color: "var(--color-ink)" }}>Weekly Digest — preview</div>
-            <PhaseBadge phase={2} />
           </div>
           <p className="font-body text-[12px] mb-4" style={{ color: "var(--color-stone)" }}>
             Sunday-evening summary to Naveen — no login needed.

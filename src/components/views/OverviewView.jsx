@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Flame, ArrowUpRight, PlusCircle, Radar, BellRing, ChevronRight, CalendarClock, Check, X, Users2 } from "lucide-react";
 import { LEADS, pendingCommitments, leadOwner } from "../../data/leads";
-import PhaseBadge from "../PhaseBadge";
 import Mascot from "../Mascot";
 import SheetPreview from "../SheetPreview";
 
@@ -350,7 +349,6 @@ export default function OverviewView({ openLead, onLogLead, setView, viewer = "A
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
               <span className="font-serif text-[15px]" style={{ color: "var(--color-ink)" }}>Objection Radar</span>
-              <PhaseBadge phase={2} />
             </div>
             <div className="font-body text-[12.5px] mt-1" style={{ color: "var(--color-stone)" }}>
               {radarLead.name} — {radarLead.days}d silent. Reads as hesitation, not cold — flags {viewer} directly.

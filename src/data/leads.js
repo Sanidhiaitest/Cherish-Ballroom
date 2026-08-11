@@ -69,18 +69,6 @@ export function roomsRequirement(guests) {
   return "No rooms required";
 }
 
-// Phase framing carried through the whole product, not just the roadmap slide.
-// Phase 1 is real and live in this build. Phase 2/3 features stay visible — the
-// vision is part of the pitch — but are visibly marked "proposed" so nothing here
-// overclaims what's actually running today. This directly answers the on-site
-// pushback: skepticism was about voice/WhatsApp automation specifically, not
-// about tracking, so the two need to look different, not identical.
-export const PHASE_META = {
-  1: { label: "Phase 1", tag: "Live", desc: "Lead capture, tracking, and follow-up visibility — this build." },
-  2: { label: "Phase 2", tag: "Proposed", desc: "Messaging and voice copilot — reversible anytime, off until you say go." },
-  3: { label: "Phase 3", tag: "Roadmap", desc: "On-property recognition and personalization — parked, not part of the opening ask." },
-};
-
 // Every lead lives in exactly one place. Referred leads point back at the
 // referrer's `name` via `ref` — the Referral Web is derived from this, not
 // a separate dataset, so there is never a second identity for the same family.

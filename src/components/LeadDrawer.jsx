@@ -4,7 +4,7 @@ import {
   X, Phone, MessageCircle, Sparkles, MapPin, FileText, StickyNote, AlertTriangle, PhoneCall, Smartphone, Bot,
   ClipboardList, Lightbulb, BellRing, HelpCircle, ThumbsUp, ThumbsDown, ChefHat, Send, Pencil, SkipForward, Check, Zap,
 } from "lucide-react";
-import { STAGES, AI_CALL_LOG, scoreTone, formatINR, fmtSeconds, commitmentSource, nextFollowupDraft } from "../data/leads";
+import { STAGES, AI_CALL_LOG, NURTURE_STEPS, scoreTone, formatINR, fmtSeconds, commitmentSource, nextFollowupDraft, nurtureDraft } from "../data/leads";
 import SourceTag from "./SourceTag";
 import Avatar from "./Avatar";
 import ScoreRing from "./ScoreRing";
@@ -36,6 +36,9 @@ export default function LeadDrawer({ lead, onClose, onCall, onWhatsApp, onPrevie
   const [draftEditing, setDraftEditing] = useState(false);
   const [draftSent, setDraftSent] = useState(false);
   const [escalationChoice, setEscalationChoice] = useState(null);
+  const [nurtureText, setNurtureText] = useState("");
+  const [nurtureEditing, setNurtureEditing] = useState(false);
+  const [nurtureSent, setNurtureSent] = useState(false);
 
   useEffect(() => {
     setExplainOpen(false);
@@ -45,6 +48,10 @@ export default function LeadDrawer({ lead, onClose, onCall, onWhatsApp, onPrevie
     setEscalationChoice(null);
     const draft = lead ? nextFollowupDraft(lead) : null;
     setDraftText(draft?.text || "");
+    setNurtureEditing(false);
+    setNurtureSent(false);
+    const nDraft = lead ? nurtureDraft(lead) : null;
+    setNurtureText(nDraft?.text || "");
   }, [lead?.id]);
 
   return (
@@ -326,6 +333,69 @@ export default function LeadDrawer({ lead, onClose, onCall, onWhatsApp, onPrevie
               <div className="mt-4 flex items-center gap-1.5 font-body text-[12px] rounded-2xl px-4 py-3" style={{ background: "rgba(31,77,61,0.07)", color: "var(--color-emerald)" }}>
                 <Check size={13} /> {nextFollowupDraft(lead).step} sent — nothing goes out without this step.
               </div>
+            )}
+
+            {lead.nurtureStep !== undefined && (
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-4 rounded-2xl p-4"
+                style={{ background: "var(--color-ivory)", border: "1px solid var(--color-stone-line)" }}
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <span className="font-mono text-[9.5px] uppercase tracking-wider" style={{ color: "var(--color-gold-deep)" }}>
+                    Post-visit nurture — step {Math.min(lead.nurtureStep + 1, NURTURE_STEPS.length)} of {NURTURE_STEPS.length}
+                  </span>
+                </div>
+                <div className="flex items-center gap-1 mb-2.5">
+                  {NURTURE_STEPS.map((step, i) => (
+                    <span
+                      key={step.id}
+                      className="flex-1 rounded-full"
+                      style={{
+                        height: 4,
+                        background: i < lead.nurtureStep ? "var(--color-emerald)" : i === lead.nurtureStep ? "var(--color-gold)" : "var(--color-stone-line)",
+                      }}
+                    />
+                  ))}
+                </div>
+                <div className="font-body text-[12px] font-semibold mb-3" style={{ color: "var(--color-ink)" }}>
+                  {NURTURE_STEPS[lead.nurtureStep]?.label}
+                  <span className="font-mono text-[9px] uppercase tracking-wide ml-1.5 font-normal" style={{ color: "var(--color-stone)" }}>
+                    · {NURTURE_STEPS[lead.nurtureStep]?.channel}
+                  </span>
+                </div>
+
+                {nurtureDraft(lead) && (
+                  nurtureSent ? (
+                    <div className="flex items-center gap-1.5 font-body text-[11.5px]" style={{ color: "var(--color-emerald)" }}>
+                      <Check size={12} /> Sent — it was already written, just hit send.
+                    </div>
+                  ) : (
+                    <>
+                      {nurtureEditing ? (
+                        <textarea
+                          value={nurtureText}
+                          onChange={(e) => setNurtureText(e.target.value)}
+                          rows={3}
+                          className="w-full rounded-xl px-3 py-2 text-[11.5px] outline-none resize-none"
+                          style={{ background: "var(--color-paper)", border: "1px solid var(--color-stone-line)", color: "var(--color-ink)" }}
+                        />
+                      ) : (
+                        <p className="font-body text-[11.5px] leading-relaxed" style={{ color: "var(--color-ink)" }}>{nurtureText}</p>
+                      )}
+                      <div className="flex items-center gap-2 mt-2.5">
+                        <button onClick={() => setNurtureSent(true)} className="flex items-center gap-1.5 rounded-full px-3.5 py-1.5 font-medium text-[11.5px]" style={{ background: "var(--color-gold)", color: "var(--color-ink)" }}>
+                          <Send size={11} /> Approve &amp; send
+                        </button>
+                        <button onClick={() => setNurtureEditing((v) => !v)} className="flex items-center gap-1.5 rounded-full px-3.5 py-1.5 font-medium text-[11.5px]" style={{ border: "1px solid var(--color-stone-line)", color: "var(--color-ink)" }}>
+                          <Pencil size={11} /> {nurtureEditing ? "Done" : "Edit"}
+                        </button>
+                      </div>
+                    </>
+                  )
+                )}
+              </motion.div>
             )}
 
             <div className="mb-5" />

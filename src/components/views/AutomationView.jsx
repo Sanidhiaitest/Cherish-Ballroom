@@ -1,15 +1,14 @@
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import {
-  MessageCircle, Bot, ArrowUpRight, CheckCircle2, Circle, PhoneCall, Check, ListFilter, Hourglass, Mic,
-  Send, Pencil, HeartHandshake, Hash, FileText, ChevronDown, ChevronUp,
+  MessageCircle, Bot, ArrowUpRight, PhoneCall, Check, ListFilter, Hourglass, Mic,
+  Pencil, HeartHandshake, Hash, FileText, ChevronDown, ChevronUp,
 } from "lucide-react";
 import {
   LEADS, STAGES, SOURCE_META, NURTURE_STEPS, AI_CALL_LOG, AI_CALLER_NUMBER, OWNER_BY_SOURCE,
-  queuedForAICall, triageToday, leadOwner, VOICE_NOTE_FALLBACK_EXAMPLE, nurtureDraft, allMessageTemplates,
+  queuedForAICall, triageToday, leadOwner, VOICE_NOTE_FALLBACK_EXAMPLE, allMessageTemplates,
 } from "../../data/leads";
 import Avatar from "../Avatar";
-import PhaseBadge from "../PhaseBadge";
 
 const REF_VB_W = 760;
 const REF_VB_H = 380;
@@ -42,8 +41,6 @@ function useReferralGraph() {
 }
 
 export default function AutomationView({ openLead, onAIVoiceCall, viewer = "Aman" }) {
-  const [nurtureEditing, setNurtureEditing] = useState(false);
-  const [nurtureSent, setNurtureSent] = useState(false);
   const [refHover, setRefHover] = useState(null);
   const { nodes: refNodes, edges: refEdges, roots: refRoots } = useReferralGraph();
   const refTotalReferred = refNodes.length - refRoots.length;
@@ -58,6 +55,8 @@ export default function AutomationView({ openLead, onAIVoiceCall, viewer = "Aman
   };
   const myLeads = LEADS.filter((l) => leadOwner(l) === viewer);
   const nurtureLead = myLeads.find((l) => l.nurtureStep !== undefined) || myLeads[0];
+  const nurtureActive = myLeads.filter((l) => l.nurtureStep !== undefined);
+  const nurtureCounts = NURTURE_STEPS.map((_, i) => nurtureActive.filter((l) => l.nurtureStep === i).length);
   const queued = queuedForAICall().filter((l) => leadOwner(l) === viewer);
   const myCallLog = AI_CALL_LOG.filter((e) => {
     const l = LEADS.find((lead) => lead.name === e.leadName);
@@ -65,8 +64,6 @@ export default function AutomationView({ openLead, onAIVoiceCall, viewer = "Aman
   });
   const triageAll = triageToday();
   const triage = { ...triageAll, green: triageAll.green.filter((l) => leadOwner(l) === viewer), yellow: triageAll.yellow.filter((l) => leadOwner(l) === viewer) };
-  const draft = nurtureDraft(nurtureLead);
-  const [draftText, setDraftText] = useState(draft?.text || "");
   const [openTemplateId, setOpenTemplateId] = useState(null);
   const [editingTemplateId, setEditingTemplateId] = useState(null);
   const [templateOverrides, setTemplateOverrides] = useState({});
@@ -90,7 +87,6 @@ export default function AutomationView({ openLead, onAIVoiceCall, viewer = "Aman
           <div className="flex items-center gap-2 mb-1.5">
             <ListFilter size={15} style={{ color: "var(--color-gold-deep)" }} />
             <div className="font-serif text-[16px]" style={{ color: "var(--color-ink)" }}>Qualification Screen</div>
-            <PhaseBadge phase={2} />
           </div>
           <p className="font-body text-[12px] mb-4" style={{ color: "var(--color-stone)" }}>
             Every query gets a light before it hits the queue — not rejection, triage.
@@ -141,69 +137,36 @@ export default function AutomationView({ openLead, onAIVoiceCall, viewer = "Aman
         >
           <div className="flex items-center gap-2 mb-1.5">
             <MessageCircle size={15} style={{ color: "var(--color-gold-deep)" }} />
-            <div className="font-serif text-[16px]" style={{ color: "var(--color-ink)" }}>Post-Visit Nurture Sequence</div>
-            <PhaseBadge phase={2} />
+            <div className="font-serif text-[16px]" style={{ color: "var(--color-ink)" }}>Post-Visit Nurture — Pipeline</div>
           </div>
           <p className="font-body text-[12px] mb-4" style={{ color: "var(--color-stone)" }}>
-            5-touch sequence drafts itself when a walkthrough ends — one-tap send today, automatic once the business line is live.
+            5-touch sequence drafts itself when a walkthrough ends — approve &amp; send from each lead's own thread.
           </p>
-          <button onClick={() => openLead(nurtureLead)} className="w-full text-left">
-            <div className="font-body text-[12px] mb-3" style={{ color: "var(--color-ink)" }}>
-              <span className="font-semibold">{nurtureLead.name}</span> — {nurtureLead.days === 0 ? "visited today" : `visited ${nurtureLead.days}d ago`}
-            </div>
-          </button>
+
           <div className="flex flex-col gap-2">
             {NURTURE_STEPS.map((step, i) => {
-              const done = i < (nurtureLead.nurtureStep ?? -1);
-              const current = i === (nurtureLead.nurtureStep ?? -1);
+              const count = nurtureCounts[i];
+              const pct = nurtureActive.length ? (count / nurtureActive.length) * 100 : 0;
               return (
                 <div key={step.id} className="flex items-center gap-2.5">
-                  {done ? (
-                    <CheckCircle2 size={15} style={{ color: "var(--color-emerald)" }} />
-                  ) : (
-                    <Circle size={15} style={{ color: current ? "var(--color-gold-deep)" : "var(--color-stone-line)" }} />
-                  )}
-                  <span className="font-body text-[12px]" style={{ color: current ? "var(--color-ink)" : "var(--color-stone)", fontWeight: current ? 600 : 400 }}>
-                    {step.label}
-                  </span>
-                  <span className="ml-auto font-mono text-[9.5px] uppercase" style={{ color: "var(--color-stone)" }}>{step.channel}</span>
+                  <span className="font-body text-[11px] w-[128px] shrink-0 truncate" style={{ color: "var(--color-ink)" }}>{step.label}</span>
+                  <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: "var(--color-ivory)" }}>
+                    <div className="h-full rounded-full" style={{ width: `${pct}%`, background: "var(--color-gold)" }} />
+                  </div>
+                  <span className="font-mono text-[10.5px] w-3 text-right shrink-0" style={{ color: count ? "var(--color-gold-deep)" : "var(--color-stone)" }}>{count}</span>
                 </div>
               );
             })}
           </div>
 
-          {draft && (
-            <div className="mt-3 pt-3" style={{ borderTop: "1px solid var(--color-stone-line)" }}>
-              <div className="font-mono text-[9px] uppercase tracking-wider mb-1.5" style={{ color: "var(--color-gold-deep)" }}>
-                Drafted, not sent — "{draft.label}"
-              </div>
-              {nurtureSent ? (
-                <div className="flex items-center gap-1.5 font-body text-[11.5px]" style={{ color: "var(--color-emerald)" }}>
-                  <Check size={12} /> Sent — it was already written, just hit send.
-                </div>
-              ) : (
-                <>
-                  {nurtureEditing ? (
-                    <textarea
-                      value={draftText}
-                      onChange={(e) => setDraftText(e.target.value)}
-                      rows={3}
-                      className="w-full rounded-xl px-3 py-2 text-[11.5px] outline-none resize-none"
-                      style={{ background: "var(--color-ivory)", border: "1px solid var(--color-stone-line)", color: "var(--color-ink)" }}
-                    />
-                  ) : (
-                    <p className="font-body text-[11.5px] leading-relaxed" style={{ color: "var(--color-ink)" }}>{draftText}</p>
-                  )}
-                  <div className="flex items-center gap-2 mt-2">
-                    <button onClick={() => setNurtureSent(true)} className="flex items-center gap-1.5 rounded-full px-3 py-1 font-medium text-[10.5px]" style={{ background: "var(--color-gold)", color: "var(--color-ink)" }}>
-                      <Send size={10} /> Approve &amp; send
-                    </button>
-                    <button onClick={() => setNurtureEditing((v) => !v)} className="flex items-center gap-1.5 rounded-full px-3 py-1 font-medium text-[10.5px]" style={{ border: "1px solid var(--color-stone-line)", color: "var(--color-ink)" }}>
-                      <Pencil size={10} /> {nurtureEditing ? "Done" : "Edit"}
-                    </button>
-                  </div>
-                </>
-              )}
+          {nurtureActive.length > 0 && (
+            <div className="flex flex-col gap-1.5 mt-4 pt-3.5" style={{ borderTop: "1px solid var(--color-stone-line)" }}>
+              {nurtureActive.map((l) => (
+                <button key={l.id} onClick={() => openLead(l)} className="w-full flex items-center gap-2 rounded-xl px-3 py-2 text-left" style={{ background: "var(--color-ivory)" }}>
+                  <span className="text-[12px] font-medium truncate" style={{ color: "var(--color-ink)" }}>{l.name}</span>
+                  <span className="ml-auto font-mono text-[9.5px] uppercase truncate" style={{ color: "var(--color-gold-deep)" }}>{NURTURE_STEPS[l.nurtureStep]?.label}</span>
+                </button>
+              ))}
             </div>
           )}
         </motion.div>
@@ -218,7 +181,6 @@ export default function AutomationView({ openLead, onAIVoiceCall, viewer = "Aman
           <div className="flex items-center gap-2 mb-1.5">
             <Mic size={15} style={{ color: "var(--color-gold-deep)" }} />
             <div className="font-serif text-[16px]" style={{ color: "var(--color-ink)" }}>Voice-Note Fallback</div>
-            <PhaseBadge phase={2} />
           </div>
           <p className="font-body text-[12px] mb-3" style={{ color: "var(--color-stone)" }}>
             Old-way calls, no brief — recorded (with consent) and transcribed so nothing's lost.
@@ -248,7 +210,6 @@ export default function AutomationView({ openLead, onAIVoiceCall, viewer = "Aman
           <div className="flex items-center gap-2 mb-3">
             <Hash size={15} style={{ color: "var(--color-gold-deep)" }} />
             <div className="font-serif text-[16px]" style={{ color: "var(--color-ink)" }}>Number System</div>
-            <PhaseBadge phase={2} />
           </div>
 
           <div className="flex items-center gap-1.5 flex-wrap mb-2">
@@ -291,7 +252,6 @@ export default function AutomationView({ openLead, onAIVoiceCall, viewer = "Aman
           <div className="flex items-center gap-2 mb-1.5">
             <FileText size={15} style={{ color: "var(--color-gold-deep)" }} />
             <div className="font-serif text-[16px]" style={{ color: "var(--color-ink)" }}>Message Templates</div>
-            <PhaseBadge phase={2} />
           </div>
           <p className="font-body text-[11.5px] mb-3" style={{ color: "var(--color-stone)" }}>
             Previewed against {nurtureLead.name}. Tap to edit.
@@ -460,7 +420,6 @@ export default function AutomationView({ openLead, onAIVoiceCall, viewer = "Aman
               <div className="flex items-center gap-2 flex-wrap">
                 <Avatar initials={anniversaryLead.initials} source={anniversaryLead.source} size={22} />
                 <span className="font-serif text-[15px]" style={{ color: "var(--color-ink)" }}>{anniversaryLead.name} — {anniversaryLead.anniversary.label}</span>
-                <PhaseBadge phase={2} />
               </div>
               <div className="font-body text-[12.5px] mt-1.5" style={{ color: "var(--color-stone)" }}>
                 {anniversaryLead.anniversary.when} — reconnection note, not a pitch. {pastReferrals.length > 0
@@ -485,7 +444,6 @@ export default function AutomationView({ openLead, onAIVoiceCall, viewer = "Aman
         <div className="flex items-center gap-2 mb-1.5">
           <Bot size={15} style={{ color: "var(--color-gold-soft)" }} />
           <div className="font-serif text-[16px]" style={{ color: "var(--color-paper)" }}>AI Voice Follow-up — Call Log</div>
-          <PhaseBadge phase={2} />
         </div>
         <p className="font-body text-[12px] mb-2" style={{ color: "var(--color-stone)" }}>
           Hindi/Hinglish voice, cloned per owner, calls 24–48h after the walkthrough. Hesitation routes to a human.
