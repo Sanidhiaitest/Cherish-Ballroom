@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Sidebar from "./components/Sidebar";
 import Topbar from "./components/Topbar";
@@ -17,6 +17,7 @@ import QueueView from "./components/views/QueueView";
 import ReferralView from "./components/views/ReferralView";
 import AutomationView from "./components/views/AutomationView";
 import ReportsView from "./components/views/ReportsView";
+import AllLeadsView from "./components/views/AllLeadsView";
 import { LEADS } from "./data/leads";
 
 const VIEWS = {
@@ -26,6 +27,7 @@ const VIEWS = {
   referral: ReferralView,
   automation: AutomationView,
   reports: ReportsView,
+  allLeads: AllLeadsView,
 };
 
 const DEFAULT_COUPLE_PREVIEW = LEADS.find((l) => l.name === "Diya & Kabir");
@@ -42,6 +44,11 @@ export default function App() {
   const [virtualTourOpen, setVirtualTourOpen] = useState(false);
   const [addLeadOpen, setAddLeadOpen] = useState(false);
   const ViewComponent = VIEWS[view];
+  const scrollRef = useRef(null);
+
+  useEffect(() => {
+    scrollRef.current?.scrollTo(0, 0);
+  }, [view]);
 
   function openAIVoiceCall(lead, script, outcome, transfer) {
     setAiVoiceCall(lead ? { lead, script, outcome, transfer } : null);
@@ -55,11 +62,11 @@ export default function App() {
   }
 
   return (
-    <div className="flex min-h-screen bg-noise" style={{ background: "var(--color-ivory)" }}>
+    <div className="flex h-screen overflow-hidden bg-noise" style={{ background: "var(--color-ivory)" }}>
       <Sidebar view={view} setView={setView} />
       <div className="flex-1 flex flex-col min-w-0">
         <Topbar viewer={viewer} setViewer={setViewer} onPreviewCoupleApp={() => setPreviewLead(selected || DEFAULT_COUPLE_PREVIEW)} />
-        <div className="flex-1 px-5 md:px-10 pb-24 md:pb-12 overflow-y-auto">
+        <div ref={scrollRef} className="flex-1 px-5 md:px-10 pb-24 md:pb-12 overflow-y-auto">
           <AnimatePresence mode="wait">
             <motion.div
               key={view}

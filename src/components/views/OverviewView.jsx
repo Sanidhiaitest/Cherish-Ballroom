@@ -23,7 +23,7 @@ function useClock() {
   return now;
 }
 
-export default function OverviewView({ openLead, onLogLead, viewer = "Aman" }) {
+export default function OverviewView({ openLead, onLogLead, setView, viewer = "Aman" }) {
   const now = useClock();
   const [syncDismissed, setSyncDismissed] = useState(false);
   const [syncLogged, setSyncLogged] = useState(false);
@@ -203,11 +203,20 @@ export default function OverviewView({ openLead, onLogLead, viewer = "Aman" }) {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.45, delay: 0.18 }}
         className="rounded-2xl p-5 mb-6"
-        style={{ background: "var(--color-ink)" }}
+        style={{ background: "var(--color-paper)", border: "1px solid var(--color-stone-line)" }}
       >
-        <div className="flex items-center gap-2 mb-3">
-          <Users2 size={15} style={{ color: "var(--color-gold-soft)" }} />
-          <div className="font-serif text-[16px]" style={{ color: "var(--color-paper)" }}>Leads</div>
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <Users2 size={15} style={{ color: "var(--color-gold-deep)" }} />
+            <div className="font-serif text-[16px]" style={{ color: "var(--color-ink)" }}>Leads</div>
+          </div>
+          <button
+            onClick={() => setView("allLeads")}
+            className="flex items-center gap-1 font-mono text-[10.5px] uppercase tracking-wide"
+            style={{ color: "var(--color-gold-deep)" }}
+          >
+            View all <ChevronRight size={12} />
+          </button>
         </div>
         <SheetPreview viewer={viewer} />
       </motion.div>

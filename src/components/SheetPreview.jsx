@@ -19,13 +19,13 @@ const NEW_ROW_BY_OWNER = {
 const CALL_META = {
   queued: { label: "Queued", color: "var(--color-stone)", dot: "var(--color-stone)", pulse: false },
   ringing: { label: "Ringing", color: "var(--color-rose)", dot: "var(--color-rose)", pulse: true },
-  oncall: { label: "On call", color: "var(--color-gold-soft)", dot: "var(--color-gold)", pulse: true },
+  oncall: { label: "On call", color: "var(--color-gold-deep)", dot: "var(--color-gold)", pulse: true },
 };
 
 const SENTIMENT_META = {
-  positive: { label: "Positive", color: "var(--color-emerald-soft)", bg: "rgba(61,120,99,0.18)" },
-  neutral: { label: "Neutral", color: "var(--color-stone)", bg: "rgba(255,255,255,0.06)" },
-  negative: { label: "Negative", color: "var(--color-rose-soft)", bg: "rgba(178,58,72,0.18)" },
+  positive: { label: "Positive", color: "var(--color-emerald)", bg: "rgba(31,77,61,0.1)" },
+  neutral: { label: "Neutral", color: "var(--color-stone)", bg: "rgba(139,133,120,0.12)" },
+  negative: { label: "Negative", color: "var(--color-rose)", bg: "rgba(178,58,72,0.1)" },
 };
 
 // Mirrors the real calling vendor's own read-out (Caller Monkey): once a
@@ -91,11 +91,11 @@ export default function SheetPreview({ viewer = "Aman" }) {
   }, [viewer]);
 
   return (
-    <div className="rounded-2xl overflow-hidden" style={{ border: "1px solid rgba(255,255,255,0.08)" }}>
-      <div className="flex items-center justify-between px-4 py-2.5" style={{ background: "rgba(255,255,255,0.04)" }}>
+    <div className="rounded-2xl overflow-hidden" style={{ border: "1px solid var(--color-stone-line)" }}>
+      <div className="flex items-center justify-between px-4 py-2.5" style={{ background: "var(--color-ivory-soft)" }}>
         <span className="font-mono text-[10.5px]" style={{ color: "var(--color-stone)" }}>Cherish Followup Sheet — Delhi</span>
-        <span className="flex items-center gap-1.5 font-mono text-[9.5px] uppercase" style={{ color: "var(--color-emerald-soft)" }}>
-          <span className="rounded-full animate-pulse" style={{ width: 6, height: 6, background: "var(--color-emerald-soft)" }} />
+        <span className="flex items-center gap-1.5 font-mono text-[9.5px] uppercase" style={{ color: "var(--color-emerald)" }}>
+          <span className="rounded-full animate-pulse" style={{ width: 6, height: 6, background: "var(--color-emerald)" }} />
           Watching for new rows
         </span>
       </div>
@@ -109,16 +109,20 @@ export default function SheetPreview({ viewer = "Aman" }) {
               key={r.name}
               layout
               initial={{ opacity: 0 }}
-              animate={{ opacity: 1, backgroundColor: isNew ? "rgba(201,162,39,0.14)" : "rgba(255,255,255,0)" }}
+              animate={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
               className="flex items-center justify-between gap-3 px-4 py-3"
-              style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}
+              style={{
+                borderBottom: "1px solid var(--color-stone-line)",
+                borderLeft: isNew ? "3px solid var(--color-gold)" : "3px solid transparent",
+                background: "var(--color-paper)",
+              }}
             >
               <div className="min-w-0">
                 <div className="flex items-center gap-1.5">
-                  <span className="font-semibold text-[12.5px] truncate" style={{ color: "var(--color-paper)" }}>{r.name}</span>
+                  <span className="font-semibold text-[12.5px] truncate" style={{ color: "var(--color-ink)" }}>{r.name}</span>
                   {isNew && (
-                    <span className="font-mono text-[8px] uppercase rounded-full px-1.5 py-0.5 shrink-0" style={{ background: "var(--color-gold)", color: "var(--color-ink)" }}>New</span>
+                    <span className="font-mono text-[8px] uppercase rounded-full px-1.5 py-0.5 shrink-0" style={{ border: "1px solid var(--color-gold)", color: "var(--color-gold-deep)" }}>New</span>
                   )}
                 </div>
                 <div className="font-mono text-[10px] truncate mt-0.5" style={{ color: "var(--color-stone)" }}>
@@ -131,7 +135,7 @@ export default function SheetPreview({ viewer = "Aman" }) {
         })}
       </AnimatePresence>
 
-      <div className="relative flex items-center gap-2.5 mx-3 my-3 rounded-full pl-1.5 pr-4 py-1.5" style={{ background: "rgba(255,255,255,0.05)" }}>
+      <div className="relative flex items-center gap-2.5 mx-3 my-3 rounded-full pl-1.5 pr-4 py-1.5" style={{ background: "var(--color-ivory-soft)" }}>
         <Mascot size={30} className="shrink-0" />
         <AnimatePresence mode="wait">
           <motion.span
@@ -141,7 +145,7 @@ export default function SheetPreview({ viewer = "Aman" }) {
             exit={{ opacity: 0, y: -4 }}
             transition={{ duration: 0.25 }}
             className="font-body text-[11px] truncate"
-            style={{ color: "var(--color-emerald-soft)" }}
+            style={{ color: "var(--color-emerald)" }}
           >
             {liveText}
           </motion.span>
