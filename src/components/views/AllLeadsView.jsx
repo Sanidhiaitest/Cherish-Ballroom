@@ -1,9 +1,10 @@
 import { motion } from "framer-motion";
 import { ArrowLeft, ChevronRight } from "lucide-react";
-import { STAGES, LEADS, leadOwner, EVENT_TYPE_META, roomsRequirement, formatINR } from "../../data/leads";
+import { STAGES, LEADS, leadOwner, roomsRequirement, formatINR } from "../../data/leads";
 import SourceTag from "../SourceTag";
 import Avatar from "../Avatar";
 import ScoreRing from "../ScoreRing";
+import EventBadge from "../EventBadge";
 
 // Merges the old "Priority Queue" (score-ranked, stale-lead flag) into the full
 // leads list so there's one canonical, excel-detailed place to see everyone —
@@ -19,18 +20,6 @@ function LastTouch({ days, stale }) {
         </span>
       )}
       {days === 0 ? "Today" : `${days}d ago`}
-    </span>
-  );
-}
-
-function EventBadge({ eventType }) {
-  const label = EVENT_TYPE_META[eventType]?.label || "—";
-  return (
-    <span
-      className="inline-block font-mono text-[8.5px] uppercase tracking-wide rounded-full px-1.5 py-0.5 w-fit"
-      style={{ border: "1px solid var(--color-stone-line)", color: "var(--color-stone)" }}
-    >
-      {label}
     </span>
   );
 }

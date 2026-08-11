@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { STAGES, LEADS, scoreTone, formatINR, TONE_COLOR, leadOwner } from "../../data/leads";
 import SourceTag, { sourceColor } from "../SourceTag";
 import Avatar from "../Avatar";
+import EventBadge from "../EventBadge";
 
 export default function FunnelView({ openLead, viewer = "Aman" }) {
   const myLeads = LEADS.filter((l) => leadOwner(l) === viewer);
@@ -51,8 +52,14 @@ export default function FunnelView({ openLead, viewer = "Aman" }) {
                     >
                       <div className="flex items-center gap-2 mb-2">
                         <Avatar initials={l.initials} source={l.source} size={26} />
-                        <div className="font-semibold text-[12.5px] leading-tight truncate" style={{ color: "var(--color-ink)" }}>{l.name}</div>
+                        <div className="min-w-0">
+                          <div className="font-semibold text-[12.5px] leading-tight truncate" style={{ color: "var(--color-ink)" }}>{l.name}</div>
+                          <div className="font-mono text-[9.5px] truncate mt-0.5" style={{ color: "var(--color-stone)" }}>
+                            {l.guests ? `${l.guests} pax` : "—"} · {l.eventDate || "—"}
+                          </div>
+                        </div>
                       </div>
+                      <div className="mb-2"><EventBadge eventType={l.eventType} /></div>
                       <div className="flex justify-between items-center">
                         <SourceTag source={l.source} />
                         <span className="font-mono text-[11px] font-bold" style={{ color: TONE_COLOR[tone.tone] }}>{l.score}</span>
