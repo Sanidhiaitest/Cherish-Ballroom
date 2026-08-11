@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import {
   MessageCircle, Bot, ArrowUpRight, PhoneCall, Check, Hourglass,
-  Pencil, HeartHandshake, Hash, FileText, ChevronDown, ChevronUp,
+  Pencil, HeartHandshake, Hash, FileText, ChevronDown, ChevronUp, FileSpreadsheet,
 } from "lucide-react";
 import {
   LEADS, STAGES, SOURCE_META, NURTURE_STEPS, AI_CALL_LOG, AI_CALLER_NUMBER, OWNER_BY_SOURCE,
@@ -14,6 +14,8 @@ const REF_VB_W = 760;
 const REF_VB_H = 380;
 const REF_ROOT_X = 110;
 const REF_CHILD_X = [560, 590];
+
+const SHEET_COLUMNS = ["Event Type", "Guest Count", "Name", "Event Date", "Visit Timing", "Owner"];
 
 function useReferralGraph() {
   return useMemo(() => {
@@ -40,7 +42,7 @@ function useReferralGraph() {
   }, []);
 }
 
-export default function AutomationView({ openLead, onAIVoiceCall, viewer = "Aman" }) {
+export default function AutomationView({ openLead, onAIVoiceCall, setView, viewer = "Aman" }) {
   const [refHover, setRefHover] = useState(null);
   const { nodes: refNodes, edges: refEdges, roots: refRoots } = useReferralGraph();
   const refTotalReferred = refNodes.length - refRoots.length;
@@ -229,6 +231,40 @@ export default function AutomationView({ openLead, onAIVoiceCall, viewer = "Aman
                 </div>
               );
             })}
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="rounded-2xl p-6"
+          style={{ background: "var(--color-paper)", border: "1px solid var(--color-stone-line)" }}
+        >
+          <div className="flex items-center gap-2 mb-1.5">
+            <FileSpreadsheet size={15} style={{ color: "var(--color-gold-deep)" }} />
+            <div className="font-serif text-[16px]" style={{ color: "var(--color-ink)" }}>Sheet Sync</div>
+          </div>
+          <p className="font-body text-[12px] mb-3" style={{ color: "var(--color-stone)" }}>
+            Same Followup Sheet Cherish already fills in — a row landing is what fires everything else.
+          </p>
+          <div className="flex flex-wrap gap-1.5 mb-3">
+            {SHEET_COLUMNS.map((c) => (
+              <span key={c} className="font-mono text-[9.5px] rounded-full px-2 py-1" style={{ background: "var(--color-ivory)", color: "var(--color-stone)" }}>
+                {c}
+              </span>
+            ))}
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="flex items-center gap-1.5 font-mono text-[9.5px] uppercase tracking-wide" style={{ color: "var(--color-emerald)" }}>
+              <span className="rounded-full animate-pulse" style={{ width: 6, height: 6, background: "var(--color-emerald)" }} />
+              Watching for new rows
+            </span>
+            {setView && (
+              <button onClick={() => setView("overview")} className="font-mono text-[9.5px] uppercase tracking-wide" style={{ color: "var(--color-gold-deep)" }}>
+                Live feed →
+              </button>
+            )}
           </div>
         </motion.div>
       </div>
