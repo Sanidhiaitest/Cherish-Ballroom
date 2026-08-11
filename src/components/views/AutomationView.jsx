@@ -69,6 +69,7 @@ export default function AutomationView({ openLead, onAIVoiceCall, viewer = "Aman
   const triage = { ...triageAll, green: triageAll.green.filter((l) => leadOwner(l) === viewer), yellow: triageAll.yellow.filter((l) => leadOwner(l) === viewer) };
   const draft = nurtureDraft(nurtureLead);
   const [draftText, setDraftText] = useState(draft?.text || "");
+  const [openTemplateId, setOpenTemplateId] = useState(null);
   const [editingTemplateId, setEditingTemplateId] = useState(null);
   const [templateOverrides, setTemplateOverrides] = useState({});
   const [savedTemplateId, setSavedTemplateId] = useState(null);
@@ -275,34 +276,28 @@ export default function AutomationView({ openLead, onAIVoiceCall, viewer = "Aman
           className="rounded-2xl p-6"
           style={{ background: "var(--color-paper)", border: "1px solid var(--color-stone-line)" }}
         >
-          <div className="flex items-center gap-2 mb-1.5">
+          <div className="flex items-center gap-2 mb-3">
             <Hash size={15} style={{ color: "var(--color-gold-deep)" }} />
             <div className="font-serif text-[16px]" style={{ color: "var(--color-ink)" }}>Number System</div>
             <PhaseBadge phase={2} />
           </div>
-          <p className="font-body text-[12px] mb-4" style={{ color: "var(--color-stone)" }}>
-            Which number is actually calling and messaging a lead, and whose voice it uses.
-          </p>
 
-          <div className="rounded-xl px-3.5 py-3 mb-3" style={{ background: "var(--color-ivory)" }}>
-            <div className="flex items-center gap-2 mb-1">
-              <PhoneCall size={12} style={{ color: "var(--color-gold-deep)" }} />
-              <span className="font-mono text-[9.5px] uppercase tracking-wider" style={{ color: "var(--color-gold-deep)" }}>Calling — {AI_CALLER_NUMBER}</span>
-            </div>
-            <p className="font-body text-[11.5px] leading-relaxed" style={{ color: "var(--color-ink)" }}>
-              One dedicated Cherish number carries every AI call, voice-cloned to whichever of Aman/Harman owns that lead's channel — the guest hears "this is {viewer} calling," but {viewer}'s personal number never touches a cold lead.
-            </p>
+          <div className="flex items-center gap-1.5 flex-wrap mb-2">
+            <span className="inline-flex items-center gap-1.5 font-mono text-[10.5px] rounded-full px-2.5 py-1.5" style={{ background: "rgba(201,162,39,0.12)", color: "var(--color-gold-deep)" }}>
+              <PhoneCall size={11} /> {AI_CALLER_NUMBER}
+            </span>
+            <span className="font-mono text-[9.5px] uppercase tracking-wide rounded-full px-2 py-1" style={{ border: "1px solid var(--color-stone-line)", color: "var(--color-stone)" }}>
+              Voice-cloned per owner
+            </span>
           </div>
 
-          <div className="rounded-xl px-3.5 py-3 mb-3" style={{ background: "var(--color-ivory)" }}>
-            <div className="flex items-center gap-2 mb-1">
-              <MessageCircle size={12} style={{ color: "var(--color-gold-deep)" }} />
-              <span className="font-mono text-[9.5px] uppercase tracking-wider" style={{ color: "var(--color-gold-deep)" }}>Messaging</span>
-            </div>
-            <p className="font-body text-[11.5px] leading-relaxed" style={{ color: "var(--color-ink)" }}>
-              <span style={{ color: "var(--color-rose)" }}>Today:</span> one-tap send from {viewer}'s own WhatsApp.{" "}
-              <span style={{ color: "var(--color-emerald)" }}>Proposed:</span> a dedicated WhatsApp Business number, automatic once confirmed.
-            </p>
+          <div className="flex items-center gap-1.5 flex-wrap mb-4">
+            <span className="inline-flex items-center gap-1.5 font-mono text-[9.5px] uppercase tracking-wide rounded-full px-2.5 py-1.5" style={{ background: "rgba(178,58,72,0.1)", color: "var(--color-rose)" }}>
+              <MessageCircle size={10} /> Today · {viewer}'s WhatsApp
+            </span>
+            <span className="inline-flex items-center gap-1.5 font-mono text-[9.5px] uppercase tracking-wide rounded-full px-2.5 py-1.5" style={{ background: "rgba(31,77,61,0.1)", color: "var(--color-emerald)" }}>
+              Proposed · Business API
+            </span>
           </div>
 
           <div className="font-mono text-[9px] uppercase tracking-wider mb-1.5" style={{ color: "var(--color-stone)" }}>
@@ -329,49 +324,61 @@ export default function AutomationView({ openLead, onAIVoiceCall, viewer = "Aman
             <div className="font-serif text-[16px]" style={{ color: "var(--color-ink)" }}>Message Templates</div>
             <PhaseBadge phase={2} />
           </div>
-          <p className="font-body text-[12px] mb-4" style={{ color: "var(--color-stone)" }}>
-            Every WhatsApp template the system sends — edit the wording, not just the send button. Previewed against {nurtureLead.name}.
+          <p className="font-body text-[11.5px] mb-3" style={{ color: "var(--color-stone)" }}>
+            Previewed against {nurtureLead.name}. Tap to edit.
           </p>
-          <div className="flex flex-col gap-2 max-h-[420px] overflow-y-auto pr-1">
+          <div className="flex flex-col gap-1.5 max-h-[420px] overflow-y-auto pr-1">
             {templates.map((t) => {
+              const isOpen = openTemplateId === t.id;
               const isEditing = editingTemplateId === t.id;
               const text = templateOverrides[t.id] ?? t.text;
               return (
-                <div key={t.id} className="rounded-xl px-3.5 py-3" style={{ background: "var(--color-ivory)" }}>
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span className="font-body text-[11.5px] font-semibold" style={{ color: "var(--color-ink)" }}>{t.label}</span>
-                    <span className="font-mono text-[8.5px] uppercase tracking-wide rounded-full px-1.5 py-0.5" style={{ border: "1px solid var(--color-stone-line)", color: "var(--color-stone)" }}>
-                      {t.channel}
-                    </span>
-                  </div>
-                  {isEditing ? (
-                    <textarea
-                      value={text}
-                      onChange={(e) => setTemplateOverrides((o) => ({ ...o, [t.id]: e.target.value }))}
-                      rows={3}
-                      className="w-full rounded-lg px-2.5 py-2 text-[11.5px] outline-none resize-none"
-                      style={{ background: "var(--color-paper)", border: "1px solid var(--color-stone-line)", color: "var(--color-ink)" }}
-                    />
-                  ) : (
-                    <p className="font-body text-[11.5px] leading-relaxed" style={{ color: "var(--color-ink)" }}>{text}</p>
-                  )}
-                  <div className="flex items-center gap-2 mt-2">
-                    <button
-                      onClick={() => {
-                        if (isEditing) { setSavedTemplateId(t.id); setTimeout(() => setSavedTemplateId((id) => (id === t.id ? null : id)), 1800); }
-                        setEditingTemplateId(isEditing ? null : t.id);
-                      }}
-                      className="flex items-center gap-1.5 font-mono text-[9.5px] uppercase tracking-wide"
-                      style={{ color: "var(--color-gold-deep)" }}
-                    >
-                      <Pencil size={10} /> {isEditing ? "Save" : "Edit"}
-                    </button>
-                    {savedTemplateId === t.id && !isEditing && (
-                      <span className="flex items-center gap-1 font-mono text-[9.5px]" style={{ color: "var(--color-emerald)" }}>
-                        <Check size={10} /> Saved
+                <div key={t.id}>
+                  <button
+                    onClick={() => setOpenTemplateId(isOpen ? null : t.id)}
+                    className="w-full flex items-center justify-between gap-2 rounded-full px-3.5 py-2"
+                    style={{ background: "var(--color-ivory)" }}
+                  >
+                    <span className="font-body text-[11.5px] font-medium truncate" style={{ color: "var(--color-ink)" }}>{t.label}</span>
+                    <span className="flex items-center gap-1.5 shrink-0">
+                      <span className="font-mono text-[8.5px] uppercase tracking-wide rounded-full px-1.5 py-0.5" style={{ border: "1px solid var(--color-stone-line)", color: "var(--color-stone)" }}>
+                        {t.channel}
                       </span>
-                    )}
-                  </div>
+                      {isOpen ? <ChevronUp size={12} style={{ color: "var(--color-stone)" }} /> : <ChevronDown size={12} style={{ color: "var(--color-stone)" }} />}
+                    </span>
+                  </button>
+                  {isOpen && (
+                    <div className="rounded-xl px-3.5 py-3 mt-1.5" style={{ background: "rgba(201,162,39,0.08)" }}>
+                      {isEditing ? (
+                        <textarea
+                          value={text}
+                          onChange={(e) => setTemplateOverrides((o) => ({ ...o, [t.id]: e.target.value }))}
+                          rows={3}
+                          className="w-full rounded-lg px-2.5 py-2 text-[11.5px] outline-none resize-none"
+                          style={{ background: "var(--color-paper)", border: "1px solid var(--color-stone-line)", color: "var(--color-ink)" }}
+                        />
+                      ) : (
+                        <p className="font-body text-[11.5px] leading-relaxed" style={{ color: "var(--color-ink)" }}>{text}</p>
+                      )}
+                      <div className="flex items-center gap-2 mt-2">
+                        <button
+                          onClick={() => {
+                            if (isEditing) { setSavedTemplateId(t.id); setTimeout(() => setSavedTemplateId((id) => (id === t.id ? null : id)), 1800); }
+                            setEditingTemplateId(isEditing ? null : t.id);
+                          }}
+                          className="flex items-center gap-1.5 font-mono text-[9.5px] uppercase tracking-wide"
+                          style={{ color: "var(--color-gold-deep)" }}
+                        >
+                          <Pencil size={10} /> {isEditing ? "Save" : "Edit"}
+                        </button>
+                        {savedTemplateId === t.id && !isEditing && (
+                          <span className="flex items-center gap-1 font-mono text-[9.5px]" style={{ color: "var(--color-emerald)" }}>
+                            <Check size={10} /> Saved
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               );
             })}
