@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Flame, ArrowUpRight, PlusCircle, Radar, BellRing, ChevronRight, Bot, CalendarClock, Check, X, Users2 } from "lucide-react";
-import { LEADS, pendingCommitments, commitmentSource, leadOwner } from "../../data/leads";
+import { Flame, ArrowUpRight, PlusCircle, Radar, BellRing, ChevronRight, CalendarClock, Check, X, Users2 } from "lucide-react";
+import { LEADS, pendingCommitments, leadOwner } from "../../data/leads";
 import SourceTag from "../SourceTag";
 import Avatar from "../Avatar";
 import PhaseBadge from "../PhaseBadge";
@@ -258,44 +258,40 @@ export default function OverviewView({ openLead, onLogLead, viewer = "Aman" }) {
           className="w-full mt-5 rounded-2xl p-5"
           style={{ background: "var(--color-paper)", border: "1px solid var(--color-stone-line)" }}
         >
-          <div className="flex items-center gap-2 mb-1">
+          <div className="flex items-center gap-2 mb-4">
             <BellRing size={15} style={{ color: "var(--color-gold-deep)" }} />
-            <span className="font-serif text-[15px]" style={{ color: "var(--color-ink)" }}>What you said you'd do</span>
+            <span className="font-serif text-[15px]" style={{ color: "var(--color-ink)" }}>To Do List</span>
           </div>
-          <p className="font-body text-[11.5px] mb-4" style={{ color: "var(--color-stone)" }}>
-            Pulled from your calls and notes — the system remembers.
-          </p>
-          <div className="flex flex-col gap-1">
-            {commitments.map(({ lead, text, due }, i) => (
-              <motion.button
-                key={lead.id}
-                initial={{ opacity: 0, x: -8 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.3 + i * 0.05 }}
-                onClick={() => openLead(lead)}
-                className="w-full flex items-center gap-3 py-2 text-left rounded-xl transition-colors hover:bg-black/[0.03]"
-              >
-                <span
-                  className="font-mono text-[9.5px] uppercase tracking-wider rounded-full px-2 py-1 shrink-0"
-                  style={{
-                    background: due === "Today" ? "rgba(178,58,72,0.1)" : "var(--color-ivory-soft)",
-                    color: due === "Today" ? "var(--color-rose)" : "var(--color-stone)",
-                  }}
-                >
-                  {due}
-                </span>
-                <div className="flex-1 min-w-0">
-                  <div className="text-[12.5px] font-medium truncate" style={{ color: "var(--color-ink)" }}>{text}</div>
-                  <div className="flex items-center gap-1 font-mono text-[10px] mt-0.5" style={{ color: "var(--color-stone)" }}>
-                    {lead.name}
-                    <span style={{ opacity: 0.5 }}>·</span>
-                    {commitmentSource(lead.name) === "Parsed from the AI call transcript" && <Bot size={9} />}
-                    {commitmentSource(lead.name)}
+          <div className="relative pl-5">
+            <div className="absolute left-[7px] top-1.5 bottom-1.5 w-px" style={{ background: "var(--color-stone-line)" }} />
+            {commitments.map(({ lead, text, due }, i) => {
+              const isToday = due === "Today";
+              return (
+                <div key={lead.id} className="relative pb-3.5 last:pb-0">
+                  <span
+                    className="absolute -left-5 top-1.5 rounded-full"
+                    style={{ width: 8, height: 8, background: isToday ? "var(--color-rose)" : "var(--color-gold)", border: "2px solid var(--color-paper)" }}
+                  />
+                  <div className="font-mono text-[9px] uppercase tracking-wider mb-1" style={{ color: isToday ? "var(--color-rose)" : "var(--color-stone)" }}>
+                    {due}
                   </div>
+                  <motion.button
+                    initial={{ opacity: 0, x: -8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.3 + i * 0.05 }}
+                    onClick={() => openLead(lead)}
+                    className="w-full flex items-center gap-3 rounded-xl px-3 py-2.5 text-left"
+                    style={{ background: isToday ? "rgba(178,58,72,0.06)" : "var(--color-ivory-soft)" }}
+                  >
+                    <div className="flex-1 min-w-0">
+                      <div className="text-[12.5px] font-medium truncate" style={{ color: "var(--color-ink)" }}>{text}</div>
+                      <div className="font-mono text-[10px] mt-0.5" style={{ color: "var(--color-stone)" }}>{lead.name}</div>
+                    </div>
+                    <ChevronRight size={14} className="shrink-0" style={{ color: "var(--color-stone)" }} />
+                  </motion.button>
                 </div>
-                <ChevronRight size={14} style={{ color: "var(--color-stone)" }} />
-              </motion.button>
-            ))}
+              );
+            })}
           </div>
         </motion.div>
       )}
