@@ -102,9 +102,29 @@ export default function OverviewView({ openLead, onLogLead, viewer = "Aman" }) {
           <h1 className="font-serif text-[24px] md:text-[27px] mt-3 leading-tight" style={{ color: "var(--color-paper)" }}>
             Good {greetingPeriod(now.getHours())}, {viewer}.
           </h1>
-          <p className="font-body text-[13.5px] mt-2.5 max-w-sm" style={{ color: "var(--color-stone)" }}>
-            One thread, no matter which door they came through — {myLeads.length} in your book right now.
+          <p className="font-body text-[11.5px] mt-1.5 max-w-sm" style={{ color: "var(--color-stone)" }}>
+            One thread, no matter which door they came through.
           </p>
+
+          <div className="flex items-stretch gap-4 sm:gap-6 mt-5 pt-5 w-full max-w-sm justify-center" style={{ borderTop: "1px solid rgba(255,255,255,0.1)" }}>
+            <div className="flex-1">
+              <div className="font-serif text-[20px] leading-none" style={{ color: "var(--color-paper)" }}>{myLeads.length}</div>
+              <div className="font-mono text-[8.5px] uppercase tracking-wide mt-1" style={{ color: "var(--color-stone)" }}>Active</div>
+            </div>
+            <div className="flex-1" style={{ borderLeft: "1px solid rgba(255,255,255,0.1)" }}>
+              <div className="font-serif text-[20px] leading-none" style={{ color: "var(--color-gold-soft)" }}>{hotAll.length}</div>
+              <div className="font-mono text-[8.5px] uppercase tracking-wide mt-1" style={{ color: "var(--color-stone)" }}>Hot</div>
+            </div>
+            <div className="flex-1" style={{ borderLeft: "1px solid rgba(255,255,255,0.1)" }}>
+              <div className="font-serif text-[20px] leading-none" style={{ color: "var(--color-rose-soft)" }}>{cold.length}</div>
+              <div className="font-mono text-[8.5px] uppercase tracking-wide mt-1" style={{ color: "var(--color-stone)" }}>Going cold</div>
+            </div>
+            <div className="flex-1" style={{ borderLeft: "1px solid rgba(255,255,255,0.1)" }}>
+              <div className="font-serif text-[20px] leading-none" style={{ color: "var(--color-emerald-soft)" }}>{formatINR(bookedValue)}</div>
+              <div className="font-mono text-[8.5px] uppercase tracking-wide mt-1" style={{ color: "var(--color-stone)" }}>Booked</div>
+            </div>
+          </div>
+
           <motion.button
             onClick={onLogLead}
             whileHover={{ scale: 1.03 }}
