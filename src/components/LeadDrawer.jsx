@@ -2,12 +2,22 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   X, Phone, MessageCircle, Sparkles, MapPin, FileText, StickyNote, AlertTriangle, PhoneCall, Smartphone, Bot,
-  ClipboardList, BrainCircuit, Lightbulb, BellRing, HelpCircle, ThumbsUp, ThumbsDown, ChefHat, Send, Pencil, SkipForward, Check,
+  ClipboardList, Lightbulb, BellRing, HelpCircle, ThumbsUp, ThumbsDown, ChefHat, Send, Pencil, SkipForward, Check,
 } from "lucide-react";
 import { STAGES, AI_CALL_LOG, scoreTone, formatINR, commitmentSource, nextFollowupDraft } from "../data/leads";
 import SourceTag from "./SourceTag";
 import Avatar from "./Avatar";
 import ScoreRing from "./ScoreRing";
+import Mascot from "./Mascot";
+
+// Trims a signal sentence down to a short, pill-sized phrase — everything
+// before the first em-dash or comma, capped at 6 words. Full sentences stay
+// available in the "Explain this score" panel below; this is just the scan.
+function shortSignal(text) {
+  const trimmed = text.split(" — ")[0].split(", ")[0];
+  const words = trimmed.split(" ");
+  return words.length > 6 ? words.slice(0, 6).join(" ") + "…" : trimmed;
+}
 
 const TYPE_ICON = {
   dm: MessageCircle,
@@ -115,19 +125,27 @@ export default function LeadDrawer({ lead, onClose, onCall, onWhatsApp, onPrevie
                 className="mt-5 rounded-2xl p-4"
                 style={{ background: "linear-gradient(135deg, var(--color-ink), #1c2e26)" }}
               >
-                <div className="flex items-center gap-2 mb-2.5">
-                  <BrainCircuit size={14} style={{ color: "var(--color-gold-soft)" }} />
+                <div className="flex items-center gap-2 mb-3">
+                  <Mascot size={24} />
                   <span className="font-mono text-[9.5px] uppercase tracking-wider" style={{ color: "var(--color-gold-soft)" }}>AI Lead Intelligence</span>
                 </div>
-                <div className="font-serif text-[16px] mb-2" style={{ color: "var(--color-paper)" }}>{lead.aiProfile.persona}</div>
-                <ul className="flex flex-col gap-1.5 mb-3">
+                <span
+                  className="inline-block font-serif text-[13.5px] rounded-full px-3 py-1.5 mb-3"
+                  style={{ background: "rgba(201,162,39,0.18)", color: "var(--color-gold-soft)" }}
+                >
+                  {lead.aiProfile.persona}
+                </span>
+                <div className="flex flex-wrap gap-1.5 mb-3">
                   {lead.aiProfile.signals.map((s, i) => (
-                    <li key={i} className="font-body text-[12px] leading-relaxed flex items-start gap-2" style={{ color: "var(--color-ivory)" }}>
-                      <span className="mt-1.5 shrink-0 rounded-full" style={{ width: 3.5, height: 3.5, background: "var(--color-gold-soft)" }} />
-                      {s}
-                    </li>
+                    <span
+                      key={i}
+                      className="font-body text-[10.5px] leading-none rounded-full px-2.5 py-1.5"
+                      style={{ background: "rgba(255,255,255,0.08)", color: "var(--color-ivory)" }}
+                    >
+                      {shortSignal(s)}
+                    </span>
                   ))}
-                </ul>
+                </div>
                 <div className="flex items-start gap-2 rounded-xl px-3 py-2.5" style={{ background: "rgba(201,162,39,0.1)" }}>
                   <Lightbulb size={13} className="shrink-0 mt-0.5" style={{ color: "var(--color-gold-soft)" }} />
                   <span className="font-body text-[11.5px] leading-relaxed" style={{ color: "var(--color-ivory)" }}>{lead.aiProfile.tip}</span>
