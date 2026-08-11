@@ -8,7 +8,7 @@ export default function FunnelView({ openLead, viewer = "Aman" }) {
   const myLeads = LEADS.filter((l) => leadOwner(l) === viewer);
   return (
     <div>
-      <h1 className="font-serif text-[27px]" style={{ color: "var(--color-ink)" }}>Live Funnel</h1>
+      <h1 className="font-serif text-[27px]" style={{ color: "var(--color-ink)" }}>Lead Stages</h1>
       <p className="font-body text-[13.5px] mt-1.5 mb-6" style={{ color: "var(--color-stone)" }}>
         {viewer}'s leads, one thread each — regardless of how they arrived.
       </p>

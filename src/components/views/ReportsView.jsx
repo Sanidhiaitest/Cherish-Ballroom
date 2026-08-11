@@ -1,9 +1,13 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
-import { Sparkles, Star, MessageSquareWarning, FileText, TrendingUp, Wand2, ChevronRight, Megaphone, ThumbsUp, ThumbsDown, MessageSquare, Mail } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Sparkles, Star, MessageSquareWarning, FileText, TrendingUp, Wand2, ChevronRight, Megaphone, ThumbsUp, ThumbsDown,
+  MessageSquare, Mail, ClipboardList, MessageCircle, Gauge, PhoneCall, CheckCircle2, XCircle, Clock, Check,
+} from "lucide-react";
 import {
   LEADS, STAGES, SOURCE_META, WEEKLY_LEAD_TREND, BOOKINGS_TREND, MONTHLY_BOOKING_GOAL,
-  REVIEWS, SAVED_REPORTS, CAMPAIGNS, CONTENT_TRENDS, ASK_THE_SHEET_EXAMPLES, formatINR, medianResponseSeconds, partnerMarginSummary, weeklyDigest, liveChannelSplit,
+  REVIEWS, SAVED_REPORTS, CAMPAIGNS, CONTENT_TRENDS, ASK_THE_SHEET_EXAMPLES, formatINR, fmtSeconds, medianResponseSeconds,
+  partnerMarginSummary, weeklyDigest, liveChannelSplit, aiCallSummary,
 } from "../../data/leads";
 import SourceTag, { sourceColor } from "../SourceTag";
 import AreaChart from "../charts/AreaChart";
@@ -12,6 +16,17 @@ import BarChart from "../charts/BarChart";
 import PhaseBadge from "../PhaseBadge";
 
 const PERIODS = ["7 Days", "30 Days", "6 Months"];
+const REPORT_RECIPIENTS = ["Kritika", "Naveen", "Rahul"];
+
+function SummaryStat({ icon: Icon, label, value, color }) {
+  return (
+    <div className="rounded-xl p-3.5" style={{ background: "var(--color-ivory)" }}>
+      <Icon size={13} style={{ color: color || "var(--color-gold-deep)" }} />
+      <div className="font-serif text-[19px] mt-2 leading-none" style={{ color: color || "var(--color-ink)" }}>{value}</div>
+      <div className="font-mono text-[9px] uppercase mt-1.5 leading-tight" style={{ color: "var(--color-stone)" }}>{label}</div>
+    </div>
+  );
+}
 
 function seededDay(i) {
   // Deterministic pseudo-random 0-3 "activity" level per calendar day — no
@@ -23,7 +38,15 @@ export default function ReportsView() {
   const [period, setPeriod] = useState("7 Days");
   const [showAIReply, setShowAIReply] = useState(false);
   const [askedIndex, setAskedIndex] = useState(null);
+  const [sendOpen, setSendOpen] = useState(false);
+  const [sentTo, setSentTo] = useState(null);
   const digest = weeklyDigest();
+  const aiSummary = aiCallSummary();
+
+  function sendSummary(name) {
+    setSentTo(name);
+    setSendOpen(false);
+  }
 
   const bySource = Object.keys(SOURCE_META)
     .map((s) => ({
@@ -67,6 +90,72 @@ export default function ReportsView() {
       <p className="font-body text-[13.5px] mt-1.5 mb-6" style={{ color: "var(--color-stone)" }}>
         Every number already sitting in the CRM, read out loud.
       </p>
+
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="rounded-2xl p-6 mb-5"
+        style={{ background: "var(--color-paper)", border: "1px solid var(--color-stone-line)" }}
+      >
+        <div className="flex items-center justify-between gap-3 flex-wrap mb-1">
+          <div className="flex items-center gap-2">
+            <ClipboardList size={15} style={{ color: "var(--color-gold-deep)" }} />
+            <div className="font-serif text-[16px]" style={{ color: "var(--color-ink)" }}>Today's Summary</div>
+          </div>
+          <div className="relative">
+            <button
+              onClick={() => setSendOpen((v) => !v)}
+              className="flex items-center gap-1.5 rounded-full px-3.5 py-1.5 font-mono text-[10.5px] uppercase tracking-wide"
+              style={{ background: "var(--color-emerald)", color: "var(--color-paper)" }}
+            >
+              <MessageCircle size={12} /> Send on WhatsApp
+            </button>
+            <AnimatePresence>
+              {sendOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: -6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  className="absolute right-0 top-full mt-2 rounded-2xl p-1.5 z-10 flex flex-col gap-0.5 min-w-[140px]"
+                  style={{ background: "var(--color-paper)", border: "1px solid var(--color-stone-line)", boxShadow: "0 12px 30px -10px rgba(20,17,15,0.25)" }}
+                >
+                  <div className="font-mono text-[8.5px] uppercase tracking-wider px-2.5 pt-1.5 pb-1" style={{ color: "var(--color-stone)" }}>Send to</div>
+                  {REPORT_RECIPIENTS.map((name) => (
+                    <button
+                      key={name}
+                      onClick={() => sendSummary(name)}
+                      className="text-left rounded-xl px-2.5 py-1.5 font-body text-[12px] hover:bg-black/5"
+                      style={{ color: "var(--color-ink)" }}
+                    >
+                      {name}
+                    </button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
+        <p className="font-body text-[12px] mb-4" style={{ color: "var(--color-stone)" }}>
+          Speed to lead, AI calls, conversions — everything that happened today, one glance.
+        </p>
+        {sentTo && (
+          <motion.div
+            initial={{ opacity: 0, y: -4 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex items-center gap-1.5 rounded-xl px-3 py-2 mb-4 font-body text-[12px]"
+            style={{ background: "rgba(31,77,61,0.08)", color: "var(--color-emerald)" }}
+          >
+            <Check size={13} /> Sent to {sentTo} on WhatsApp.
+          </motion.div>
+        )}
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+          <SummaryStat icon={Gauge} label="Speed to lead" value={fmtSeconds(median)} />
+          <SummaryStat icon={PhoneCall} label="Leads via AI call" value={aiSummary.calls} />
+          <SummaryStat icon={CheckCircle2} label="Converted" value={aiSummary.converted} color="var(--color-emerald)" />
+          <SummaryStat icon={XCircle} label="Not converted" value={aiSummary.notConverted} color="var(--color-stone)" />
+          <SummaryStat icon={Clock} label="Avg call time" value={fmtSeconds(aiSummary.avgSec)} />
+        </div>
+      </motion.div>
 
       <motion.div
         initial={{ opacity: 0, y: 12 }}

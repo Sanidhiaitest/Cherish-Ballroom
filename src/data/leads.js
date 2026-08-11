@@ -807,3 +807,27 @@ export function formatINR(n) {
   if (n >= 100000) return `₹${(n / 100000).toFixed(1).replace(/\.0$/, "")}L`;
   return `₹${n.toLocaleString("en-IN")}`;
 }
+
+export function fmtSeconds(s) {
+  if (!s) return "—";
+  if (s < 60) return `${s} sec`;
+  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")} min`;
+}
+
+// Daily-summary numbers for the Report page's top snippet — same AI call log
+// and stage data every other view reads, just rolled up business-wide rather
+// than per-viewer, since this is what goes to Kritika/Naveen, not one rep.
+export function aiCallSummary() {
+  const converted = LEADS.filter((l) => l.stage === "booked").length;
+  const secs = AI_CALL_LOG.map((e) => {
+    const [m, s] = (e.duration || "0:00").split(":").map(Number);
+    return m * 60 + s;
+  });
+  const avgSec = secs.length ? Math.round(secs.reduce((a, b) => a + b, 0) / secs.length) : 0;
+  return {
+    calls: AI_CALL_LOG.length,
+    converted,
+    notConverted: LEADS.length - converted,
+    avgSec,
+  };
+}

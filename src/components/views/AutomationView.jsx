@@ -1,18 +1,13 @@
 import { Fragment, useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { Zap, MessageCircle, Bot, Users2, ArrowUpRight, CheckCircle2, Circle, Globe2, PhoneCall, ChefHat, Check, X as XIcon, ShieldCheck, ListFilter, FileSpreadsheet, Hourglass, Mic, CalendarClock, AlertCircle, Send, Pencil, ShieldQuestion, HeartHandshake } from "lucide-react";
+import { Zap, MessageCircle, Bot, Users2, ArrowUpRight, CheckCircle2, Circle, Globe2, PhoneCall, ChefHat, Check, X as XIcon, ListFilter, FileSpreadsheet, Hourglass, Mic, CalendarClock, AlertCircle, Send, Pencil, ShieldQuestion, HeartHandshake } from "lucide-react";
 import {
   LEADS, STAGES, NURTURE_STEPS, AI_CALL_LOG, COMPETITIVE_CHECKLIST, AI_CALLER_NUMBER, DATA_INTAKE_TODAY, medianResponseSeconds,
-  partnerMarginSummary, formatINR, queuedForAICall, triageToday, leadOwner, VOICE_NOTE_FALLBACK_EXAMPLE,
+  partnerMarginSummary, formatINR, fmtSeconds, queuedForAICall, triageToday, leadOwner, VOICE_NOTE_FALLBACK_EXAMPLE,
   PRE_VISIT_PRIMER_EXAMPLE, OPEN_QUESTION_WHATSAPP_VOICE, nurtureDraft, GUARDRAILS,
 } from "../../data/leads";
 import Avatar from "../Avatar";
 import PhaseBadge from "../PhaseBadge";
-
-function fmtSeconds(s) {
-  if (s < 60) return `${s} sec`;
-  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")} min`;
-}
 
 const REF_VB_W = 760;
 const REF_VB_H = 380;
@@ -77,22 +72,7 @@ export default function AutomationView({ openLead, onAIVoiceCall, onOpenVirtualT
 
   return (
     <div>
-      <h1 className="font-serif text-[27px]" style={{ color: "var(--color-ink)" }}>Cherish Copilot</h1>
-      <p className="font-body text-[13.5px] mt-1.5 mb-4" style={{ color: "var(--color-stone)" }}>
-        Live today, and what's next — built alongside Aman and Harman.
-      </p>
-
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="flex items-center gap-2.5 rounded-2xl px-4 py-3 mb-5"
-        style={{ background: "rgba(31,77,61,0.07)", border: "1px solid rgba(31,77,61,0.22)" }}
-      >
-        <ShieldCheck size={15} className="shrink-0" style={{ color: "var(--color-emerald)" }} />
-        <span className="font-body text-[12px]" style={{ color: "var(--color-ink)" }}>
-          Negotiation, tasting, close — stay yours. Reversible anytime. 10 leads/day instead of 3, same people.
-        </span>
-      </motion.div>
+      <h1 className="font-serif text-[27px] mb-5" style={{ color: "var(--color-ink)" }}>Cherish Copilot</h1>
 
       <motion.div
         initial={{ opacity: 0, y: 14 }}

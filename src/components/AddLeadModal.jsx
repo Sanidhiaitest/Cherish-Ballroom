@@ -272,7 +272,7 @@ export default function AddLeadModal({ open, onClose, onAdd }) {
                   cursor: form.name.trim() ? "pointer" : "not-allowed",
                 }}
               >
-                <PlusCircle size={15} /> Add to Live Funnel
+                <PlusCircle size={15} /> Add to Lead Stages
               </motion.button>
               <div className="text-center font-body text-[10px]" style={{ color: "var(--color-stone)" }}>
                 Simulated entry point · a real build reads this off your ad platforms and sheets — this form is just the walk-in and phone-call door

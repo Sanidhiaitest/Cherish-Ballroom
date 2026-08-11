@@ -4,7 +4,7 @@ import { ChandelierMotif } from "./Illustrations";
 
 const ITEMS = [
   { id: "overview", label: "Overview", Icon: LayoutGrid },
-  { id: "funnel", label: "Live Funnel", Icon: GitBranch },
+  { id: "funnel", label: "Lead Stages", Icon: GitBranch },
   { id: "allLeads", label: "All Leads", Icon: Table2 },
   { id: "automation", label: "Copilot", Icon: Zap },
   { id: "reports", label: "Report", Icon: PieChart },
