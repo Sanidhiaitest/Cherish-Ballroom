@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   X, Phone, MessageCircle, Sparkles, MapPin, FileText, StickyNote, AlertTriangle, PhoneCall, Smartphone, Bot,
-  ClipboardList, Lightbulb, BellRing, HelpCircle, ThumbsUp, ThumbsDown, ChefHat, Send, Pencil, SkipForward, Check,
+  ClipboardList, Lightbulb, BellRing, HelpCircle, ThumbsUp, ThumbsDown, ChefHat, Send, Pencil, SkipForward, Check, Zap,
 } from "lucide-react";
-import { STAGES, AI_CALL_LOG, scoreTone, formatINR, commitmentSource, nextFollowupDraft } from "../data/leads";
+import { STAGES, AI_CALL_LOG, scoreTone, formatINR, fmtSeconds, commitmentSource, nextFollowupDraft } from "../data/leads";
 import SourceTag from "./SourceTag";
 import Avatar from "./Avatar";
 import ScoreRing from "./ScoreRing";
@@ -85,6 +85,18 @@ export default function LeadDrawer({ lead, onClose, onCall, onWhatsApp, onPrevie
               {lead.eventDate && <span>Event: {lead.eventDate}</span>}
               {lead.ref && <span>Referred by {lead.ref}</span>}
             </div>
+
+            {lead.firstResponseSeconds !== undefined && lead.thread?.[0] && (
+              <div className="mt-2.5 flex items-start gap-2 rounded-xl px-3 py-2" style={{ background: "var(--color-ivory)" }}>
+                <Zap size={12} className="shrink-0 mt-0.5" style={{ color: "var(--color-gold-deep)" }} />
+                <span className="font-body text-[11px] leading-relaxed" style={{ color: "var(--color-ink)" }}>
+                  <span className="font-mono text-[9px] uppercase tracking-wider mr-1" style={{ color: "var(--color-gold-deep)" }}>
+                    First touch · replied in {fmtSeconds(lead.firstResponseSeconds)}:
+                  </span>
+                  {lead.thread[0].e}
+                </span>
+              </div>
+            )}
 
             {lead.dietaryNote && (
               <div className="mt-2.5 flex items-start gap-2 rounded-xl px-3 py-2" style={{ background: "rgba(201,162,39,0.08)" }}>
