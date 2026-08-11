@@ -13,7 +13,6 @@ import VirtualTourModal from "./components/VirtualTourModal";
 import AddLeadModal from "./components/AddLeadModal";
 import OverviewView from "./components/views/OverviewView";
 import FunnelView from "./components/views/FunnelView";
-import ReferralView from "./components/views/ReferralView";
 import AutomationView from "./components/views/AutomationView";
 import ReportsView from "./components/views/ReportsView";
 import AllLeadsView from "./components/views/AllLeadsView";
@@ -22,7 +21,6 @@ import { LEADS } from "./data/leads";
 const VIEWS = {
   overview: OverviewView,
   funnel: FunnelView,
-  referral: ReferralView,
   automation: AutomationView,
   reports: ReportsView,
   allLeads: AllLeadsView,

@@ -1,12 +1,11 @@
 import { motion } from "framer-motion";
-import { LayoutGrid, GitBranch, Table2, Share2, Sparkles, Zap, PieChart } from "lucide-react";
+import { LayoutGrid, GitBranch, Table2, Sparkles, Zap, PieChart } from "lucide-react";
 import { ChandelierMotif } from "./Illustrations";
 
 const ITEMS = [
   { id: "overview", label: "Overview", Icon: LayoutGrid },
   { id: "funnel", label: "Live Funnel", Icon: GitBranch },
   { id: "allLeads", label: "All Leads", Icon: Table2 },
-  { id: "referral", label: "Referral Web", Icon: Share2 },
   { id: "automation", label: "Copilot", Icon: Zap },
   { id: "reports", label: "Report", Icon: PieChart },
 ];
