@@ -1,6 +1,6 @@
 import { Fragment, useState } from "react";
 import { motion } from "framer-motion";
-import { Zap, MessageCircle, Bot, Users2, ArrowUpRight, CheckCircle2, Circle, Globe2, PhoneCall, ChefHat, Check, X as XIcon, ShieldCheck, ListFilter, FileSpreadsheet, Hourglass, Mic, CalendarClock, AlertCircle, Send, Pencil, ShieldQuestion, Link2 } from "lucide-react";
+import { Zap, MessageCircle, Bot, Users2, ArrowUpRight, CheckCircle2, Circle, Globe2, PhoneCall, ChefHat, Check, X as XIcon, ShieldCheck, ListFilter, FileSpreadsheet, Hourglass, Mic, CalendarClock, AlertCircle, Send, Pencil, ShieldQuestion } from "lucide-react";
 import {
   LEADS, NURTURE_STEPS, AI_CALL_LOG, COMPETITIVE_CHECKLIST, AI_CALLER_NUMBER, DATA_INTAKE_TODAY, medianResponseSeconds,
   partnerMarginSummary, formatINR, queuedForAICall, triageToday, leadOwner, VOICE_NOTE_FALLBACK_EXAMPLE,
@@ -8,7 +8,6 @@ import {
 } from "../../data/leads";
 import Avatar from "../Avatar";
 import PhaseBadge from "../PhaseBadge";
-import SheetPreview from "../SheetPreview";
 
 function fmtSeconds(s) {
   if (s < 60) return `${s} sec`;
@@ -105,41 +104,6 @@ export default function AutomationView({ openLead, setView, onAIVoiceCall, onOpe
             <span style={{ color: "var(--color-emerald)" }}>Proposed:</span> {DATA_INTAKE_TODAY.proposed}
           </div>
         </div>
-      </motion.div>
-
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.09 }}
-        className="rounded-2xl p-5 mb-5"
-        style={{ background: "var(--color-ink)" }}
-      >
-        <div className="flex items-center gap-2 mb-1.5">
-          <Link2 size={15} style={{ color: "var(--color-gold-soft)" }} />
-          <div className="font-serif text-[16px]" style={{ color: "var(--color-paper)" }}>Sheet → WhatsApp → Call, connected</div>
-          <PhaseBadge phase={2} />
-        </div>
-        <p className="font-body text-[12px] mb-4" style={{ color: "var(--color-stone)" }}>
-          The moment a row lands in the Followup Sheet, a message sends and a call gets queued — status updates live, right in the sheet, not after the fact.
-        </p>
-        <div className="mb-4">
-          <SheetPreview />
-        </div>
-        <div className="flex items-center gap-2 mb-4 rounded-xl px-3.5 py-2.5" style={{ background: "rgba(255,255,255,0.03)", border: "1px dashed rgba(255,255,255,0.12)" }}>
-          <PhoneCall size={12} className="shrink-0" style={{ color: "var(--color-stone)" }} />
-          <span className="font-body text-[11px] leading-relaxed" style={{ color: "var(--color-stone)" }}>
-            The calling side runs on your existing Caller Monkey line — its Inbound API dials the moment a row lands, and its webhook syncs duration + sentiment back here the moment the call ends.
-          </span>
-        </div>
-        <a
-          href="https://claude.ai/code/artifact/a7fc95cc-bbb2-47bd-959a-09b006d70983"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-wide"
-          style={{ color: "var(--color-gold-soft)" }}
-        >
-          See the full walkthrough <ArrowUpRight size={12} />
-        </a>
       </motion.div>
 
       <motion.div

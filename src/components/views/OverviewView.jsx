@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Flame, ArrowUpRight, PlusCircle, Radar, BellRing, ChevronRight, Bot, CalendarClock, Check, X } from "lucide-react";
+import { Flame, ArrowUpRight, PlusCircle, Radar, BellRing, ChevronRight, Bot, CalendarClock, Check, X, Users2 } from "lucide-react";
 import { LEADS, pendingCommitments, commitmentSource, leadOwner } from "../../data/leads";
 import SourceTag from "../SourceTag";
 import Avatar from "../Avatar";
 import PhaseBadge from "../PhaseBadge";
 import Mascot from "../Mascot";
+import SheetPreview from "../SheetPreview";
 
 function greetingPeriod(h) {
   return h < 12 ? "morning" : h < 17 ? "afternoon" : "evening";
@@ -196,6 +197,20 @@ export default function OverviewView({ openLead, onLogLead, viewer = "Aman" }) {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.45, delay: 0.18 }}
+        className="rounded-2xl p-5 mb-6"
+        style={{ background: "var(--color-ink)" }}
+      >
+        <div className="flex items-center gap-2 mb-3">
+          <Users2 size={15} style={{ color: "var(--color-gold-soft)" }} />
+          <div className="font-serif text-[16px]" style={{ color: "var(--color-paper)" }}>Leads</div>
+        </div>
+        <SheetPreview viewer={viewer} />
+      </motion.div>
 
       <div className="flex flex-col lg:flex-row gap-5">
         <motion.div
