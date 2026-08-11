@@ -51,6 +51,24 @@ export const TONE_COLOR = {
   cold: "var(--color-stone)",
 };
 
+// Mirrors the real intake sheet's event-type sections (Wedding, Birthday, etc.)
+export const EVENT_TYPE_META = {
+  wedding: { label: "Wedding" },
+  sangeet: { label: "Sangeet" },
+  engagement: { label: "Engagement" },
+  anniversary: { label: "Anniversary" },
+  corporate: { label: "Corporate" },
+};
+
+// Derived, not stored per-lead — mirrors the sheet's "Rooms Requirement?" column,
+// which scales with guest count on the real intake form.
+export function roomsRequirement(guests) {
+  if (!guests) return "Not yet qualified";
+  if (guests >= 400) return "10–20 rooms";
+  if (guests >= 150) return "5–10 rooms";
+  return "No rooms required";
+}
+
 // Phase framing carried through the whole product, not just the roadmap slide.
 // Phase 1 is real and live in this build. Phase 2/3 features stay visible — the
 // vision is part of the pitch — but are visibly marked "proposed" so nothing here
@@ -70,6 +88,7 @@ export const LEADS = [
   {
     id: 1, name: "Ananya & Rohit", initials: "AR", source: "meta_ads", stage: "followup",
     score: 82, days: 2, phone: "+91 98•• ••71", ref: null, hall: "Emerald Hall", guests: 450, value: 1900000,
+    eventType: "wedding", eventDate: "Dec 2026",
     firstResponseSeconds: 118, nurtureStep: 2, followupStep: 2,
     commitment: { text: "Follow-up call re: budget hint (₹18–20L)", due: "Tomorrow AM" },
     dietaryNote: "Asked specifically about Jain menu options for the groom's side.",
@@ -93,6 +112,7 @@ export const LEADS = [
   {
     id: 2, name: "Meera Kapoor", initials: "MK", source: "walkin", stage: "quoted",
     score: 91, days: 1, phone: "+91 98•• ••90", ref: "Sharma Family", hall: "Rubicon Hall", guests: 300, value: 1650000,
+    eventType: "wedding", eventDate: "Mar 2026",
     commitment: { text: "Nudge on the Rubicon quote — opened twice, no reply", due: "Tomorrow" },
     dietaryNote: "Mentioned a strict no-onion-garlic requirement for half the guest list.",
     aiProfile: {
@@ -112,6 +132,7 @@ export const LEADS = [
   {
     id: 3, name: "The Bhatia–Singh Function", initials: "BH", source: "eventco", stage: "visited",
     score: 58, days: 4, phone: "+91 98•• ••12", ref: "Aarambh Events", hall: "Pearl Hall", guests: 200, value: 950000,
+    eventType: "anniversary", eventDate: "Not fixed yet",
     aiProfile: {
       persona: "Planner-Mediated, Low Direct Signal",
       signals: [
@@ -129,6 +150,7 @@ export const LEADS = [
   {
     id: 4, name: "Ishaan & Priya", initials: "IP", source: "meta_ads", stage: "visited",
     score: 74, days: 1, phone: "+91 98•• ••83", ref: null, hall: "Solitaire Hall", guests: 380, value: 1940000,
+    eventType: "wedding", eventDate: "Nov 2026",
     firstResponseSeconds: 64, nurtureStep: 1,
     commitment: { text: "Tasting date — confirm and prep", due: "This week" },
     aiProfile: {
@@ -148,6 +170,7 @@ export const LEADS = [
   {
     id: 5, name: "Kavya Malhotra", initials: "KM", source: "walkin", stage: "booked", rootFamily: true, milestone: "Booked · Feb '27",
     score: 100, days: 0, phone: "+91 98•• ••21", ref: null, hall: "Emerald Hall", guests: 500, value: 3200000,
+    eventType: "wedding", eventDate: "Feb 2027",
     aiProfile: {
       persona: "Legacy Client",
       signals: [
@@ -164,6 +187,7 @@ export const LEADS = [
   {
     id: 6, name: "The Chopra Wedding", initials: "CW", source: "walkin", stage: "followup",
     score: 66, days: 6, phone: "+91 98•• ••90", ref: "Kavya Malhotra", hall: "Rubicon Hall", guests: 340, value: 1630000,
+    eventType: "wedding", eventDate: "Jan 2027",
     followupStep: 4,
     commitment: { text: "Overdue human call — F4 went unanswered, needs a decision", due: "Today" },
     aiProfile: {
@@ -183,6 +207,7 @@ export const LEADS = [
   {
     id: 7, name: "Rhea & Arjun", initials: "RA", source: "wedmegood", stage: "query",
     score: 40, days: 0, phone: "+91 98•• ••50", ref: null, hall: "—", guests: 0, value: 0,
+    eventType: "wedding", eventDate: "Feb 2026 (tentative)",
     firstResponseSeconds: 41,
     aiProfile: {
       persona: "Early-Stage Researcher",
@@ -197,6 +222,7 @@ export const LEADS = [
   {
     id: 8, name: "Verma Family", initials: "VF", source: "walkin", stage: "visited",
     score: 70, days: 2, phone: "+91 98•• ••47", ref: "Sharma Family", hall: "Pearl Hall", guests: 150, value: 700000,
+    eventType: "engagement", eventDate: "Not fixed yet",
     aiProfile: {
       persona: "Referral-Trusted Warm Lead",
       signals: [
@@ -213,6 +239,7 @@ export const LEADS = [
   {
     id: 9, name: "The Corporate Gala — Nexlabs", initials: "NX", source: "eventco", stage: "quoted",
     score: 61, days: 3, phone: "+91 98•• ••04", ref: "Aarambh Events", hall: "Solitaire Hall", guests: 150, value: 780000,
+    eventType: "corporate", eventDate: "Oct 2026",
     aiProfile: {
       persona: "Corporate / Planner-Mediated",
       signals: [
@@ -228,6 +255,7 @@ export const LEADS = [
   {
     id: 10, name: "Simran Oberoi", initials: "SO", source: "meta_ads", stage: "query",
     score: 35, days: 0, phone: "+91 98•• ••29", ref: null, hall: "—", guests: 0, value: 0,
+    eventType: "wedding", eventDate: "Not fixed yet",
     firstResponseSeconds: 52,
     aiProfile: {
       persona: "Passive Browser",
@@ -242,6 +270,7 @@ export const LEADS = [
   {
     id: 11, name: "The Bansal Sangeet", initials: "BN", source: "eventco", stage: "followup",
     score: 30, days: 9, phone: "+91 98•• ••01", ref: "Rang Decor Co.", hall: "Pearl Hall", guests: 220, value: 990000,
+    eventType: "sangeet", eventDate: "Dec 2026",
     followupStep: 4,
     aiProfile: {
       persona: "Cold Planner Lead",
@@ -259,6 +288,7 @@ export const LEADS = [
   {
     id: 12, name: "Diya & Kabir", initials: "DK", source: "google_ads", stage: "quoted",
     score: 85, days: 1, phone: "+91 98•• ••65", ref: null, hall: "Emerald Hall", guests: 400, value: 2100000,
+    eventType: "wedding", eventDate: "Jan 2027",
     firstResponseSeconds: 29, nurtureStep: 3,
     commitment: { text: "Lock a tasting date — hottest lead in the pipeline", due: "Today" },
     aiProfile: {
@@ -277,6 +307,7 @@ export const LEADS = [
   {
     id: 13, name: "Sharma Family", initials: "SF", source: "walkin", stage: "booked", rootFamily: true, milestone: "Booked · Apr '26",
     score: 100, days: 0, phone: "+91 98•• ••18", ref: null, hall: "Rubicon Hall", guests: 1200, value: 6000000,
+    eventType: "wedding", eventDate: "Apr 2026",
     aiProfile: {
       persona: "Legacy Anchor Family",
       signals: [
@@ -294,6 +325,7 @@ export const LEADS = [
   {
     id: 14, name: "Gill Family", initials: "GF", source: "walkin", stage: "booked", rootFamily: true, milestone: "Booked · Jan '26",
     score: 100, days: 0, phone: "+91 98•• ••63", ref: null, hall: "Pearl Hall", guests: 250, value: 1150000,
+    eventType: "wedding", eventDate: "Jan 2026",
     anniversary: { label: "3rd anniversary of their first Cherish event", when: "Next month" },
     aiProfile: {
       persona: "Repeat Loyalist",
@@ -307,6 +339,7 @@ export const LEADS = [
   {
     id: 15, name: "Raina Cousins", initials: "RC", source: "walkin", stage: "booked", milestone: "Booked · Nov '26",
     score: 95, days: 0, phone: "+91 98•• ••37", ref: "Kavya Malhotra", hall: "Sapphire Hall", guests: 220, value: 1200000,
+    eventType: "engagement", eventDate: "Nov 2026",
     aiProfile: {
       persona: "Referral-Trusted Fast Mover",
       signals: [
@@ -324,6 +357,7 @@ export const LEADS = [
   {
     id: 16, name: "Sethi Family", initials: "SE", source: "walkin", stage: "query",
     score: 25, days: 0, phone: "+91 98•• ••82", ref: "Gill Family", hall: "—", guests: 0, value: 0,
+    eventType: "wedding", eventDate: "Not fixed yet",
     aiProfile: {
       persona: "Early-Stage Referral",
       signals: [
@@ -336,6 +370,7 @@ export const LEADS = [
   {
     id: 17, name: "Naina Chawla", initials: "NC", source: "meta_ads", stage: "query",
     score: 58, days: 0, phone: "+91 98•• ••56", ref: null, hall: "—", guests: 0, value: 0,
+    eventType: "wedding", eventDate: "Not fixed yet",
     firstResponseSeconds: 35,
     aiProfile: {
       persona: "Aesthetic-First Silent Browser",

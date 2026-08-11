@@ -26,7 +26,7 @@ export default function SourceTag({ source, size = "sm" }) {
   const pad = size === "sm" ? "px-2 py-[3px] text-[10.5px]" : "px-2.5 py-1 text-[11.5px]";
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-full font-mono uppercase tracking-wider font-medium ring-1 ${s.bg} ${s.text} ${s.ring} ${pad}`}
+      className={`inline-flex items-center gap-1.5 rounded-full font-mono uppercase tracking-wider font-medium ring-1 whitespace-nowrap ${s.bg} ${s.text} ${s.ring} ${pad}`}
     >
       <Icon size={size === "sm" ? 10 : 11.5} strokeWidth={2.5} />
       {label}
