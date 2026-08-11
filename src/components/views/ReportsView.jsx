@@ -3,9 +3,9 @@ import { motion } from "framer-motion";
 import { Sparkles, Star, MessageSquareWarning, FileText, TrendingUp, Wand2, ChevronRight, Megaphone, ThumbsUp, ThumbsDown, MessageSquare, Mail } from "lucide-react";
 import {
   LEADS, STAGES, SOURCE_META, WEEKLY_LEAD_TREND, BOOKINGS_TREND, MONTHLY_BOOKING_GOAL,
-  REVIEWS, SAVED_REPORTS, CAMPAIGNS, CONTENT_TRENDS, ASK_THE_SHEET_EXAMPLES, formatINR, medianResponseSeconds, partnerMarginSummary, weeklyDigest,
+  REVIEWS, SAVED_REPORTS, CAMPAIGNS, CONTENT_TRENDS, ASK_THE_SHEET_EXAMPLES, formatINR, medianResponseSeconds, partnerMarginSummary, weeklyDigest, liveChannelSplit,
 } from "../../data/leads";
-import { sourceColor } from "../SourceTag";
+import SourceTag, { sourceColor } from "../SourceTag";
 import AreaChart from "../charts/AreaChart";
 import DonutChart from "../charts/DonutChart";
 import BarChart from "../charts/BarChart";
@@ -34,6 +34,11 @@ export default function ReportsView() {
     .filter((s) => s.value > 0)
     .sort((a, b) => b.value - a.value);
 
+  const bySourceDetailed = Object.keys(SOURCE_META)
+    .map((s) => ({ key: s, count: LEADS.filter((l) => l.source === s).length }))
+    .sort((a, b) => b.count - a.count);
+  const split = liveChannelSplit();
+
   const funnelData = STAGES.map((s) => ({
     label: s.label.replace("Visit Scheduled", "Visit Sch.").replace("Follow-Up", "Follow-Up"),
     value: LEADS.filter((l) => l.stage === s.id).length,
@@ -58,7 +63,7 @@ export default function ReportsView() {
 
   return (
     <div>
-      <h1 className="font-serif text-[27px]" style={{ color: "var(--color-ink)" }}>Reports & Insights</h1>
+      <h1 className="font-serif text-[27px]" style={{ color: "var(--color-ink)" }}>Report</h1>
       <p className="font-body text-[13.5px] mt-1.5 mb-6" style={{ color: "var(--color-stone)" }}>
         Every number already sitting in the CRM, read out loud.
       </p>
@@ -248,6 +253,41 @@ export default function ReportsView() {
           <AreaChart data={BOOKINGS_TREND} color="var(--color-emerald)" />
           <div className="font-serif text-[26px] mt-2" style={{ color: "var(--color-ink)" }}>{BOOKINGS_TREND.reduce((s, d) => s + d.value, 0)}</div>
           <div className="font-mono text-[10px] uppercase" style={{ color: "var(--color-stone)" }}>Booked, last 6 months</div>
+        </div>
+      </div>
+
+      <div className="rounded-2xl p-6 mb-5" style={{ background: "var(--color-paper)", border: "1px solid var(--color-stone-line)" }}>
+        <div className="flex items-center justify-between mb-1">
+          <div className="font-serif text-[17px]" style={{ color: "var(--color-ink)" }}>Where they're coming from</div>
+        </div>
+        <div className="flex items-center gap-3 mb-5">
+          <div className="flex-1 h-2 rounded-full overflow-hidden flex" style={{ background: "var(--color-ivory-soft)" }}>
+            <motion.div initial={{ width: 0 }} animate={{ width: `${split.indirectPct}%` }} transition={{ duration: 0.7 }} style={{ background: "var(--color-gold)" }} />
+            <motion.div initial={{ width: 0 }} animate={{ width: `${split.directPct}%` }} transition={{ duration: 0.7, delay: 0.1 }} style={{ background: "var(--color-emerald)" }} />
+          </div>
+          <span className="font-mono text-[10.5px] shrink-0" style={{ color: "var(--color-stone)" }}>
+            {split.indirectPct}% indirect · {split.directPct}% direct
+          </span>
+        </div>
+        {bySourceDetailed.map((s, i) => (
+          <div key={s.key} className="mb-4 last:mb-0">
+            <div className="flex justify-between items-center mb-1.5">
+              <SourceTag source={s.key} />
+              <span className="font-mono text-[12px]" style={{ color: "var(--color-stone)" }}>{s.count} leads</span>
+            </div>
+            <div className="h-2 rounded-full overflow-hidden" style={{ background: "var(--color-ivory-soft)" }}>
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: `${(s.count / LEADS.length) * 100}%` }}
+                transition={{ duration: 0.7, delay: 0.2 + i * 0.1, ease: [0.22, 1, 0.36, 1] }}
+                className="h-full rounded-full"
+                style={{ background: sourceColor(s.key) }}
+              />
+            </div>
+          </div>
+        ))}
+        <div className="mt-4 pt-4 font-body text-[10.5px]" style={{ borderTop: "1px solid var(--color-stone-line)", color: "var(--color-stone)" }}>
+          Live sample · business-wide split is ~70/30 indirect/direct
         </div>
       </div>
 

@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Flame, ArrowUpRight, PlusCircle, Radar, BellRing, ChevronRight, Bot, CalendarClock, Check, X } from "lucide-react";
-import { LEADS, SOURCE_META, liveChannelSplit, pendingCommitments, commitmentSource, leadOwner } from "../../data/leads";
-import SourceTag, { sourceColor } from "../SourceTag";
+import { LEADS, pendingCommitments, commitmentSource, leadOwner } from "../../data/leads";
+import SourceTag from "../SourceTag";
 import Avatar from "../Avatar";
 import PhaseBadge from "../PhaseBadge";
 import Mascot from "../Mascot";
@@ -37,11 +37,6 @@ export default function OverviewView({ openLead, onLogLead, viewer = "Aman" }) {
   }
 
   const myLeads = LEADS.filter((l) => leadOwner(l) === viewer);
-  const bySource = Object.keys(SOURCE_META).map((s) => ({
-    key: s,
-    count: LEADS.filter((l) => l.source === s).length,
-  })).sort((a, b) => b.count - a.count);
-  const split = liveChannelSplit();
   const hotAll = myLeads.filter((l) => l.score >= 75 && l.stage !== "booked").sort((a, b) => b.score - a.score);
   const hot = hotAll.slice(0, 4);
   const cold = myLeads.filter((l) => l.days >= 5);
@@ -203,47 +198,6 @@ export default function OverviewView({ openLead, onLogLead, viewer = "Aman" }) {
       </AnimatePresence>
 
       <div className="flex flex-col lg:flex-row gap-5">
-        <motion.div
-          initial={{ opacity: 0, y: 14 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.45, delay: 0.15 }}
-          className="flex-1 rounded-2xl p-6"
-          style={{ background: "var(--color-paper)", border: "1px solid var(--color-stone-line)" }}
-        >
-          <div className="flex items-center justify-between mb-1">
-            <div className="font-serif text-[17px]" style={{ color: "var(--color-ink)" }}>Where they're coming from</div>
-          </div>
-          <div className="flex items-center gap-3 mb-5">
-            <div className="flex-1 h-2 rounded-full overflow-hidden flex" style={{ background: "var(--color-ivory-soft)" }}>
-              <motion.div initial={{ width: 0 }} animate={{ width: `${split.indirectPct}%` }} transition={{ duration: 0.7 }} style={{ background: "var(--color-gold)" }} />
-              <motion.div initial={{ width: 0 }} animate={{ width: `${split.directPct}%` }} transition={{ duration: 0.7, delay: 0.1 }} style={{ background: "var(--color-emerald)" }} />
-            </div>
-            <span className="font-mono text-[10.5px] shrink-0" style={{ color: "var(--color-stone)" }}>
-              {split.indirectPct}% indirect · {split.directPct}% direct
-            </span>
-          </div>
-          {bySource.map((s, i) => (
-            <div key={s.key} className="mb-4 last:mb-0">
-              <div className="flex justify-between items-center mb-1.5">
-                <SourceTag source={s.key} />
-                <span className="font-mono text-[12px]" style={{ color: "var(--color-stone)" }}>{s.count} leads</span>
-              </div>
-              <div className="h-2 rounded-full overflow-hidden" style={{ background: "var(--color-ivory-soft)" }}>
-                <motion.div
-                  initial={{ width: 0 }}
-                  animate={{ width: `${(s.count / LEADS.length) * 100}%` }}
-                  transition={{ duration: 0.7, delay: 0.2 + i * 0.1, ease: [0.22, 1, 0.36, 1] }}
-                  className="h-full rounded-full"
-                  style={{ background: sourceColor(s.key) }}
-                />
-              </div>
-            </div>
-          ))}
-          <div className="mt-4 pt-4 font-body text-[10.5px]" style={{ borderTop: "1px solid var(--color-stone-line)", color: "var(--color-stone)" }}>
-            Live sample · business-wide split is ~70/30 indirect/direct
-          </div>
-        </motion.div>
-
         <motion.div
           id="needs-attention"
           initial={{ opacity: 0, y: 14 }}

@@ -8,7 +8,7 @@ const ITEMS = [
   { id: "queue", label: "Priority Queue", Icon: ListOrdered },
   { id: "referral", label: "Referral Web", Icon: Share2 },
   { id: "automation", label: "Copilot", Icon: Zap },
-  { id: "reports", label: "Reports & Insights", Icon: PieChart },
+  { id: "reports", label: "Report", Icon: PieChart },
 ];
 
 export default function Sidebar({ view, setView }) {

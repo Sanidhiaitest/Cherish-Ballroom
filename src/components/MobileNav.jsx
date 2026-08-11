@@ -6,7 +6,7 @@ const ITEMS = [
   { id: "queue", label: "Queue", Icon: ListOrdered },
   { id: "referral", label: "Referrals", Icon: Share2 },
   { id: "automation", label: "Copilot", Icon: Zap },
-  { id: "reports", label: "Reports", Icon: PieChart },
+  { id: "reports", label: "Report", Icon: PieChart },
 ];
 
 export default function MobileNav({ view, setView }) {
