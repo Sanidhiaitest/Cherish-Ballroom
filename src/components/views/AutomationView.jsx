@@ -1,12 +1,12 @@
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import {
-  Zap, MessageCircle, Bot, ArrowUpRight, CheckCircle2, Circle, PhoneCall, Check, ListFilter, Hourglass, Mic,
+  MessageCircle, Bot, ArrowUpRight, CheckCircle2, Circle, PhoneCall, Check, ListFilter, Hourglass, Mic,
   Send, Pencil, HeartHandshake, Hash, FileText, ChevronDown, ChevronUp,
 } from "lucide-react";
 import {
   LEADS, STAGES, SOURCE_META, NURTURE_STEPS, AI_CALL_LOG, AI_CALLER_NUMBER, OWNER_BY_SOURCE,
-  fmtSeconds, queuedForAICall, triageToday, leadOwner, VOICE_NOTE_FALLBACK_EXAMPLE, nurtureDraft, allMessageTemplates,
+  queuedForAICall, triageToday, leadOwner, VOICE_NOTE_FALLBACK_EXAMPLE, nurtureDraft, allMessageTemplates,
 } from "../../data/leads";
 import Avatar from "../Avatar";
 import PhaseBadge from "../PhaseBadge";
@@ -57,8 +57,6 @@ export default function AutomationView({ openLead, onAIVoiceCall, viewer = "Aman
     return true;
   };
   const myLeads = LEADS.filter((l) => leadOwner(l) === viewer);
-  const fastestReplies = myLeads.filter((l) => l.firstResponseSeconds).sort((a, b) => a.firstResponseSeconds - b.firstResponseSeconds);
-  const dmExample = fastestReplies[0];
   const nurtureLead = myLeads.find((l) => l.nurtureStep !== undefined) || myLeads[0];
   const queued = queuedForAICall().filter((l) => leadOwner(l) === viewer);
   const myCallLog = AI_CALL_LOG.filter((e) => {
@@ -82,35 +80,6 @@ export default function AutomationView({ openLead, onAIVoiceCall, viewer = "Aman
       <h1 className="font-serif text-[27px] mb-5" style={{ color: "var(--color-ink)" }}>Cherish Copilot</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.08 }}
-          className="rounded-2xl p-6"
-          style={{ background: "var(--color-paper)", border: "1px solid var(--color-stone-line)" }}
-        >
-          <div className="flex items-center gap-2 mb-1.5">
-            <Zap size={15} style={{ color: "var(--color-gold-deep)" }} />
-            <div className="font-serif text-[16px]" style={{ color: "var(--color-ink)" }}>First Touch — Profile + Video Folder</div>
-            <PhaseBadge phase={2} />
-          </div>
-          <p className="font-body text-[12px] mb-4" style={{ color: "var(--color-stone)" }}>
-            Right folder + profile, sent the moment a lead lands — matched to function type, no manual searching.
-          </p>
-          {dmExample && (
-            <button onClick={() => openLead(dmExample)} className="w-full flex flex-col gap-2 rounded-2xl p-4 text-left" style={{ background: "var(--color-ivory)" }}>
-              <div className="flex items-center gap-2">
-                <Avatar initials={dmExample.initials} source={dmExample.source} size={26} />
-                <span className="font-semibold text-[12.5px]" style={{ color: "var(--color-ink)" }}>{dmExample.name}</span>
-                <span className="ml-auto font-mono text-[11px] font-bold" style={{ color: "var(--color-emerald)" }}>{fmtSeconds(dmExample.firstResponseSeconds)}</span>
-              </div>
-              <div className="font-body text-[12px] leading-relaxed" style={{ color: "var(--color-ink)" }}>
-                {dmExample.thread[0].e}
-              </div>
-            </button>
-          )}
-        </motion.div>
-
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
