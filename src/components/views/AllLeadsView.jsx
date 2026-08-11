@@ -5,25 +5,12 @@ import SourceTag from "../SourceTag";
 import Avatar from "../Avatar";
 import ScoreRing from "../ScoreRing";
 import EventBadge from "../EventBadge";
+import LastTouch from "../LastTouch";
 
 // Merges the old "Priority Queue" (score-ranked, stale-lead flag) into the full
 // leads list so there's one canonical, excel-detailed place to see everyone —
 // same fields the real intake sheet tracks (event type, guests, rooms, date,
 // phone), plus the AI persona read the sheet alone can't give.
-function LastTouch({ days, stale }) {
-  return (
-    <span className="inline-flex items-center gap-1.5 font-mono text-[11px]" style={{ color: stale ? "var(--color-rose)" : "var(--color-stone)" }}>
-      {stale && (
-        <span className="relative flex items-center justify-center shrink-0" style={{ width: 6, height: 6 }}>
-          <span className="absolute inline-flex rounded-full opacity-60" style={{ width: 6, height: 6, background: "var(--color-rose)" }} />
-          <span className="pulse-ring absolute rounded-full" style={{ width: 6, height: 6, color: "var(--color-rose)" }} />
-        </span>
-      )}
-      {days === 0 ? "Today" : `${days}d ago`}
-    </span>
-  );
-}
-
 function stageLabel(l) {
   const base = STAGES.find((s) => s.id === l.stage)?.label;
   return l.followupStep === undefined ? base : `${base} · F${l.followupStep}`;

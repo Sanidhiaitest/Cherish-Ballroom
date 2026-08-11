@@ -795,6 +795,13 @@ export function buildReferralGraph() {
   return { roots, children, byName };
 }
 
+// A lead has had at least one WhatsApp touch once it's moved past a fresh,
+// same-day query, or once an instant first-reply was logged (the ack that
+// fires the moment a DM lands, before a human ever gets involved).
+export function whatsappSent(lead) {
+  return lead.stage !== "query" || lead.firstResponseSeconds !== undefined;
+}
+
 export function scoreTone(score) {
   if (score >= 75) return { tone: "hot", label: "Hot" };
   if (score >= 50) return { tone: "warm", label: "Warm" };
