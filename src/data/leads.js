@@ -708,6 +708,21 @@ export function nurtureDraft(lead) {
   return { label: step.label, text: NURTURE_TEMPLATES[step.id](lead) };
 }
 
+// Every WhatsApp template the system sends, in one place -- previewed against
+// a real lead so the placeholders (name, hall) read naturally, not as {{tags}}.
+export function allMessageTemplates(lead) {
+  return [
+    { id: "f1", label: "F1 — First follow-up", channel: "WhatsApp", text: FOLLOWUP_TEMPLATES[1](lead) },
+    { id: "f2", label: "F2 — Quote follow-up", channel: "WhatsApp", text: FOLLOWUP_TEMPLATES[2](lead) },
+    { id: "f3", label: "F3 — Lock the date", channel: "WhatsApp", text: FOLLOWUP_TEMPLATES[3](lead) },
+    { id: "f4", label: "F4 — Final check-in", channel: "WhatsApp", text: FOLLOWUP_TEMPLATES[4](lead) },
+    { id: "thank_you", label: "Thank-you + visit recap", channel: "WhatsApp", text: NURTURE_TEMPLATES.thank_you(lead) },
+    { id: "menu_nudge", label: "Menu & tasting nudge", channel: "WhatsApp", text: NURTURE_TEMPLATES.menu_nudge(lead) },
+    { id: "date_reminder", label: "Limited-date reminder", channel: "WhatsApp", text: NURTURE_TEMPLATES.date_reminder(lead) },
+    { id: "social_proof", label: "Testimonial / social proof", channel: "WhatsApp", text: NURTURE_TEMPLATES.social_proof(lead) },
+  ];
+}
+
 export const EVENTCO_COMMISSION_RATE = 0.5;
 
 export function medianResponseSeconds() {

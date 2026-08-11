@@ -1,9 +1,12 @@
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { Zap, MessageCircle, Bot, ArrowUpRight, CheckCircle2, Circle, PhoneCall, Check, ListFilter, Hourglass, Mic, Send, Pencil, HeartHandshake } from "lucide-react";
 import {
-  LEADS, STAGES, NURTURE_STEPS, AI_CALL_LOG, AI_CALLER_NUMBER,
-  fmtSeconds, queuedForAICall, triageToday, leadOwner, VOICE_NOTE_FALLBACK_EXAMPLE, nurtureDraft,
+  Zap, MessageCircle, Bot, ArrowUpRight, CheckCircle2, Circle, PhoneCall, Check, ListFilter, Hourglass, Mic,
+  Send, Pencil, HeartHandshake, Hash, FileText, ChevronDown, ChevronUp,
+} from "lucide-react";
+import {
+  LEADS, STAGES, SOURCE_META, NURTURE_STEPS, AI_CALL_LOG, AI_CALLER_NUMBER, OWNER_BY_SOURCE,
+  fmtSeconds, queuedForAICall, triageToday, leadOwner, VOICE_NOTE_FALLBACK_EXAMPLE, nurtureDraft, allMessageTemplates,
 } from "../../data/leads";
 import Avatar from "../Avatar";
 import PhaseBadge from "../PhaseBadge";
@@ -66,6 +69,12 @@ export default function AutomationView({ openLead, onAIVoiceCall, viewer = "Aman
   const triage = { ...triageAll, green: triageAll.green.filter((l) => leadOwner(l) === viewer), yellow: triageAll.yellow.filter((l) => leadOwner(l) === viewer) };
   const draft = nurtureDraft(nurtureLead);
   const [draftText, setDraftText] = useState(draft?.text || "");
+  const [editingTemplateId, setEditingTemplateId] = useState(null);
+  const [templateOverrides, setTemplateOverrides] = useState({});
+  const [savedTemplateId, setSavedTemplateId] = useState(null);
+  const [expandedCall, setExpandedCall] = useState(null);
+  const templates = allMessageTemplates(nurtureLead);
+  const mySources = Object.keys(OWNER_BY_SOURCE).filter((s) => OWNER_BY_SOURCE[s] === viewer);
 
   return (
     <div>
@@ -258,6 +267,118 @@ export default function AutomationView({ openLead, onAIVoiceCall, viewer = "Aman
         </motion.div>
       </div>
 
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mt-5">
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.16 }}
+          className="rounded-2xl p-6"
+          style={{ background: "var(--color-paper)", border: "1px solid var(--color-stone-line)" }}
+        >
+          <div className="flex items-center gap-2 mb-1.5">
+            <Hash size={15} style={{ color: "var(--color-gold-deep)" }} />
+            <div className="font-serif text-[16px]" style={{ color: "var(--color-ink)" }}>Number System</div>
+            <PhaseBadge phase={2} />
+          </div>
+          <p className="font-body text-[12px] mb-4" style={{ color: "var(--color-stone)" }}>
+            Which number is actually calling and messaging a lead, and whose voice it uses.
+          </p>
+
+          <div className="rounded-xl px-3.5 py-3 mb-3" style={{ background: "var(--color-ivory)" }}>
+            <div className="flex items-center gap-2 mb-1">
+              <PhoneCall size={12} style={{ color: "var(--color-gold-deep)" }} />
+              <span className="font-mono text-[9.5px] uppercase tracking-wider" style={{ color: "var(--color-gold-deep)" }}>Calling — {AI_CALLER_NUMBER}</span>
+            </div>
+            <p className="font-body text-[11.5px] leading-relaxed" style={{ color: "var(--color-ink)" }}>
+              One dedicated Cherish number carries every AI call, voice-cloned to whichever of Aman/Harman owns that lead's channel — the guest hears "this is {viewer} calling," but {viewer}'s personal number never touches a cold lead.
+            </p>
+          </div>
+
+          <div className="rounded-xl px-3.5 py-3 mb-3" style={{ background: "var(--color-ivory)" }}>
+            <div className="flex items-center gap-2 mb-1">
+              <MessageCircle size={12} style={{ color: "var(--color-gold-deep)" }} />
+              <span className="font-mono text-[9.5px] uppercase tracking-wider" style={{ color: "var(--color-gold-deep)" }}>Messaging</span>
+            </div>
+            <p className="font-body text-[11.5px] leading-relaxed" style={{ color: "var(--color-ink)" }}>
+              <span style={{ color: "var(--color-rose)" }}>Today:</span> one-tap send from {viewer}'s own WhatsApp.{" "}
+              <span style={{ color: "var(--color-emerald)" }}>Proposed:</span> a dedicated WhatsApp Business number, automatic once confirmed.
+            </p>
+          </div>
+
+          <div className="font-mono text-[9px] uppercase tracking-wider mb-1.5" style={{ color: "var(--color-stone)" }}>
+            {viewer}'s channels, routed to this voice
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {mySources.map((s) => (
+              <span key={s} className="font-mono text-[9.5px] rounded-full px-2 py-1" style={{ background: "rgba(201,162,39,0.1)", color: "var(--color-gold-deep)" }}>
+                {SOURCE_META[s]?.label}
+              </span>
+            ))}
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.18 }}
+          className="rounded-2xl p-6"
+          style={{ background: "var(--color-paper)", border: "1px solid var(--color-stone-line)" }}
+        >
+          <div className="flex items-center gap-2 mb-1.5">
+            <FileText size={15} style={{ color: "var(--color-gold-deep)" }} />
+            <div className="font-serif text-[16px]" style={{ color: "var(--color-ink)" }}>Message Templates</div>
+            <PhaseBadge phase={2} />
+          </div>
+          <p className="font-body text-[12px] mb-4" style={{ color: "var(--color-stone)" }}>
+            Every WhatsApp template the system sends — edit the wording, not just the send button. Previewed against {nurtureLead.name}.
+          </p>
+          <div className="flex flex-col gap-2 max-h-[420px] overflow-y-auto pr-1">
+            {templates.map((t) => {
+              const isEditing = editingTemplateId === t.id;
+              const text = templateOverrides[t.id] ?? t.text;
+              return (
+                <div key={t.id} className="rounded-xl px-3.5 py-3" style={{ background: "var(--color-ivory)" }}>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="font-body text-[11.5px] font-semibold" style={{ color: "var(--color-ink)" }}>{t.label}</span>
+                    <span className="font-mono text-[8.5px] uppercase tracking-wide rounded-full px-1.5 py-0.5" style={{ border: "1px solid var(--color-stone-line)", color: "var(--color-stone)" }}>
+                      {t.channel}
+                    </span>
+                  </div>
+                  {isEditing ? (
+                    <textarea
+                      value={text}
+                      onChange={(e) => setTemplateOverrides((o) => ({ ...o, [t.id]: e.target.value }))}
+                      rows={3}
+                      className="w-full rounded-lg px-2.5 py-2 text-[11.5px] outline-none resize-none"
+                      style={{ background: "var(--color-paper)", border: "1px solid var(--color-stone-line)", color: "var(--color-ink)" }}
+                    />
+                  ) : (
+                    <p className="font-body text-[11.5px] leading-relaxed" style={{ color: "var(--color-ink)" }}>{text}</p>
+                  )}
+                  <div className="flex items-center gap-2 mt-2">
+                    <button
+                      onClick={() => {
+                        if (isEditing) { setSavedTemplateId(t.id); setTimeout(() => setSavedTemplateId((id) => (id === t.id ? null : id)), 1800); }
+                        setEditingTemplateId(isEditing ? null : t.id);
+                      }}
+                      className="flex items-center gap-1.5 font-mono text-[9.5px] uppercase tracking-wide"
+                      style={{ color: "var(--color-gold-deep)" }}
+                    >
+                      <Pencil size={10} /> {isEditing ? "Save" : "Edit"}
+                    </button>
+                    {savedTemplateId === t.id && !isEditing && (
+                      <span className="flex items-center gap-1 font-mono text-[9.5px]" style={{ color: "var(--color-emerald)" }}>
+                        <Check size={10} /> Saved
+                      </span>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </motion.div>
+      </div>
+
       <motion.div
         id="referral-web"
         initial={{ opacity: 0, y: 12 }}
@@ -435,29 +556,62 @@ export default function AutomationView({ openLead, onAIVoiceCall, viewer = "Aman
                 const positive = entry.tone === "positive";
                 const sentimentColor = { positive: "var(--color-emerald-soft)", neutral: "var(--color-stone)", negative: "var(--color-rose-soft)" }[entry.sentiment];
                 const sentimentBg = { positive: "rgba(61,120,99,0.18)", neutral: "rgba(255,255,255,0.06)", negative: "rgba(178,58,72,0.18)" }[entry.sentiment];
+                const isOpen = expandedCall === entry.leadName;
                 return (
-                  <button
-                    key={entry.leadName}
-                    onClick={() => onAIVoiceCall(callLead, entry.script, entry.outcomeDetail, entry.transfer)}
-                    className="w-full flex items-center gap-3 rounded-2xl p-3.5 text-left"
-                    style={{ background: "rgba(255,255,255,0.04)", border: `1px solid ${positive ? "rgba(31,77,61,0.4)" : "rgba(201,162,39,0.25)"}` }}
-                  >
-                    <Avatar initials={callLead.initials} source={callLead.source} size={28} />
-                    <div className="flex-1 min-w-0">
-                      <div className="font-semibold text-[12px]" style={{ color: "var(--color-paper)" }}>{callLead.name}</div>
-                      <div className="font-body text-[10.5px] truncate" style={{ color: positive ? "var(--color-emerald-soft)" : "var(--color-gold-soft)" }}>{entry.outcomeLabel}</div>
-                    </div>
-                    {entry.duration && (
-                      <span className="font-mono text-[9.5px] shrink-0" style={{ color: "var(--color-stone)" }}>{entry.duration}</span>
+                  <div key={entry.leadName} className="rounded-2xl overflow-hidden" style={{ border: `1px solid ${positive ? "rgba(31,77,61,0.4)" : "rgba(201,162,39,0.25)"}` }}>
+                    <button
+                      onClick={() => setExpandedCall(isOpen ? null : entry.leadName)}
+                      className="w-full flex items-center gap-3 p-3.5 text-left"
+                      style={{ background: "rgba(255,255,255,0.04)" }}
+                    >
+                      <Avatar initials={callLead.initials} source={callLead.source} size={28} />
+                      <div className="flex-1 min-w-0">
+                        <div className="font-semibold text-[12px]" style={{ color: "var(--color-paper)" }}>{callLead.name}</div>
+                        <div className="font-body text-[10.5px] truncate" style={{ color: positive ? "var(--color-emerald-soft)" : "var(--color-gold-soft)" }}>{entry.outcomeLabel}</div>
+                      </div>
+                      {entry.duration && (
+                        <span className="font-mono text-[9.5px] shrink-0" style={{ color: "var(--color-stone)" }}>{entry.duration}</span>
+                      )}
+                      {entry.sentiment && (
+                        <span className="font-mono text-[8px] uppercase tracking-wide rounded-full px-1.5 py-0.5 shrink-0" style={{ background: sentimentBg, color: sentimentColor }}>
+                          {entry.sentiment}
+                        </span>
+                      )}
+                      <span className="font-mono text-[9px] uppercase shrink-0" style={{ color: "var(--color-stone)" }}>{leadOwner(callLead)}'s voice</span>
+                      {isOpen ? <ChevronUp size={13} style={{ color: "var(--color-stone)" }} /> : <ChevronDown size={13} style={{ color: "var(--color-stone)" }} />}
+                    </button>
+                    {isOpen && (
+                      <div className="px-3.5 pb-3.5 pt-1 flex flex-col gap-2">
+                        {entry.script.map((line, i) => (
+                          <div
+                            key={i}
+                            className="max-w-[85%] rounded-xl px-3 py-2"
+                            style={{
+                              alignSelf: line.from === "ai" ? "flex-start" : "flex-end",
+                              background: line.from === "ai" ? "rgba(255,255,255,0.05)" : "rgba(201,162,39,0.14)",
+                            }}
+                          >
+                            <div className="font-mono text-[8px] uppercase tracking-wide mb-0.5" style={{ color: line.from === "ai" ? "var(--color-stone)" : "var(--color-gold-soft)" }}>
+                              {line.from === "ai" ? "AI" : callLead.name.split(" ")[0]}
+                            </div>
+                            <div className="font-body text-[11.5px] leading-relaxed" style={{ color: "var(--color-ivory)" }}>{line.text}</div>
+                          </div>
+                        ))}
+                        {entry.transfer && (
+                          <div className="rounded-xl px-3 py-2 font-body text-[11px] italic" style={{ background: "rgba(178,58,72,0.12)", color: "var(--color-rose-soft)" }}>
+                            {entry.transfer.line}
+                          </div>
+                        )}
+                        <button
+                          onClick={() => onAIVoiceCall(callLead, entry.script, entry.outcomeDetail, entry.transfer)}
+                          className="flex items-center gap-1.5 self-start mt-1 font-mono text-[9.5px] uppercase tracking-wide"
+                          style={{ color: "var(--color-gold-soft)" }}
+                        >
+                          <PhoneCall size={11} /> Open full replay
+                        </button>
+                      </div>
                     )}
-                    {entry.sentiment && (
-                      <span className="font-mono text-[8px] uppercase tracking-wide rounded-full px-1.5 py-0.5 shrink-0" style={{ background: sentimentBg, color: sentimentColor }}>
-                        {entry.sentiment}
-                      </span>
-                    )}
-                    <span className="font-mono text-[9px] uppercase shrink-0" style={{ color: "var(--color-stone)" }}>{leadOwner(callLead)}'s voice</span>
-                    <PhoneCall size={13} style={{ color: "var(--color-stone)" }} />
-                  </button>
+                  </div>
                 );
               })}
             </div>
