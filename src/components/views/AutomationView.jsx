@@ -1,10 +1,9 @@
-import { Fragment, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { Zap, MessageCircle, Bot, ArrowUpRight, CheckCircle2, Circle, PhoneCall, Check, X as XIcon, ListFilter, FileSpreadsheet, Hourglass, Mic, AlertCircle, Send, Pencil, HeartHandshake } from "lucide-react";
+import { Zap, MessageCircle, Bot, ArrowUpRight, CheckCircle2, Circle, PhoneCall, Check, ListFilter, Hourglass, Mic, Send, Pencil, HeartHandshake } from "lucide-react";
 import {
-  LEADS, STAGES, NURTURE_STEPS, AI_CALL_LOG, COMPETITIVE_CHECKLIST, AI_CALLER_NUMBER, DATA_INTAKE_TODAY,
-  fmtSeconds, queuedForAICall, triageToday, leadOwner, VOICE_NOTE_FALLBACK_EXAMPLE,
-  OPEN_QUESTION_WHATSAPP_VOICE, nurtureDraft,
+  LEADS, STAGES, NURTURE_STEPS, AI_CALL_LOG, AI_CALLER_NUMBER,
+  fmtSeconds, queuedForAICall, triageToday, leadOwner, VOICE_NOTE_FALLBACK_EXAMPLE, nurtureDraft,
 } from "../../data/leads";
 import Avatar from "../Avatar";
 import PhaseBadge from "../PhaseBadge";
@@ -71,43 +70,6 @@ export default function AutomationView({ openLead, onAIVoiceCall, viewer = "Aman
   return (
     <div>
       <h1 className="font-serif text-[27px] mb-5" style={{ color: "var(--color-ink)" }}>Cherish Copilot</h1>
-
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="flex flex-col sm:flex-row sm:items-center gap-3 rounded-2xl px-5 py-4 mb-5"
-        style={{ background: "var(--color-paper)", border: "1px dashed var(--color-stone-line)" }}
-      >
-        <div className="flex items-center justify-center rounded-xl w-9 h-9 shrink-0" style={{ background: "rgba(201,162,39,0.12)" }}>
-          <FileSpreadsheet size={16} style={{ color: "var(--color-gold-deep)" }} />
-        </div>
-        <div className="flex-1">
-          <div className="flex items-center gap-2 flex-wrap mb-0.5">
-            <span className="font-serif text-[14px]" style={{ color: "var(--color-ink)" }}>Data intake</span>
-            <PhaseBadge phase={2} />
-          </div>
-          <div className="font-body text-[11.5px] leading-relaxed" style={{ color: "var(--color-stone)" }}>
-            <span style={{ color: "var(--color-rose)" }}>Today:</span> {DATA_INTAKE_TODAY.today}
-          </div>
-          <div className="font-body text-[11.5px] leading-relaxed mt-0.5" style={{ color: "var(--color-stone)" }}>
-            <span style={{ color: "var(--color-emerald)" }}>Proposed:</span> {DATA_INTAKE_TODAY.proposed}
-          </div>
-        </div>
-      </motion.div>
-
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.05 }}
-        className="flex items-start gap-2.5 rounded-2xl px-4 py-3 mb-5"
-        style={{ background: "rgba(178,58,72,0.06)", border: "1px solid rgba(178,58,72,0.2)" }}
-      >
-        <AlertCircle size={14} className="shrink-0 mt-0.5" style={{ color: "var(--color-rose)" }} />
-        <span className="font-body text-[11.5px] leading-relaxed" style={{ color: "var(--color-ink)" }}>
-          <span className="font-mono text-[9.5px] uppercase tracking-wider mr-1.5" style={{ color: "var(--color-rose)" }}>Open question:</span>
-          {OPEN_QUESTION_WHATSAPP_VOICE}
-        </span>
-      </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         <motion.div
@@ -530,38 +492,6 @@ export default function AutomationView({ openLead, onAIVoiceCall, viewer = "Aman
               </div>
             )}
           </div>
-        </div>
-      </motion.div>
-
-      <motion.div
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.22 }}
-        className="rounded-2xl p-6 mt-5"
-        style={{ background: "var(--color-paper)", border: "1px solid var(--color-stone-line)" }}
-      >
-        <div className="flex items-center gap-2 mb-1">
-          <div className="font-serif text-[16px]" style={{ color: "var(--color-ink)" }}>Where Delhi Stands Today</div>
-          <span className="font-mono text-[9px] uppercase tracking-wider rounded-full px-2 py-0.5" style={{ background: "var(--color-ivory)", color: "var(--color-stone)" }}>Competitive audit</span>
-        </div>
-        <p className="font-body text-[12px] mb-4" style={{ color: "var(--color-stone)" }}>
-          Every premium Delhi peer audited still runs on personal WhatsApp and manual forms.
-        </p>
-        <div className="grid grid-cols-[1fr_70px_100px] gap-y-2.5 items-center max-w-lg">
-          <span className="font-mono text-[9.5px] uppercase" style={{ color: "var(--color-stone)" }} />
-          <span className="font-mono text-[9.5px] uppercase text-center" style={{ color: "var(--color-gold-deep)" }}>Cherish</span>
-          <span className="font-mono text-[9.5px] uppercase text-center" style={{ color: "var(--color-stone)" }}>Other Venues</span>
-          {COMPETITIVE_CHECKLIST.map((item) => (
-            <Fragment key={item}>
-              <span className="font-body text-[12px]" style={{ color: "var(--color-ink)" }}>{item}</span>
-              <span className="flex justify-center">
-                <Check size={15} style={{ color: "var(--color-emerald)" }} />
-              </span>
-              <span className="flex justify-center">
-                <XIcon size={13} style={{ color: "var(--color-stone)" }} />
-              </span>
-            </Fragment>
-          ))}
         </div>
       </motion.div>
     </div>
