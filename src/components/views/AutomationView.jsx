@@ -1,12 +1,12 @@
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import {
-  MessageCircle, Bot, ArrowUpRight, PhoneCall, Check, ListFilter, Hourglass, Mic,
+  MessageCircle, Bot, ArrowUpRight, PhoneCall, Check, Hourglass,
   Pencil, HeartHandshake, Hash, FileText, ChevronDown, ChevronUp,
 } from "lucide-react";
 import {
   LEADS, STAGES, SOURCE_META, NURTURE_STEPS, AI_CALL_LOG, AI_CALLER_NUMBER, OWNER_BY_SOURCE,
-  queuedForAICall, triageToday, leadOwner, VOICE_NOTE_FALLBACK_EXAMPLE, allMessageTemplates,
+  queuedForAICall, leadOwner, allMessageTemplates,
 } from "../../data/leads";
 import Avatar from "../Avatar";
 
@@ -62,8 +62,6 @@ export default function AutomationView({ openLead, onAIVoiceCall, viewer = "Aman
     const l = LEADS.find((lead) => lead.name === e.leadName);
     return l && leadOwner(l) === viewer;
   });
-  const triageAll = triageToday();
-  const triage = { ...triageAll, green: triageAll.green.filter((l) => leadOwner(l) === viewer), yellow: triageAll.yellow.filter((l) => leadOwner(l) === viewer) };
   const [openTemplateId, setOpenTemplateId] = useState(null);
   const [editingTemplateId, setEditingTemplateId] = useState(null);
   const [templateOverrides, setTemplateOverrides] = useState({});
@@ -77,57 +75,6 @@ export default function AutomationView({ openLead, onAIVoiceCall, viewer = "Aman
       <h1 className="font-serif text-[27px] mb-5" style={{ color: "var(--color-ink)" }}>Cherish Copilot</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="rounded-2xl p-6"
-          style={{ background: "var(--color-paper)", border: "1px solid var(--color-stone-line)" }}
-        >
-          <div className="flex items-center gap-2 mb-1.5">
-            <ListFilter size={15} style={{ color: "var(--color-gold-deep)" }} />
-            <div className="font-serif text-[16px]" style={{ color: "var(--color-ink)" }}>Qualification Screen</div>
-          </div>
-          <p className="font-body text-[12px] mb-4" style={{ color: "var(--color-stone)" }}>
-            Every query gets a light before it hits the queue — not rejection, triage.
-          </p>
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center gap-2 mb-1">
-              <span className="rounded-full" style={{ width: 8, height: 8, background: "var(--color-emerald)" }} />
-              <span className="font-mono text-[10px] uppercase tracking-wide" style={{ color: "var(--color-stone)" }}>Green — call today ({triage.green.length})</span>
-            </div>
-            {triage.green.map((l) => (
-              <button key={l.id} onClick={() => openLead(l)} className="w-full flex items-center gap-2.5 rounded-xl px-3 py-2 text-left" style={{ background: "rgba(31,77,61,0.06)" }}>
-                <span className="text-[12px] font-medium" style={{ color: "var(--color-ink)" }}>{l.name}</span>
-                <span className="ml-auto font-mono text-[10.5px]" style={{ color: "var(--color-emerald)" }}>{l.score}</span>
-              </button>
-            ))}
-            {triage.yellow.length > 0 && (
-              <>
-                <div className="flex items-center gap-2 mb-1 mt-1">
-                  <span className="rounded-full" style={{ width: 8, height: 8, background: "var(--color-gold-deep)" }} />
-                  <span className="font-mono text-[10px] uppercase tracking-wide" style={{ color: "var(--color-stone)" }}>Yellow — worth a look ({triage.yellow.length})</span>
-                </div>
-                {triage.yellow.map((l) => (
-                  <button key={l.id} onClick={() => openLead(l)} className="w-full flex items-center gap-2.5 rounded-xl px-3 py-2 text-left" style={{ background: "rgba(201,162,39,0.08)" }}>
-                    <span className="text-[12px] font-medium" style={{ color: "var(--color-ink)" }}>{l.name}</span>
-                    <span className="ml-auto font-mono text-[10.5px]" style={{ color: "var(--color-gold-deep)" }}>{l.score}</span>
-                  </button>
-                ))}
-              </>
-            )}
-            <div className="flex items-center gap-2 mb-1 mt-1">
-              <span className="rounded-full" style={{ width: 8, height: 8, background: "var(--color-stone)" }} />
-              <span className="font-mono text-[10px] uppercase tracking-wide" style={{ color: "var(--color-stone)" }}>Red — auto-handled, never reaches you ({triage.red.length})</span>
-            </div>
-            {triage.red.map((r, i) => (
-              <div key={i} className="font-body text-[11px] leading-relaxed rounded-xl px-3 py-2" style={{ background: "var(--color-ivory)", color: "var(--color-stone)" }}>
-                {r.note}
-              </div>
-            ))}
-          </div>
-        </motion.div>
-
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -171,35 +118,6 @@ export default function AutomationView({ openLead, onAIVoiceCall, viewer = "Aman
           )}
         </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15 }}
-          className="rounded-2xl p-6"
-          style={{ background: "var(--color-paper)", border: "1px solid var(--color-stone-line)" }}
-        >
-          <div className="flex items-center gap-2 mb-1.5">
-            <Mic size={15} style={{ color: "var(--color-gold-deep)" }} />
-            <div className="font-serif text-[16px]" style={{ color: "var(--color-ink)" }}>Voice-Note Fallback</div>
-          </div>
-          <p className="font-body text-[12px] mb-3" style={{ color: "var(--color-stone)" }}>
-            Old-way calls, no brief — recorded (with consent) and transcribed so nothing's lost.
-          </p>
-          <div className="rounded-xl px-3.5 py-2.5 mb-2" style={{ background: "var(--color-ivory)" }}>
-            <div className="font-body text-[11.5px] italic leading-relaxed" style={{ color: "var(--color-ink)" }}>{VOICE_NOTE_FALLBACK_EXAMPLE.raw}</div>
-          </div>
-          <div className="flex flex-col gap-1">
-            {VOICE_NOTE_FALLBACK_EXAMPLE.extracted.map((f, i) => (
-              <div key={i} className="flex items-center justify-between font-mono text-[10.5px]" style={{ color: "var(--color-stone)" }}>
-                <span className="uppercase">{f.field}</span>
-                <span style={{ color: "var(--color-ink)" }}>{f.value}</span>
-              </div>
-            ))}
-          </div>
-        </motion.div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mt-5">
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}

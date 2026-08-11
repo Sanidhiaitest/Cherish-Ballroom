@@ -440,22 +440,6 @@ export const DATA_INTAKE_TODAY = {
   proposed: "A live link to the same sheet — leads land already split by source and call-ready, no retyping.",
 };
 
-// "If 5 queries come in, AI filters it to the 3 that are actually yours to
-// work" — Aman's own framing. A real green/yellow/red triage, not a single
-// count: green/yellow are computed off today's actual query-stage leads; red
-// is illustrative (leads that never entered the funnel don't exist in LEADS).
-export function triageToday() {
-  const queries = LEADS.filter((l) => l.stage === "query");
-  return {
-    green: queries.filter((l) => l.score >= 50),
-    yellow: queries.filter((l) => l.score < 50),
-    red: [
-      { note: "Function date already past — auto-replied with next availability, no call queued." },
-      { note: "Enquiry was for a different city's banquet — auto-declined with a referral note." },
-    ],
-  };
-}
-
 // One dedicated Cherish number carries every AI touch, but the voice clone
 // still matches whichever manager actually owns that lead's channel — "one
 // owns Instagram, one owns Google/the ballroom side," per the discovery call.
@@ -484,19 +468,6 @@ export const HALL_AVAILABILITY = {
 export function nextAvailability(hall) {
   return HALL_AVAILABILITY[hall] || [];
 }
-
-// Fallback for the calls that happen the old way — no brief, no prep: the
-// recording (with consent) gets transcribed and filed, so nothing said out
-// loud gets lost the way it currently can.
-export const VOICE_NOTE_FALLBACK_EXAMPLE = {
-  raw: "\"Haan dekho, hume December mein chahiye, around 300 log honge, thoda budget tight hai but Rubicon dekhna hai...\"",
-  extracted: [
-    { field: "Date", value: "December (exact TBD)" },
-    { field: "Guests", value: "~300" },
-    { field: "Hall interest", value: "Rubicon" },
-    { field: "Budget signal", value: "Price-sensitive — mentioned unprompted" },
-  ],
-};
 
 // "A day before a confirmed visit, the guest automatically gets a short
 // 'here's what to expect' message" — small, but it's the polish that
