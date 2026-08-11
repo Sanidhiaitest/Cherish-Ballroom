@@ -106,7 +106,7 @@ export default function OverviewView({ openLead, onLogLead, viewer = "Aman" }) {
             One thread, no matter which door they came through.
           </p>
 
-          <div className="flex items-stretch gap-4 sm:gap-6 mt-5 pt-5 w-full max-w-sm justify-center" style={{ borderTop: "1px solid rgba(255,255,255,0.1)" }}>
+          <div className="flex items-stretch gap-4 sm:gap-6 mt-5 pt-5 w-full max-w-xs justify-center" style={{ borderTop: "1px solid rgba(255,255,255,0.1)" }}>
             <div className="flex-1">
               <div className="font-serif text-[20px] leading-none" style={{ color: "var(--color-paper)" }}>{myLeads.length}</div>
               <div className="font-mono text-[8.5px] uppercase tracking-wide mt-1" style={{ color: "var(--color-stone)" }}>Active</div>
@@ -118,10 +118,6 @@ export default function OverviewView({ openLead, onLogLead, viewer = "Aman" }) {
             <div className="flex-1" style={{ borderLeft: "1px solid rgba(255,255,255,0.1)" }}>
               <div className="font-serif text-[20px] leading-none" style={{ color: "var(--color-rose-soft)" }}>{cold.length}</div>
               <div className="font-mono text-[8.5px] uppercase tracking-wide mt-1" style={{ color: "var(--color-stone)" }}>Going cold</div>
-            </div>
-            <div className="flex-1" style={{ borderLeft: "1px solid rgba(255,255,255,0.1)" }}>
-              <div className="font-serif text-[20px] leading-none" style={{ color: "var(--color-emerald-soft)" }}>{formatINR(bookedValue)}</div>
-              <div className="font-mono text-[8.5px] uppercase tracking-wide mt-1" style={{ color: "var(--color-stone)" }}>Booked</div>
             </div>
           </div>
 
