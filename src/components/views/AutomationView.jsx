@@ -1,18 +1,60 @@
-import { useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { Zap, MessageCircle, Bot, CheckCircle2, Circle, PhoneCall, ListFilter, FileSpreadsheet, Hourglass, AlertCircle, Send, Pencil, Check } from "lucide-react";
+import { Zap, MessageCircle, Bot, ArrowUpRight, CheckCircle2, Circle, PhoneCall, Check, X as XIcon, ListFilter, FileSpreadsheet, Hourglass, Mic, AlertCircle, Send, Pencil, HeartHandshake } from "lucide-react";
 import {
-  LEADS, NURTURE_STEPS, AI_CALL_LOG, AI_CALLER_NUMBER, DATA_INTAKE_TODAY, medianResponseSeconds,
-  fmtSeconds, queuedForAICall, triageToday, leadOwner, OPEN_QUESTION_WHATSAPP_VOICE, nurtureDraft,
+  LEADS, STAGES, NURTURE_STEPS, AI_CALL_LOG, COMPETITIVE_CHECKLIST, AI_CALLER_NUMBER, DATA_INTAKE_TODAY,
+  fmtSeconds, queuedForAICall, triageToday, leadOwner, VOICE_NOTE_FALLBACK_EXAMPLE,
+  OPEN_QUESTION_WHATSAPP_VOICE, nurtureDraft,
 } from "../../data/leads";
 import Avatar from "../Avatar";
 import PhaseBadge from "../PhaseBadge";
 
+const REF_VB_W = 760;
+const REF_VB_H = 380;
+const REF_ROOT_X = 110;
+const REF_CHILD_X = [560, 590];
+
+function useReferralGraph() {
+  return useMemo(() => {
+    const roots = LEADS.filter((l) => l.rootFamily);
+    const byRoot = Object.fromEntries(roots.map((r) => [r.name, LEADS.filter((l) => l.ref === r.name)]));
+    const bandH = REF_VB_H / roots.length;
+    const nodes = [];
+    const edges = [];
+    roots.forEach((root, i) => {
+      const bandTop = i * bandH;
+      const rootY = bandTop + bandH / 2;
+      nodes.push({ ...root, x: REF_ROOT_X, y: rootY });
+      const kids = byRoot[root.name] || [];
+      kids.forEach((kid, ki) => {
+        const pad = bandH * 0.2;
+        const usable = bandH - pad * 2;
+        const y = kids.length === 1 ? rootY : bandTop + pad + (usable * ki) / (kids.length - 1);
+        const kidNode = { ...kid, x: REF_CHILD_X[ki % 2], y };
+        nodes.push(kidNode);
+        edges.push({ id: kid.id, parentName: root.name, x1: REF_ROOT_X, y1: rootY, x2: kidNode.x, y2: y });
+      });
+    });
+    return { nodes, edges, roots };
+  }, []);
+}
+
 export default function AutomationView({ openLead, onAIVoiceCall, viewer = "Aman" }) {
   const [nurtureEditing, setNurtureEditing] = useState(false);
   const [nurtureSent, setNurtureSent] = useState(false);
+  const [refHover, setRefHover] = useState(null);
+  const { nodes: refNodes, edges: refEdges, roots: refRoots } = useReferralGraph();
+  const refTotalReferred = refNodes.length - refRoots.length;
+  const refBooked = refNodes.filter((n) => n.stage === "booked").length;
+  const anniversaryLead = LEADS.find((l) => l.anniversary);
+  const pastReferrals = anniversaryLead ? LEADS.filter((l) => l.ref === anniversaryLead.name) : [];
+  const isRefDimmed = (n) => {
+    if (!refHover) return false;
+    if (n.name === refHover) return false;
+    if (n.ref === refHover) return false;
+    return true;
+  };
   const myLeads = LEADS.filter((l) => leadOwner(l) === viewer);
-  const median = medianResponseSeconds();
   const fastestReplies = myLeads.filter((l) => l.firstResponseSeconds).sort((a, b) => a.firstResponseSeconds - b.firstResponseSeconds);
   const dmExample = fastestReplies[0];
   const nurtureLead = myLeads.find((l) => l.nurtureStep !== undefined) || myLeads[0];
@@ -31,39 +73,8 @@ export default function AutomationView({ openLead, onAIVoiceCall, viewer = "Aman
       <h1 className="font-serif text-[27px] mb-5" style={{ color: "var(--color-ink)" }}>Cherish Copilot</h1>
 
       <motion.div
-        initial={{ opacity: 0, y: 14 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-        className="relative overflow-hidden rounded-3xl px-7 py-8 md:px-9 md:py-10 mb-5"
-        style={{ background: "linear-gradient(120deg, var(--color-ink) 0%, #241a12 60%, var(--color-gold-deep) 160%)" }}
-      >
-        <div className="relative flex flex-col md:flex-row md:items-end md:justify-between gap-8">
-          <div>
-            <div className="font-mono text-[10.5px] uppercase tracking-[0.16em]" style={{ color: "var(--color-gold-soft)" }}>
-              Speed to lead · this week
-            </div>
-            <div className="font-serif text-[52px] mt-2 leading-none" style={{ color: "var(--color-paper)" }}>
-              {fmtSeconds(median)}
-            </div>
-            <div className="font-body text-[13px] mt-2" style={{ color: "var(--color-ivory)" }}>
-              Median first response, all channels
-            </div>
-          </div>
-          <div className="flex flex-col gap-2 max-w-xs">
-            <div className="flex items-center gap-2 rounded-full px-3.5 py-2" style={{ background: "rgba(178,58,72,0.18)", border: "1px solid rgba(178,58,72,0.35)" }}>
-              <span className="font-mono text-[11px]" style={{ color: "var(--color-rose-soft)" }}>Delhi banquet average: 11–47 hrs</span>
-            </div>
-            <div className="flex items-center gap-2 rounded-full px-3.5 py-2" style={{ background: "rgba(201,162,39,0.14)", border: "1px solid rgba(201,162,39,0.3)" }}>
-              <span className="font-mono text-[11px]" style={{ color: "var(--color-gold-soft)" }}>5 min vs 30 min reply → 21x odds (MIT)</span>
-            </div>
-          </div>
-        </div>
-      </motion.div>
-
-      <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.08 }}
         className="flex flex-col sm:flex-row sm:items-center gap-3 rounded-2xl px-5 py-4 mb-5"
         style={{ background: "var(--color-paper)", border: "1px dashed var(--color-stone-line)" }}
       >
@@ -87,7 +98,7 @@ export default function AutomationView({ openLead, onAIVoiceCall, viewer = "Aman
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
+        transition={{ delay: 0.05 }}
         className="flex items-start gap-2.5 rounded-2xl px-4 py-3 mb-5"
         style={{ background: "rgba(178,58,72,0.06)", border: "1px solid rgba(178,58,72,0.2)" }}
       >
@@ -102,7 +113,7 @@ export default function AutomationView({ openLead, onAIVoiceCall, viewer = "Aman
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
+          transition={{ delay: 0.08 }}
           className="rounded-2xl p-6"
           style={{ background: "var(--color-paper)", border: "1px solid var(--color-stone-line)" }}
         >
@@ -131,7 +142,7 @@ export default function AutomationView({ openLead, onAIVoiceCall, viewer = "Aman
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.12 }}
+          transition={{ delay: 0.1 }}
           className="rounded-2xl p-6"
           style={{ background: "var(--color-paper)", border: "1px solid var(--color-stone-line)" }}
         >
@@ -183,8 +194,8 @@ export default function AutomationView({ openLead, onAIVoiceCall, viewer = "Aman
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15 }}
-          className="rounded-2xl p-6 lg:col-span-2"
+          transition={{ delay: 0.13 }}
+          className="rounded-2xl p-6"
           style={{ background: "var(--color-paper)", border: "1px solid var(--color-stone-line)" }}
         >
           <div className="flex items-center gap-2 mb-1.5">
@@ -255,12 +266,160 @@ export default function AutomationView({ openLead, onAIVoiceCall, viewer = "Aman
             </div>
           )}
         </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
+          className="rounded-2xl p-6"
+          style={{ background: "var(--color-paper)", border: "1px solid var(--color-stone-line)" }}
+        >
+          <div className="flex items-center gap-2 mb-1.5">
+            <Mic size={15} style={{ color: "var(--color-gold-deep)" }} />
+            <div className="font-serif text-[16px]" style={{ color: "var(--color-ink)" }}>Voice-Note Fallback</div>
+            <PhaseBadge phase={2} />
+          </div>
+          <p className="font-body text-[12px] mb-3" style={{ color: "var(--color-stone)" }}>
+            Old-way calls, no brief — recorded (with consent) and transcribed so nothing's lost.
+          </p>
+          <div className="rounded-xl px-3.5 py-2.5 mb-2" style={{ background: "var(--color-ivory)" }}>
+            <div className="font-body text-[11.5px] italic leading-relaxed" style={{ color: "var(--color-ink)" }}>{VOICE_NOTE_FALLBACK_EXAMPLE.raw}</div>
+          </div>
+          <div className="flex flex-col gap-1">
+            {VOICE_NOTE_FALLBACK_EXAMPLE.extracted.map((f, i) => (
+              <div key={i} className="flex items-center justify-between font-mono text-[10.5px]" style={{ color: "var(--color-stone)" }}>
+                <span className="uppercase">{f.field}</span>
+                <span style={{ color: "var(--color-ink)" }}>{f.value}</span>
+              </div>
+            ))}
+          </div>
+        </motion.div>
       </div>
+
+      <motion.div
+        id="referral-web"
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.18 }}
+        className="rounded-2xl p-6 mt-5"
+        style={{ background: "var(--color-paper)", border: "1px solid var(--color-stone-line)" }}
+      >
+        <div className="flex items-center gap-2 mb-1">
+          <HeartHandshake size={15} style={{ color: "var(--color-gold-deep)" }} />
+          <div className="font-serif text-[16px]" style={{ color: "var(--color-ink)" }}>Referral Web</div>
+        </div>
+        <p className="font-body text-[12px] mb-4" style={{ color: "var(--color-stone)" }}>
+          {refRoots.length} root families · {refTotalReferred} referred · {refBooked} booked — the channel Event Co. leads cost you 50% to buy.
+        </p>
+
+        <div className="rounded-3xl p-6 md:p-8" style={{ background: "linear-gradient(160deg, var(--color-ink) 0%, #1a1512 100%)" }}>
+          <svg width="100%" height="420" viewBox={`0 0 ${REF_VB_W} ${REF_VB_H}`}>
+            <defs>
+              <linearGradient id="thread" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stopColor="var(--color-gold)" stopOpacity="0.1" />
+                <stop offset="100%" stopColor="var(--color-gold)" stopOpacity="0.75" />
+              </linearGradient>
+              <radialGradient id="rootGlow" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stopColor="var(--color-gold)" stopOpacity="0.55" />
+                <stop offset="100%" stopColor="var(--color-gold)" stopOpacity="0" />
+              </radialGradient>
+            </defs>
+
+            {refEdges.map((e, i) => {
+              const dimmed = refHover && refHover !== e.id && refHover !== e.parentName;
+              return (
+                <motion.path
+                  key={e.id}
+                  d={`M ${e.x1} ${e.y1} C ${(e.x1 + e.x2) / 2} ${e.y1}, ${(e.x1 + e.x2) / 2} ${e.y2}, ${e.x2} ${e.y2}`}
+                  stroke="url(#thread)"
+                  strokeWidth={dimmed ? 1 : 1.8}
+                  fill="none"
+                  initial={{ pathLength: 0, opacity: 0 }}
+                  animate={{ pathLength: 1, opacity: dimmed ? 0.25 : 1 }}
+                  transition={{ pathLength: { duration: 1, delay: i * 0.12, ease: "easeInOut" }, opacity: { duration: 0.25 } }}
+                />
+              );
+            })}
+
+            {refNodes.map((n, i) => {
+              const dimmed = isRefDimmed(n);
+              const status = n.milestone || STAGES.find((s) => s.id === n.stage)?.label || n.stage;
+              return (
+                <motion.g
+                  key={n.id}
+                  style={{ x: n.x, y: n.y, cursor: "pointer" }}
+                  initial={{ opacity: 0, scale: 0.6 }}
+                  animate={{ opacity: dimmed ? 0.35 : 1, scale: 1 }}
+                  transition={{ duration: 0.4, delay: 0.15 + i * 0.06 }}
+                  onMouseEnter={() => setRefHover(n.rootFamily ? n.name : n.ref)}
+                  onMouseLeave={() => setRefHover(null)}
+                  onClick={() => openLead(n)}
+                >
+                  {n.rootFamily && <circle r={18} fill="url(#rootGlow)" />}
+                  <circle
+                    r={n.rootFamily ? 8 : 5.5}
+                    fill={n.rootFamily ? "var(--color-gold)" : "var(--color-paper)"}
+                    stroke={n.rootFamily ? "var(--color-gold-soft)" : "var(--color-stone)"}
+                    strokeWidth="1.2"
+                  />
+                  <text x={n.rootFamily ? 15 : 11} y={4} fontFamily="Inter" fontSize="12.5" fontWeight={n.rootFamily ? 700 : 500} fill="var(--color-paper)">
+                    {n.name}
+                  </text>
+                  <text x={n.rootFamily ? 15 : 11} y={18} fontFamily="JetBrains Mono" fontSize="9.5" fill="var(--color-stone)">
+                    {status}
+                  </text>
+                </motion.g>
+              );
+            })}
+          </svg>
+        </div>
+
+        <div className="flex flex-wrap gap-5 mt-5 font-body text-[12px]" style={{ color: "var(--color-stone)" }}>
+          <span className="flex items-center gap-2">
+            <span className="inline-block rounded-full" style={{ width: 9, height: 9, background: "var(--color-gold)" }} />
+            Root family (originated the chain)
+          </span>
+          <span className="flex items-center gap-2">
+            <span className="inline-block rounded-full" style={{ width: 9, height: 9, border: "1.5px solid var(--color-stone)", background: "var(--color-paper)" }} />
+            Referred lead — hover to trace, click to open
+          </span>
+        </div>
+
+        {anniversaryLead && (
+          <motion.button
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            onClick={() => openLead(anniversaryLead)}
+            className="w-full mt-5 rounded-2xl p-5 text-left flex items-start gap-4"
+            style={{ background: "var(--color-ivory)", border: "1.5px dashed var(--color-stone-line)" }}
+          >
+            <div className="flex items-center justify-center rounded-xl w-10 h-10 shrink-0" style={{ background: "rgba(201,162,39,0.12)" }}>
+              <HeartHandshake size={17} style={{ color: "var(--color-gold-deep)" }} />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <Avatar initials={anniversaryLead.initials} source={anniversaryLead.source} size={22} />
+                <span className="font-serif text-[15px]" style={{ color: "var(--color-ink)" }}>{anniversaryLead.name} — {anniversaryLead.anniversary.label}</span>
+                <PhaseBadge phase={2} />
+              </div>
+              <div className="font-body text-[12.5px] mt-1.5" style={{ color: "var(--color-stone)" }}>
+                {anniversaryLead.anniversary.when} — reconnection note, not a pitch. {pastReferrals.length > 0
+                  ? `Already referred ${pastReferrals[0].name}.`
+                  : "Where referrals start — worth a personal line."}
+              </div>
+              <div className="flex items-center gap-1.5 mt-2 font-mono text-[10.5px] uppercase tracking-wide" style={{ color: "var(--color-gold-deep)" }}>
+                Open thread <ArrowUpRight size={12} />
+              </div>
+            </div>
+          </motion.button>
+        )}
+      </motion.div>
 
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.28 }}
+        transition={{ delay: 0.2 }}
         className="rounded-2xl p-6 mt-5"
         style={{ background: "var(--color-ink)" }}
       >
@@ -371,6 +530,38 @@ export default function AutomationView({ openLead, onAIVoiceCall, viewer = "Aman
               </div>
             )}
           </div>
+        </div>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.22 }}
+        className="rounded-2xl p-6 mt-5"
+        style={{ background: "var(--color-paper)", border: "1px solid var(--color-stone-line)" }}
+      >
+        <div className="flex items-center gap-2 mb-1">
+          <div className="font-serif text-[16px]" style={{ color: "var(--color-ink)" }}>Where Delhi Stands Today</div>
+          <span className="font-mono text-[9px] uppercase tracking-wider rounded-full px-2 py-0.5" style={{ background: "var(--color-ivory)", color: "var(--color-stone)" }}>Competitive audit</span>
+        </div>
+        <p className="font-body text-[12px] mb-4" style={{ color: "var(--color-stone)" }}>
+          Every premium Delhi peer audited still runs on personal WhatsApp and manual forms.
+        </p>
+        <div className="grid grid-cols-[1fr_70px_100px] gap-y-2.5 items-center max-w-lg">
+          <span className="font-mono text-[9.5px] uppercase" style={{ color: "var(--color-stone)" }} />
+          <span className="font-mono text-[9.5px] uppercase text-center" style={{ color: "var(--color-gold-deep)" }}>Cherish</span>
+          <span className="font-mono text-[9.5px] uppercase text-center" style={{ color: "var(--color-stone)" }}>Other Venues</span>
+          {COMPETITIVE_CHECKLIST.map((item) => (
+            <Fragment key={item}>
+              <span className="font-body text-[12px]" style={{ color: "var(--color-ink)" }}>{item}</span>
+              <span className="flex justify-center">
+                <Check size={15} style={{ color: "var(--color-emerald)" }} />
+              </span>
+              <span className="flex justify-center">
+                <XIcon size={13} style={{ color: "var(--color-stone)" }} />
+              </span>
+            </Fragment>
+          ))}
         </div>
       </motion.div>
     </div>
