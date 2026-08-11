@@ -2,14 +2,21 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Flame, ArrowUpRight, PlusCircle, Radar, BellRing, ChevronRight, CalendarClock, Check, X, Users2 } from "lucide-react";
 import { LEADS, pendingCommitments, leadOwner } from "../../data/leads";
-import SourceTag from "../SourceTag";
-import Avatar from "../Avatar";
 import PhaseBadge from "../PhaseBadge";
 import Mascot from "../Mascot";
 import SheetPreview from "../SheetPreview";
 
 function greetingPeriod(h) {
   return h < 12 ? "morning" : h < 17 ? "afternoon" : "evening";
+}
+
+// Trims a commitment's full sentence down to a short, scannable phrase --
+// everything before the first em-dash or parenthetical, capped at 5 words.
+function shortReason(commitment) {
+  if (!commitment) return null;
+  const trimmed = commitment.text.split(" — ")[0].split(" (")[0];
+  const words = trimmed.split(" ");
+  return words.length > 5 ? words.slice(0, 5).join(" ") + "…" : trimmed;
 }
 
 // Ticks once a minute so the hero's clock and greeting period stay honest
@@ -228,33 +235,56 @@ export default function OverviewView({ openLead, onLogLead, setView, viewer = "A
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.45, delay: 0.2 }}
           className="flex-1 rounded-2xl p-6"
-          style={{ background: "var(--color-ink)" }}
+          style={{ background: "var(--color-paper)", border: "1px solid var(--color-stone-line)" }}
         >
           <div className="flex items-center justify-between mb-4">
-            <div className="font-serif text-[17px]" style={{ color: "var(--color-paper)" }}>Needs a human, now</div>
-            <Flame size={15} style={{ color: "var(--color-gold)" }} />
+            <div className="font-serif text-[17px]" style={{ color: "var(--color-ink)" }}>Needs a human, now</div>
+            <Flame size={15} style={{ color: "var(--color-gold-deep)" }} />
           </div>
-          <div className="flex flex-col">
-            {hot.map((l, i) => (
-              <motion.button
-                key={l.id}
-                initial={{ opacity: 0, x: 10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.25 + i * 0.06 }}
-                onClick={() => openLead(l)}
-                whileHover={{ x: 3 }}
-                className="w-full flex items-center gap-3 py-2.5 text-left"
-                style={{ borderBottom: i < hot.length - 1 ? "1px solid var(--color-ink-line)" : "none" }}
-              >
-                <Avatar initials={l.initials} source={l.source} size={34} />
-                <div className="flex-1 min-w-0">
-                  <div className="text-[13px] font-medium truncate" style={{ color: "var(--color-paper)" }}>{l.name}</div>
-                  <SourceTag source={l.source} />
-                </div>
-                <div className="font-mono text-[16px]" style={{ color: "var(--color-gold-soft)" }}>{l.score}</div>
-                <ArrowUpRight size={14} style={{ color: "var(--color-stone)" }} />
-              </motion.button>
-            ))}
+          <div className="flex flex-col gap-2.5">
+            {hot.map((l, i) => {
+              const reason = shortReason(l.commitment);
+              const isToday = l.commitment?.due === "Today";
+              return (
+                <motion.button
+                  key={l.id}
+                  initial={{ opacity: 0, x: 10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.25 + i * 0.06 }}
+                  onClick={() => openLead(l)}
+                  whileHover={{ x: 3 }}
+                  className="w-full flex items-center gap-3.5 rounded-2xl p-3 text-left"
+                  style={{ background: "var(--color-ivory-soft)" }}
+                >
+                  <div
+                    className="flex flex-col items-center justify-center rounded-2xl shrink-0"
+                    style={{ width: 50, height: 50, background: "var(--color-paper)", border: "1px solid var(--color-stone-line)" }}
+                  >
+                    <span className="font-serif text-[18px] leading-none" style={{ color: "var(--color-gold-deep)" }}>{l.score}</span>
+                    <span className="font-mono text-[6.5px] uppercase mt-0.5 tracking-wide" style={{ color: "var(--color-stone)" }}>Score</span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-[13.5px] font-semibold truncate" style={{ color: "var(--color-ink)" }}>{l.name}</div>
+                    {reason && (
+                      <div className="text-[11.5px] truncate mt-0.5" style={{ color: "var(--color-stone)" }}>{reason}</div>
+                    )}
+                    {l.commitment?.due && (
+                      <span
+                        className="inline-block mt-1 font-mono text-[8px] uppercase tracking-wide rounded-full px-1.5 py-0.5"
+                        style={{
+                          background: isToday ? "rgba(178,58,72,0.1)" : "var(--color-paper)",
+                          color: isToday ? "var(--color-rose)" : "var(--color-stone)",
+                          border: isToday ? "none" : "1px solid var(--color-stone-line)",
+                        }}
+                      >
+                        {l.commitment.due}
+                      </span>
+                    )}
+                  </div>
+                  <ArrowUpRight size={14} className="shrink-0" style={{ color: "var(--color-stone)" }} />
+                </motion.button>
+              );
+            })}
           </div>
         </motion.div>
       </div>
