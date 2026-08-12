@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { LayoutGrid, GitBranch, Table2, Sparkles, Zap, PieChart } from "lucide-react";
+import { LayoutGrid, GitBranch, Table2, Zap, PieChart } from "lucide-react";
 import { ChandelierMotif } from "./Illustrations";
 
 const ITEMS = [
@@ -67,22 +67,6 @@ export default function Sidebar({ view, setView }) {
           );
         })}
       </nav>
-
-      <div className="mt-auto pt-6 relative" style={{ borderTop: "1px solid rgba(255,255,255,0.08)", zIndex: 1 }}>
-        <div
-          className="rounded-2xl p-4"
-          style={{ background: "linear-gradient(150deg, rgba(201,162,39,0.14), rgba(31,77,61,0.14))", border: "1px solid rgba(201,162,39,0.2)" }}
-        >
-          <div className="flex items-center gap-1.5 font-mono text-[9.5px] uppercase tracking-[0.12em]" style={{ color: "var(--color-gold-soft)" }}>
-            <Sparkles size={11} />
-            Gen-Z Half-Sold Index
-          </div>
-          <div className="font-serif text-[26px] mt-1.5" style={{ color: "var(--color-paper)" }}>0.63</div>
-          <div className="font-body text-[11px] mt-1 leading-snug" style={{ color: "var(--color-stone)" }}>
-            of inbound queries arrive pre-decided, not cold
-          </div>
-        </div>
-      </div>
     </div>
   );
 }
