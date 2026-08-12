@@ -160,7 +160,7 @@ export default function OverviewView({ openLead, onLogLead, setView, viewer = "A
             filter: "blur(24px)",
           }}
         />
-        <Mascot className="relative shrink-0" style={{ width: 52, height: 52 }} />
+        <Mascot className="relative shrink-0" style={{ width: 76, height: 76 }} />
 
         <div className="relative min-w-0 shrink-0">
           <div className="font-mono text-[9px] uppercase tracking-[0.14em]" style={{ color: "var(--color-gold-soft)" }}>
