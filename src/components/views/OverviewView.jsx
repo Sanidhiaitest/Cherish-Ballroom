@@ -59,7 +59,7 @@ export default function OverviewView({ openLead, onLogLead, setView, viewer = "A
         initial={{ opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-        className="relative rounded-3xl px-7 pb-8 md:pb-10 mt-24 md:mt-32 mb-6"
+        className="relative rounded-3xl px-7 pb-8 mt-24 mb-6 lg:hidden"
         style={{ background: "linear-gradient(120deg, var(--color-ink) 0%, #1c2e26 58%, var(--color-emerald) 130%)", paddingTop: "clamp(120px, 20vw, 210px)" }}
       >
         <div className="absolute inset-0 rounded-3xl overflow-hidden pointer-events-none">
@@ -143,6 +143,72 @@ export default function OverviewView({ openLead, onLogLead, setView, viewer = "A
             Log a lead
           </motion.button>
         </div>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+        className="hidden lg:flex relative items-center gap-5 rounded-2xl pl-6 pr-7 py-4 mb-6 overflow-hidden"
+        style={{ background: "linear-gradient(120deg, var(--color-ink) 0%, #1c2e26 58%, var(--color-emerald) 130%)" }}
+      >
+        <div
+          className="absolute left-0 top-1/2 -translate-y-1/2 rounded-full pointer-events-none"
+          style={{
+            width: 320, height: 320,
+            background: "radial-gradient(circle, rgba(125,211,252,0.22) 0%, rgba(240,128,176,0.14) 46%, rgba(240,128,176,0) 72%)",
+            filter: "blur(24px)",
+          }}
+        />
+        <Mascot className="relative shrink-0" style={{ width: 52, height: 52 }} />
+
+        <div className="relative min-w-0 shrink-0">
+          <div className="font-mono text-[9px] uppercase tracking-[0.14em]" style={{ color: "var(--color-gold-soft)" }}>
+            {now.toLocaleDateString("en-IN", { weekday: "short", month: "short", day: "numeric" })} · {now.toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit" })}
+          </div>
+          <h1 className="font-serif text-[19px] leading-tight mt-0.5" style={{ color: "var(--color-paper)" }}>
+            Good {greetingPeriod(now.getHours())}, {viewer}.
+          </h1>
+        </div>
+
+        <div className="relative flex items-center gap-5 pl-5 shrink-0" style={{ borderLeft: "1px solid rgba(255,255,255,0.12)" }}>
+          <div>
+            <div className="font-serif text-[17px] leading-none" style={{ color: "var(--color-paper)" }}>{myLeads.length}</div>
+            <div className="font-mono text-[8px] uppercase tracking-wide mt-1" style={{ color: "var(--color-stone)" }}>Active</div>
+          </div>
+          <div>
+            <div className="font-serif text-[17px] leading-none" style={{ color: "var(--color-gold-soft)" }}>{hotAll.length}</div>
+            <div className="font-mono text-[8px] uppercase tracking-wide mt-1" style={{ color: "var(--color-stone)" }}>Hot</div>
+          </div>
+          <div>
+            <div className="font-serif text-[17px] leading-none" style={{ color: "var(--color-rose-soft)" }}>{cold.length}</div>
+            <div className="font-mono text-[8px] uppercase tracking-wide mt-1" style={{ color: "var(--color-stone)" }}>Going cold</div>
+          </div>
+        </div>
+
+        {hotAll.length + cold.length > 0 && (
+          <button
+            onClick={() => document.getElementById("needs-attention")?.scrollIntoView({ behavior: "smooth", block: "center" })}
+            className="relative flex items-center gap-1.5 rounded-full pl-2 pr-3 py-1.5 ml-auto shrink-0"
+            style={{ background: "rgba(178,58,72,0.18)", border: "1px solid rgba(178,58,72,0.4)" }}
+          >
+            <span className="rounded-full animate-pulse" style={{ width: 6, height: 6, background: "var(--color-rose-soft)" }} />
+            <span className="font-mono text-[10px] uppercase tracking-wide whitespace-nowrap" style={{ color: "var(--color-rose-soft)" }}>
+              {hotAll.length + cold.length} need attention
+            </span>
+          </button>
+        )}
+
+        <motion.button
+          onClick={onLogLead}
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.97 }}
+          className={`relative flex items-center gap-1.5 rounded-full px-4 py-2.5 font-medium text-[12.5px] shrink-0 whitespace-nowrap ${hotAll.length + cold.length > 0 ? "" : "ml-auto"}`}
+          style={{ background: "var(--color-gold)", color: "var(--color-ink)" }}
+        >
+          <PlusCircle size={14} />
+          Log a lead
+        </motion.button>
       </motion.div>
 
       <AnimatePresence>

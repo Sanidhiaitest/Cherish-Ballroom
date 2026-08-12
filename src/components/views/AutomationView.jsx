@@ -2,10 +2,10 @@ import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import {
   MessageCircle, Bot, ArrowUpRight, PhoneCall, Check, Hourglass,
-  Pencil, HeartHandshake, Hash, FileText, ChevronDown, ChevronUp, FileSpreadsheet,
+  Pencil, HeartHandshake, Hash, FileText, ChevronDown, ChevronUp,
 } from "lucide-react";
 import {
-  LEADS, STAGES, SOURCE_META, NURTURE_STEPS, AI_CALL_LOG, AI_CALLER_NUMBER, OWNER_BY_SOURCE,
+  LEADS, STAGES, SOURCE_META, AI_CALL_LOG, AI_CALLER_NUMBER, OWNER_BY_SOURCE,
   queuedForAICall, leadOwner, allMessageTemplates,
 } from "../../data/leads";
 import Avatar from "../Avatar";
@@ -14,8 +14,6 @@ const REF_VB_W = 760;
 const REF_VB_H = 380;
 const REF_ROOT_X = 110;
 const REF_CHILD_X = [560, 590];
-
-const SHEET_COLUMNS = ["Event Type", "Guest Count", "Name", "Event Date", "Visit Timing", "Owner"];
 
 function useReferralGraph() {
   return useMemo(() => {
@@ -42,7 +40,7 @@ function useReferralGraph() {
   }, []);
 }
 
-export default function AutomationView({ openLead, onAIVoiceCall, setView, viewer = "Aman" }) {
+export default function AutomationView({ openLead, onAIVoiceCall, viewer = "Aman" }) {
   const [refHover, setRefHover] = useState(null);
   const { nodes: refNodes, edges: refEdges, roots: refRoots } = useReferralGraph();
   const refTotalReferred = refNodes.length - refRoots.length;
@@ -57,8 +55,6 @@ export default function AutomationView({ openLead, onAIVoiceCall, setView, viewe
   };
   const myLeads = LEADS.filter((l) => leadOwner(l) === viewer);
   const nurtureLead = myLeads.find((l) => l.nurtureStep !== undefined) || myLeads[0];
-  const nurtureActive = myLeads.filter((l) => l.nurtureStep !== undefined);
-  const nurtureCounts = NURTURE_STEPS.map((_, i) => nurtureActive.filter((l) => l.nurtureStep === i).length);
   const queued = queuedForAICall().filter((l) => leadOwner(l) === viewer);
   const myCallLog = AI_CALL_LOG.filter((e) => {
     const l = LEADS.find((lead) => lead.name === e.leadName);
@@ -81,49 +77,6 @@ export default function AutomationView({ openLead, onAIVoiceCall, setView, viewe
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.13 }}
-          className="rounded-2xl p-6"
-          style={{ background: "var(--color-paper)", border: "1px solid var(--color-stone-line)" }}
-        >
-          <div className="flex items-center gap-2 mb-1.5">
-            <MessageCircle size={15} style={{ color: "var(--color-gold-deep)" }} />
-            <div className="font-serif text-[16px]" style={{ color: "var(--color-ink)" }}>Post-Visit Nurture — Pipeline</div>
-          </div>
-          <p className="font-body text-[12px] mb-4" style={{ color: "var(--color-stone)" }}>
-            5-touch sequence drafts itself when a walkthrough ends — approve &amp; send from each lead's own thread.
-          </p>
-
-          <div className="flex flex-col gap-2">
-            {NURTURE_STEPS.map((step, i) => {
-              const count = nurtureCounts[i];
-              const pct = nurtureActive.length ? (count / nurtureActive.length) * 100 : 0;
-              return (
-                <div key={step.id} className="flex items-center gap-2.5">
-                  <span className="font-body text-[11px] w-[128px] shrink-0 truncate" style={{ color: "var(--color-ink)" }}>{step.label}</span>
-                  <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: "var(--color-ivory)" }}>
-                    <div className="h-full rounded-full" style={{ width: `${pct}%`, background: "var(--color-gold)" }} />
-                  </div>
-                  <span className="font-mono text-[10.5px] w-3 text-right shrink-0" style={{ color: count ? "var(--color-gold-deep)" : "var(--color-stone)" }}>{count}</span>
-                </div>
-              );
-            })}
-          </div>
-
-          {nurtureActive.length > 0 && (
-            <div className="flex flex-col gap-1.5 mt-4 pt-3.5" style={{ borderTop: "1px solid var(--color-stone-line)" }}>
-              {nurtureActive.map((l) => (
-                <button key={l.id} onClick={() => openLead(l)} className="w-full flex items-center gap-2 rounded-xl px-3 py-2 text-left" style={{ background: "var(--color-ivory)" }}>
-                  <span className="text-[12px] font-medium truncate" style={{ color: "var(--color-ink)" }}>{l.name}</span>
-                  <span className="ml-auto font-mono text-[9.5px] uppercase truncate" style={{ color: "var(--color-gold-deep)" }}>{NURTURE_STEPS[l.nurtureStep]?.label}</span>
-                </button>
-              ))}
-            </div>
-          )}
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.16 }}
           className="rounded-2xl p-6"
           style={{ background: "var(--color-paper)", border: "1px solid var(--color-stone-line)" }}
         >
@@ -231,40 +184,6 @@ export default function AutomationView({ openLead, onAIVoiceCall, setView, viewe
                 </div>
               );
             })}
-          </div>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="rounded-2xl p-6"
-          style={{ background: "var(--color-paper)", border: "1px solid var(--color-stone-line)" }}
-        >
-          <div className="flex items-center gap-2 mb-1.5">
-            <FileSpreadsheet size={15} style={{ color: "var(--color-gold-deep)" }} />
-            <div className="font-serif text-[16px]" style={{ color: "var(--color-ink)" }}>Sheet Sync</div>
-          </div>
-          <p className="font-body text-[12px] mb-3" style={{ color: "var(--color-stone)" }}>
-            Same Followup Sheet Cherish already fills in — a row landing is what fires everything else.
-          </p>
-          <div className="flex flex-wrap gap-1.5 mb-3">
-            {SHEET_COLUMNS.map((c) => (
-              <span key={c} className="font-mono text-[9.5px] rounded-full px-2 py-1" style={{ background: "var(--color-ivory)", color: "var(--color-stone)" }}>
-                {c}
-              </span>
-            ))}
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="flex items-center gap-1.5 font-mono text-[9.5px] uppercase tracking-wide" style={{ color: "var(--color-emerald)" }}>
-              <span className="rounded-full animate-pulse" style={{ width: 6, height: 6, background: "var(--color-emerald)" }} />
-              Watching for new rows
-            </span>
-            {setView && (
-              <button onClick={() => setView("overview")} className="font-mono text-[9.5px] uppercase tracking-wide" style={{ color: "var(--color-gold-deep)" }}>
-                Live feed →
-              </button>
-            )}
           </div>
         </motion.div>
       </div>

@@ -9,7 +9,7 @@ import {
   REVIEWS, SAVED_REPORTS, CAMPAIGNS, CONTENT_TRENDS, ASK_THE_SHEET_EXAMPLES, formatINR, fmtSeconds, medianResponseSeconds,
   partnerMarginSummary, weeklyDigest, liveChannelSplit, aiCallSummary,
 } from "../../data/leads";
-import SourceTag, { sourceColor } from "../SourceTag";
+import { sourceColor } from "../SourceTag";
 import AreaChart from "../charts/AreaChart";
 import DonutChart from "../charts/DonutChart";
 import BarChart from "../charts/BarChart";
@@ -56,9 +56,6 @@ export default function ReportsView() {
     .filter((s) => s.value > 0)
     .sort((a, b) => b.value - a.value);
 
-  const bySourceDetailed = Object.keys(SOURCE_META)
-    .map((s) => ({ key: s, count: LEADS.filter((l) => l.source === s).length }))
-    .sort((a, b) => b.count - a.count);
   const split = liveChannelSplit();
 
   const funnelData = STAGES.map((s) => ({
@@ -342,52 +339,30 @@ export default function ReportsView() {
         </div>
       </div>
 
-      <div className="rounded-2xl p-6 mb-5" style={{ background: "var(--color-paper)", border: "1px solid var(--color-stone-line)" }}>
-        <div className="flex items-center justify-between mb-1">
-          <div className="font-serif text-[17px]" style={{ color: "var(--color-ink)" }}>Where they're coming from</div>
-        </div>
-        <div className="flex items-center gap-3 mb-5">
-          <div className="flex-1 h-2 rounded-full overflow-hidden flex" style={{ background: "var(--color-ivory-soft)" }}>
-            <motion.div initial={{ width: 0 }} animate={{ width: `${split.indirectPct}%` }} transition={{ duration: 0.7 }} style={{ background: "var(--color-gold)" }} />
-            <motion.div initial={{ width: 0 }} animate={{ width: `${split.directPct}%` }} transition={{ duration: 0.7, delay: 0.1 }} style={{ background: "var(--color-emerald)" }} />
-          </div>
-          <span className="font-mono text-[10.5px] shrink-0" style={{ color: "var(--color-stone)" }}>
-            {split.indirectPct}% indirect · {split.directPct}% direct
-          </span>
-        </div>
-        {bySourceDetailed.map((s, i) => (
-          <div key={s.key} className="mb-4 last:mb-0">
-            <div className="flex justify-between items-center mb-1.5">
-              <SourceTag source={s.key} />
-              <span className="font-mono text-[12px]" style={{ color: "var(--color-stone)" }}>{s.count} leads</span>
-            </div>
-            <div className="h-2 rounded-full overflow-hidden" style={{ background: "var(--color-ivory-soft)" }}>
-              <motion.div
-                initial={{ width: 0 }}
-                animate={{ width: `${(s.count / LEADS.length) * 100}%` }}
-                transition={{ duration: 0.7, delay: 0.2 + i * 0.1, ease: [0.22, 1, 0.36, 1] }}
-                className="h-full rounded-full"
-                style={{ background: sourceColor(s.key) }}
-              />
-            </div>
-          </div>
-        ))}
-        <div className="mt-4 pt-4 font-body text-[10.5px]" style={{ borderTop: "1px solid var(--color-stone-line)", color: "var(--color-stone)" }}>
-          Live sample · business-wide split is ~70/30 indirect/direct
-        </div>
-      </div>
-
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-5">
         <div className="rounded-2xl p-6 flex items-center gap-6" style={{ background: "var(--color-paper)", border: "1px solid var(--color-stone-line)" }}>
           <DonutChart segments={bySource} centerLabel={LEADS.length} centerSub="Leads" />
-          <div className="flex flex-col gap-2.5">
+          <div className="flex flex-col gap-2.5 min-w-0">
             <div className="font-serif text-[15px] mb-1" style={{ color: "var(--color-ink)" }}>Lead Source Mix</div>
             {bySource.map((s) => (
               <div key={s.label} className="flex items-center gap-2 font-body text-[12px]" style={{ color: "var(--color-ink)" }}>
-                <span className="rounded-full" style={{ width: 8, height: 8, background: s.color }} />
-                {s.label} <span className="font-mono ml-auto" style={{ color: "var(--color-stone)" }}>{s.value}</span>
+                <span className="rounded-full shrink-0" style={{ width: 8, height: 8, background: s.color }} />
+                <span className="truncate">{s.label}</span> <span className="font-mono ml-auto shrink-0" style={{ color: "var(--color-stone)" }}>{s.value}</span>
               </div>
             ))}
+            <div className="flex items-center gap-2 mt-1 pt-2.5" style={{ borderTop: "1px solid var(--color-stone-line)" }}>
+              <div className="flex-1 h-1.5 rounded-full overflow-hidden flex" style={{ background: "var(--color-ivory-soft)" }}>
+                <motion.div initial={{ width: 0 }} animate={{ width: `${split.indirectPct}%` }} transition={{ duration: 0.7 }} style={{ background: "var(--color-gold)" }} />
+                <motion.div initial={{ width: 0 }} animate={{ width: `${split.directPct}%` }} transition={{ duration: 0.7, delay: 0.1 }} style={{ background: "var(--color-emerald)" }} />
+              </div>
+              <span
+                className="font-mono text-[9.5px] shrink-0"
+                style={{ color: "var(--color-stone)" }}
+                title="Live sample from current pipeline — Naveen's confirmed business-wide split is ~70/30"
+              >
+                {split.indirectPct}/{split.directPct} indirect/direct
+              </span>
+            </div>
           </div>
         </div>
 
